@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>network | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/network/">network</a></div><div class="post-time">2018-11-03</div></div></div><div class="container post-header"><h1>network</h1></div><div class="container post-content"><h3 id="API网关"><a href="#API网关" class="headerlink" title="API网关"></a>API网关</h3><p>API网关可以看做系统与外界联通的入口，可以在网关进行处理一些非业务逻辑的逻辑，比如权限验证，监控，缓存，请求路由。</p>
+<h4 id="为什么需要API网关"><a href="#为什么需要API网关" class="headerlink" title="为什么需要API网关"></a>为什么需要API网关</h4><ul>
+<li><p>RPC协议转成HTTP</p>
+<p>  由于系统内部开发使用<code>RPC协议</code>，连接内部服务，外部服务需要使用这个接口时需要将RPC协议转换成HTTP协议。</p>
+</li>
+<li><p>请求路由</p>
+<p>  系统中由于同一个接口新老两套系统都在使用，需要根据请求上下文将请求路由到对应的接口。</p>
+</li>
+<li><p>统一鉴权</p>
+<p>  对于鉴权操作不涉及到业务逻辑，那么可以在网关层进行处理，不用下层到业务逻辑。</p>
+</li>
+<li><p>统一监控</p>
+<p>  由于网关是外部服务的=入口，所以可以在这里监控数据，比如入参、出参、链路时间。</p>
+</li>
+<li><p>流量控制，熔断降级</p>
+<p>  对于流量控制，熔断降级非业务逻辑可以统一放到网关层。</p>
+</li>
+</ul>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://juejin.im/post/5bda67f26fb9a0223e4da611" target="_blank" rel="noopener">浅析如何设计一个亿级网关</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>MySQL | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/MySQL/">MySQL</a></div><div class="post-time">2018-10-09</div></div></div><div class="container post-header"><h1>MySQL</h1></div><div class="container post-content"><h3 id="Best-Practice"><a href="#Best-Practice" class="headerlink" title="Best Practice"></a>Best Practice</h3><p><strong>关于count(*)</strong></p>
+<p><code>MyISAM</code>会直接存储总行数，<code>InnoDB</code>则不会，需要按行扫描。只有查询全表的总行数，MyISAM才会直接返回结果，当加了where条件后，两种存储引擎的处理方式类似。</p>
+<p><strong>关于全文索引</strong></p>
+<p><code>MyISAM</code>支持全文索引，<code>InnoDB</code> 5.6之前不支持全文索引。不管哪种存储引擎，在数据量大并发量大的情况下，都不应该使用数据库自带的全文索引，会导致小量请求占用大量数据库资源。</p>
+<p><strong>关于事务</strong></p>
+<p><code>MyISAM</code>不支持事务，<code>InnoDB</code>支持事务。事务是选择InnoDB非常诱人的原因之一，它提供了commit，rollback，崩溃修复等能力。在系统异常崩溃时，MyISAM有一定几率造成文件损坏。</p>
+<p><strong>关于外键</strong></p>
+<p><code>MyISAM</code>不支持外键，<code>InnoDB</code>支持外键。不管哪种存储引擎，在数据量大并发量大的情况下，都不应该使用外键，而建议由应用程序保证完整性。</p>
+<p><strong>关于行锁与表锁</strong></p>
+<p><code>MyISAM</code>只支持表锁，<code>InnoDB</code>可以支持行锁。<code>MyISAM</code>执行读写SQL语句时，会对表加锁，所以数据量大，并发量高时，性能会急剧下降。<code>InnoDB</code>细粒度行锁，在数据量大，并发量高时，性能比较优异。</p>
+<hr>
+<p>Reference :</p>
+<ol>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651961428&amp;idx=1&amp;sn=31a9eb967941d888fbd4bb2112e9602b&amp;chksm=bd2d0d888a5a849e7ebaa7756a8bc1b3d4e2f493f3a76383fc80f7e9ce7657e4ed2f6c01777d&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">InnoDB，5项最佳实践，知其所以然？</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651961471&amp;idx=1&amp;sn=da257b4f77ac464d5119b915b409ba9c&amp;chksm=bd2d0da38a5a84b5fc1417667fe123f2fbd2d7610b89ace8e97e3b9f28b794ad147c1290ceea&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">InnoDB，select为啥会阻塞insert？</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

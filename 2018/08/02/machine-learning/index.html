@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>machine-learning | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-02</div></div></div><div class="container post-header"><h1>machine-learning</h1></div><div class="container post-content"><p><strong>Hacker News的热门排名算法</strong></p>
+<p><a href="https://news.ycombinator.com/" target="_blank" rel="noopener">Hacker News</a> 是一家关于计算机黑客和创业公司的社会化新闻网站，没有踩或反对一条提交新闻的选项，只可以赞或是完全不投票。Hacker News 允许提交任何可以被理解为“任何满足人们求知欲”的新闻。</p>
+<p><code>Hacker News</code> 采用公式 (p – 1) / (t + 2)^1.5 做为排行依据。其中P是投票数量，t是发表以来的时间，小时计。在其他条件不变的情况下，得票越多，排名越高。</p>
+<p>为什么是<code>P-1</code>？很多文章作者在提交的时候会给自己投上一票。文章发布初期的投票数对排名影响非常大，仅仅是给自己投一票，也会起到非常大的作用。换在国内，估计P-100还不够。</p>
+<p>其他条件不变的情况下，越是新发表的帖子，排名越高。</p>
+<p>重力因子G的数值大小决定了排名随时间下降的速度。G主要目的是控制更新频率。G的值越大，score的衰减速度越快，排行的更新越频繁。</p>
+<hr>
+<p><strong>Reddit的排名算法</strong></p>
+<p><a href="https://www.reddit.com/" target="_blank" rel="noopener">Reddit</a> 与 Hacker News有很大的不同点就是，Hacker News文章标题前面只有一个向上的小箭头，即只能投赞成票，而Reddit的每个文章标题前会有两个箭头，即一个向上，一个像下。分别代表“赞成”与“反对”。</p>
+<p><code>Reddit</code> 排名算法主要与以下内容有关：</p>
+<ol>
+<li>文章的发表时间t: t = 发表时间 – 2005 年 12 月 8 日7:46:43</li>
+<li>赞成票与反对票的差x: x = 赞成票 – 反对票</li>
+<li>投票方向y</li>
+<li>帖子的受肯定程度z</li>
+</ol>
+<hr>
+<p><strong>《社交网络》中Facemash算法分析</strong></p>
+<p><img src="machine-learning/facemash.png" alt="facemash"></p>
+<hr>
+<p><strong>推荐系统</strong></p>
+<p>推荐算法通常被分为四大类：</p>
+<ul>
+<li>协同过滤推荐算法</li>
+<li>基于内容的推荐算法</li>
+<li>混合推荐算法</li>
+<li>流行度推荐算法</li>
+</ul>
+<hr>
+<p><strong>梯度下降（Gradient Descent）</strong></p>
+<ol>
+<li>梯度</li>
+<li>梯度下降与梯度上升</li>
+<li>梯度下降的直观解释</li>
+<li>梯度下降的相关概念</li>
+<li>梯度下降法的代数方式描述</li>
+<li>梯度下降法的矩阵方式描述</li>
+<li>梯度下降的算法调优</li>
+</ol>
+<hr>
+<p><strong>集成学习原理</strong></p>
+<p><code>集成学习(ensemble learning)</code> 是通过构建并结合多个机器学习器来完成学习任务。</p>
+<p>对于训练集数据，通过训练若干个个体学习器，通过一定的结合策略，就可以最终形成一个强学习器，以达到博采众长的目的。集成学习有两个主要的问题需要解决，第一是如何得到若干个个体学习器，第二是如何选择一种结合策略，将这些个体学习器集合成一个强学习器。</p>
+<h3 id="个体学习器"><a href="#个体学习器" class="headerlink" title="个体学习器"></a><a>个体学习器</a></h3><p>第一种就是所有的个体学习器都是一个种类的(同质)。</p>
+<p>第二种是所有的个体学习器不全是一个种类的(异质)。</p>
+<h4 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a><a>Boosting</a></h4><p>Boosting算法工作机制:首先从训练集用初始权重训练出一个弱学习器1，根据弱学习的学习误差率表现来更新训练样本的权重，使得之前弱学习器1学习误差率高的训练样本点的权重变高，使得这些误差率高的点在后面的弱学习器2中得到更多的重视。然后基于调整权重后的训练集来训练弱学习器2.，如此重复进行，直到弱学习器数达到事先指定的数目T，最终将这T个弱学习器通过集合策略进行整合，得到最终的强学习器。</p>
+<p>Boosting系列算法里最著名算法主要有<code>AdaBoost</code>算法和<code>提升树</code>(boosting tree)系列算法。提升树系列算法里面应用最广泛的是<code>梯度提升树</code>(Gradient Boosting Tree)。</p>
+<p><img src="machine-learning/boosting.png" alt="Boosting"></p>
+<h4 id="Bagging"><a href="#Bagging" class="headerlink" title="Bagging"></a><a>Bagging</a></h4><p>Bagging的个体弱学习器的训练集是通过随机采样得到的。通过T次的随机采样，我们就可以得到T个采样集，对于这T个采样集，我们可以分别独立的训练出T个弱学习器，再对这T个弱学习器通过集合策略来得到最终的强学习器。</p>
+<p><img src="machine-learning/bagging.png" alt="Bagging"></p>
+<h3 id="结合策略"><a href="#结合策略" class="headerlink" title="结合策略"></a><a>结合策略</a></h3><h4 id="平均法"><a href="#平均法" class="headerlink" title="平均法"></a><a>平均法</a></h4><p>数值类的回归预测问题，通常使用的结合策略是平均法。</p>
+<p>对于若干个弱学习器的输出进行平均得到最终的预测输出。</p>
+<h4 id="投票法"><a href="#投票法" class="headerlink" title="投票法"></a><a>投票法</a></h4><p>分类问题预测，通常使用投票法。</p>
+<p>假设预测类别是{c1,c2,…cK},对任意一个预测样本x，T个弱学习器预测结果分别：(h1(x),h2(x)…hT(x))。</p>
+<p>最简单的投票法是相对多数投票法，（少数服从多数）。T个弱学习器对样本x的预测结果中，数量最多的类别ci为最终分类类别。如果不止一个类别获得最高票，则随机选择一个做最终类别。</p>
+<p>稍微复杂的投票法是绝对多数投票法，（票过半数）。相对多数投票法的基础上，不光要求获得最高票，还要求票过半数。否则会拒绝预测。</p>
+<p>更加复杂的是加权投票法，和加权平均法一样，每个弱学习器分类票数要乘以一个权重，最终将各个类别的加权票数求和，最大的值对应的类别为最终类别。</p>
+<h4 id="学习法"><a href="#学习法" class="headerlink" title="学习法"></a><a>学习法</a></h4><h3 id="Adaboost"><a href="#Adaboost" class="headerlink" title="Adaboost"></a><a>Adaboost</a></h3><hr>
+<h3 id="Parameter-Server"><a href="#Parameter-Server" class="headerlink" title="Parameter Server"></a><a>Parameter Server</a></h3><p><img src="machine-learning/parameter_server.png" alt="Parameter Server"></p>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://www.biaodianfu.com/hacker-news-popularity-algorithm.html" target="_blank" rel="noopener">Hacker News的热门排名算法</a></li>
+<li><a href="https://www.biaodianfu.com/reddit-popularity-algorithms.html" target="_blank" rel="noopener">Reddit的排名算法</a></li>
+<li><a href="https://www.biaodianfu.com/fackbook-facemash-algorithm.html" target="_blank" rel="noopener">《社交网络》中Facemash算法分析</a></li>
+<li><a href="http://www.infoq.com/cn/news/2015/12/Algorithm-case-10" target="_blank" rel="noopener">从算法到案例：推荐系统必读的10篇精选技术文章</a></li>
+<li><a href="http://www.infoq.com/cn/articles/recommendation-algorithm-overview-part01" target="_blank" rel="noopener">推荐算法综述（一）</a></li>
+<li><a href="http://www.infoq.com/cn/articles/recommendation-algorithm-overview-part02" target="_blank" rel="noopener">推荐算法综述（二）</a></li>
+<li><a href="https://www.cnblogs.com/pinard/p/5970503.html" target="_blank" rel="noopener">梯度下降（Gradient Descent）</a></li>
+<li><a href="http://www.cnblogs.com/pinard/p/6131423.html" target="_blank" rel="noopener">集成学习原理</a></li>
+<li><a href="https://blog.csdn.net/LegenDavid/article/details/82844187" target="_blank" rel="noopener">Parameter Server入门和理解</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

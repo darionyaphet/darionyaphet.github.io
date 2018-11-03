@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>git | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>git</h1></div><div class="container post-content"><p>如同生活中的许多伟大事件一样，<code>Git</code> 诞生于一个极富纷争大举创新的年代。Linux 内核开源项目绝大多数的维护工作都花在了提交补丁和保存归档的繁琐事务上。2005 年，开发 BitKeeper 的商业公司同 Linux 内核开源社区的合作关系结束，他们收回了免费使用 BitKeeper 的权力。迫使 Linux 开源社区不得不吸取教训，只有开发一套属于自己的版本控制系统才不至于重蹈覆辙。</p>
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>git | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>git</h1></div><div class="container post-content"><p>如同生活中的许多伟大事件一样，<code>Git</code> 诞生于一个极富纷争大举创新的年代。Linux 内核开源项目绝大多数的维护工作都花在了提交补丁和保存归档的繁琐事务上。2005 年，开发 BitKeeper 的商业公司同 Linux 内核开源社区的合作关系结束，他们收回了免费使用 BitKeeper 的权力。迫使 Linux 开源社区不得不吸取教训，只有开发一套属于自己的版本控制系统才不至于重蹈覆辙。</p>
 <hr>
 <p><strong>Git 基础</strong></p>
 <p><code>Git</code> 和其他版本控制系统主要差别在于，<code>Git</code> 只关心文件数据的整体是否发生变化，而其他系统只关心文件内容的具体差异。<code>Git</code> 并不保存这些前后变化的差异数据。<code>Git</code> 更像是把变化的文件作快照后，记录在一个微型的文件系统中。每次提交更新时，它会遍历所有文件的指纹信息并对文件作快照，然后保存一个指向这次快照的索引。</p>
@@ -31,9 +31,77 @@
 <p>远程仓库是指托管在网络上的项目仓库，可能会有好多个。管理远程仓库，包括添加远程库，移除废弃远程库，管理各式远程库分支，定义是否跟踪分支。</p>
 <p><code>git remote</code> 查看当前配置有哪些远程仓库。<code>-v (--verbose)</code> 选项显示对应的克隆地址。</p>
 <p><code>git remote add [shortname] [url]</code> 添加一个新的远程仓库，指定名字。</p>
-<p><code>git fetch [remote-name]</code> 从远程仓库抓取数据到本地。</p>
-<p><code></code></p>
+<p><code>git fetch [remote-name]</code> 从远程仓库抓取数据到本地。完成后，可以在本地访问该远程仓库中的所有分支，将某个分支合并到本地。</p>
+<p><code>git fetch origin</code> 会抓取从上次克隆以来别人上传到此远程仓库中的所有更新。</p>
+<p><code>fetch</code> 命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有确实准备好了，才能手工合并。</p>
+<p><code>git pull</code> 自动抓取数据下来，然后将远端分支自动合并到本地仓库中当前分支。</p>
+<p><code>git push [remote-name] [branch-name]</code> 将本地仓库中的数据推送到远程仓库。</p>
+<p><code>git remote show [remote-name]</code> 查看某个远程仓库的详细信息。</p>
+<p><code>git remote rename [remote-name] [branch-name]</code> 修改某个远程仓库在本地的名称。</p>
+<p><code>git remote rm [branch-name]</code> 移除对应的远端仓库。</p>
+<p>Git 使用的标签有两种类型：轻量级的（lightweight）和含附注的（annotated）。轻量级标签就像是个不会变化的分支，指向特定提交对象的引用。含附注标签，是存储在仓库中的一个独立对象，它有自身的校验和信息，标签本身也允许使用 GNU Privacy Guard (GPG) 来签署或验证。</p>
+<p><code>git tag</code> 列出现有标签，<code>-a（annotated）</code> 创建一个含附注类型的标签，<code>-m</code> 指定了标签说明。</p>
+<p><code>git tag -v (verify) [tag-name]</code> 验证已经签署的标签。</p>
+<p><code>git blame [file_name]</code> 查看文件的每个部分是谁修改的。</p>
+<p>默认情况下， <code>git push</code> 并不会把标签传送到远端服务器上，只有通过显式命令(<code>git push origin [tagname]</code>)才能分享标签到远端仓库。 <code>--tags</code> 选项一次推送所有本地新增的标签。</p>
+<p><strong>Git 分支</strong></p>
+<p><code>git commit</code> 新建提交对象前，Git 会先计算每一个子目录校验和，在 Git 仓库中将目录保存为树对象。<code>Git</code> 创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象的指针。</p>
+<p><code>Git</code> 的分支，本质上仅仅是指向提交对象的可变指针，提交对象会包含一个指向上次提交对象的指针。默认分支名字是 <code>master</code>。 特殊指针 <code>HEAD</code> 指向当前所在的本地分支。</p>
+<p><img src="18333fig0302-tn.png" alt=""></p>
+<p>分支实际上仅是一个包含所指对象校验和的文件，所以创建和销毁一个分支就变得非常廉价。<code>git branch [branch-name]</code> 创建一个新的分支指针。<code>HEAD</code>指针是一个指向你正在工作中的本地分支的指针。<code>git branch</code> 仅仅是建立了一个新分支，但不会自动切换到这个分支。</p>
+<p><code>git checkout [branch-name]</code> 切换到其他分支。每次提交后 HEAD 随着分支一起向前移动。</p>
 <hr>
+<p><strong>git-flow 的工作流程</strong></p>
+<p><img src="git-flow.png" alt="Git Flow"></p>
+<p>团队开发中使用版本控制系统时，商定一个统一的工作流程是至关重要的。<br><code>git-flow</code> 并不是要替代 <code>Git</code>，它仅仅是非常聪明有效地把标准的 <code>Git</code> 命令用脚本组合了起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/tmp/git.flow » git flow init</span><br><span class="line"></span><br><span class="line">Initialized empty Git repository in /private/tmp/git.flow/.git/</span><br><span class="line">No branches exist yet. Base branches must be created now.</span><br><span class="line">Branch name for production releases: [master]</span><br><span class="line">Branch name for &quot;next release&quot; development: [develop]</span><br><span class="line"></span><br><span class="line">How to name your supporting branch prefixes?</span><br><span class="line">Feature branches? [feature/]</span><br><span class="line">Release branches? [release/]</span><br><span class="line">Hotfix branches? [hotfix/]</span><br><span class="line">Support branches? [support/]</span><br><span class="line">Version tag prefix? []</span><br></pre></td></tr></table></figure>
+<p><code>git-flow</code> 模式会预设两个主分支在仓库中：</p>
+<ul>
+<li>master 可以部署到生产环境</li>
+<li>develop 作为每日构建集成分支，到达稳定状态时可以发布并merge回master</li>
+</ul>
+<p><code>master</code>用于存放对外发布的版本，任何时候在这个分支拿到的，都是稳定的分布版；<code>develop</code>用于日常开发，存放最新的开发版。</p>
+<p>三种短期分支:</p>
+<ul>
+<li>功能分支（feature branch）</li>
+<li>补丁分支（hotfix branch）</li>
+<li>预发分支（release branch）</li>
+</ul>
+<p>完成开发，它们就会被合并进<code>develop</code>或<code>master</code>，然后被删除。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git flow feature start rss-feed</span><br><span class="line"></span><br><span class="line">Switched to a new branch &apos;feature/rss-feed&apos;</span><br><span class="line"></span><br><span class="line">Summary of actions:</span><br><span class="line">- A new branch &apos;feature/rss-feed&apos; was created, based on &apos;develop&apos;</span><br><span class="line">- You are now on branch &apos;feature/rss-feed&apos;</span><br><span class="line"></span><br><span class="line">Now, start committing on your feature. When done, use:</span><br><span class="line"></span><br><span class="line">     git flow feature finish rss-feed</span><br></pre></td></tr></table></figure>
+<p><code>Github flow</code> 是<code>Git flow</code>的简化版，专门配合”持续发布”。</p>
+<ul>
+<li>从<code>master</code>拉出新分支，不区分功能分支或补丁分支。</li>
+<li>新分支开发完成后，或者需要讨论的时候，就向<code>master</code>发起一个pull request。</li>
+<li><code>Pull Request</code>既是一个通知，让别人注意到你的请求，又是一种对话机制，大家一起评审和讨论你的代码。</li>
+<li><code>Pull Request</code>被接受，合并进<code>master</code>，重新部署后，原来你拉出来的那个分支就被删除。</li>
+</ul>
+<p><code>Gitlab flow</code> 是 Git flow 与 Github flow 的综合。它吸取了两者的优点，既有适应不同开发环境的弹性，又有单一主分支的简单和便利。它是 Gitlab.com 推荐的做法。</p>
+<hr>
+<p><strong>Git LFS</strong></p>
+<p><code>Git LFS</code>（Large File Storage, 大文件存储）是可以把任意文件存在 <code>Git</code> 仓库之外，而在 <code>Git</code> 仓库中用一个占用空间 1KB 不到的文本指针来代替的小工具。这样可以减小 <code>Git</code> 仓库本身的体积，使克隆 <code>Git</code> 仓库的速度加快，也使得 <code>Git</code> 不会因为仓库中充满大文件而损失性能。默认情况下，只有当前签出的 <code>commit</code> 下的 LFS 对象的当前版本会被下载。</p>
+<p><code>git lfs track</code> 追踪需要使用 Git LFS 管理的文件。</p>
+<p>编辑 <code>Git</code> 仓库根目录下 <code>. gitattributes</code> 文件<br><code>*.psd filter=lfs diff=lfs merge=lfs -text</code></p>
+<p><em>常用 Git LFS 命令</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 查看当前使用 Git LFS 管理的匹配列表</span><br><span class="line">git lfs track</span><br><span class="line"></span><br><span class="line"># 使用 Git LFS 管理指定的文件</span><br><span class="line">git lfs track &quot;*.psd&quot;</span><br><span class="line"></span><br><span class="line"># 不再使用 Git LFS 管理指定的文件</span><br><span class="line">git lfs untrack &quot;*.psd&quot;</span><br><span class="line"></span><br><span class="line"># 类似 `git status`，查看当前 Git LFS 对象的状态</span><br><span class="line">git lfs status</span><br><span class="line"></span><br><span class="line"># 枚举目前所有被 Git LFS 管理的具体文件</span><br><span class="line">git lfs ls-files</span><br><span class="line"></span><br><span class="line"># 检查当前所用 Git LFS 的版本</span><br><span class="line">git lfs version</span><br><span class="line"></span><br><span class="line"># 针对使用了 LFS 的仓库进行了特别优化的 clone 命令，显著提升获取</span><br><span class="line"># LFS 对象的速度，接受和 `git clone` 一样的参数。 [1] [2]</span><br><span class="line">git lfs clone https://github.com/user/repo.git</span><br></pre></td></tr></table></figure>
+<p><code>Git LFS</code> 核心思想就是把需要进行版本管理、但又占用很大空间的那部分文件独立于 Git 仓库进行管理。从而加快克隆仓库速度，同时获得灵活的管理 LFS 对象的能力。如果获取代码时，没有一并获取 LFS 对象，随后又需要这些被 LFS 管理的文件时，可以单独执行 LFS 命令来获取并签出 LFS 对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git lfs fetch</span><br><span class="line">git lfs checkout</span><br><span class="line"># 或</span><br><span class="line">git lfs pull</span><br></pre></td></tr></table></figure>
+<p>如果只想取 <code>images</code> 文件夹，可以配置 LFS 下载对象时仅包含 images 文件夹：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config lfs.fetchinclude &apos;images/**&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello</span><br></pre></td></tr></table></figure>
+<p><strong><em>we</em></strong></p>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener">Pro Git</a></li>
+<li><a href="https://medium.com/@fredrikmorken/why-you-should-stop-using-git-rebase-5552bee4fed1" target="_blank" rel="noopener">Why you should stop using Git rebase</a></li>
+<li><a href="https://www.git-tower.com/learn/git/ebook/cn/command-line/advanced-topics/git-flow" target="_blank" rel="noopener">git-flow 的工作流程</a></li>
+<li><a href="https://github.com/petervanderdoes/gitflow-avh/wiki#installing-git-flow" target="_blank" rel="noopener">Installing git-flow</a></li>
+<li><a href="https://zzz.buzz/zh/2016/04/19/the-guide-to-git-lfs/" target="_blank" rel="noopener">Git LFS 操作指南</a></li>
+<li><a href="https://danielkummer.github.io/git-flow-cheatsheet/index.zh_CN.html" target="_blank" rel="noopener">git-flow 备忘清单</a></li>
+<li><a href="https://learngitbranching.js.org/" target="_blank" rel="noopener">learn git branching</a></li>
+<li><a href="https://www.cnblogs.com/ludashi/p/8052739.html" target="_blank" rel="noopener">Git知识总览(一) 从 git clone 和 git status 谈起</a></li>
+</ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
 });

@@ -1,4 +1,41 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>go | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>go</h1></div><div class="container post-content"></div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>go | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>go</h1></div><div class="container post-content"><p><strong>Testing in Go by example</strong></p>
+<p>All you have to do is create a file named like <code>*_test.go</code>, and start with something like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import &quot;testing&quot;</span><br><span class="line"></span><br><span class="line">func TestSomething(t *testing.T) &#123;</span><br><span class="line">	// test stuff here...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>test function starts with <code>Test...</code> and receives a single parameter: <code>t *testing.T</code>. <code>t.Fail()</code> make test failed, <code>t.Error()</code> throw a error, <code>t.Log()</code> take a log output.</p>
+<p><code>go test -v testing</code> runs the actual tests for the “testing” package from the standard library.</p>
+<p><code>go test -v testing encoding/json</code> running multiple packages with a single command.</p>
+<p><code>go test -v -run=TestBowlingGameScoring</code> </p>
+<hr>
+<p><strong>Golang必备技巧：接口型函数</strong></p>
+<p><code>接口型函数</code>，函数实现接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">type Handler interface &#123;</span><br><span class="line">	Work(k, v interface&#123;&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Each(m map[interface&#123;&#125;]interface&#123;&#125;, h Handler) &#123;</span><br><span class="line">	if m != nil &amp;&amp; len(m) &gt; 0 &#123;</span><br><span class="line">		for k, v := range m &#123;</span><br><span class="line">			h.Work(k, v)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>interface</code> 是一种类型，具有一组方法的类型，这些方法定义了 <code>interface</code> 的行为。</p>
+<p>go 允许不带任何方法的 interface ，<code>empty interface</code>。</p>
+<p>如果一个类型实现了一个 interface 中所有方法，类型实现了该 interface，</p>
+<p><strong>Context</strong></p>
+<p><code>Context</code>(上下文)，它是一个比较抽象的概念，一般理解为程序单元的一个运行状态。</p>
+<p>Goroutine在执行之前，都要先知道程序当前的执行状态，通常将执行状态封装在一个<code>Context</code>变量中，传递给要执行的Goroutine中。</p>
+<p><code>context</code>包的核心就是<code>Context</code>接口，定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">type Context interface &#123;</span><br><span class="line">    Deadline() (deadline time.Time, ok bool)</span><br><span class="line">    Done() &lt;-chan struct&#123;&#125;</span><br><span class="line">    Err() error</span><br><span class="line">    Value(key interface&#123;&#125;) interface&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Deadline</code>会返回一个超时时间，Goroutine获得了超时时间后，例如可以对某些io操作设定超时时间。</p>
+<p><code>Done</code>方法返回一个信道（channel），当Context被撤销或过期时，该信道是关闭的，即它是一个表示Context是否已关闭的信号。</p>
+<p>当<code>Done</code>信道关闭后，<code>Err</code>方法表明Context被撤的原因。</p>
+<p><code>Value</code>可以让Goroutine共享一些数据，当然获得数据是协程安全的。但使用这些数据的时候要注意同步，比如返回了一个map，而这个map的读写则要加锁。</p>
+<p>Programs that use Contexts should follow these rules to keep interfaces consistent across packages and enable static analysis tools to check context propagation:</p>
+<ul>
+<li>Do not store Contexts inside a struct type; instead, pass a Context explicitly to each function that needs it. The Context should be the first parameter, typically named ctx；</li>
+<li>Do not pass a nil Context, even if a function permits it. Pass context.TODO if you are unsure about which Context to use；</li>
+<li>Use context Values only for request-scoped data that transits processes and APIs, not for passing optional parameters to functions；</li>
+<li>The same Context may be passed to functions running in different goroutines; Contexts are safe for simultaneous use by multiple goroutines；</li>
+</ul>
+<hr>
+<p>Reference :</p>
+<ol>
+<li><a href="https://smartystreets.com/blog/tags/testing-in-go-series" target="_blank" rel="noopener">Testing in Go by example</a></li>
+<li><a href="http://www.flysnow.org/2016/12/30/golang-function-interface.html" target="_blank" rel="noopener">Golang必备技巧：接口型函数</a></li>
+<li><a href="https://sanyuesha.com/2017/07/22/how-to-understand-go-interface/" target="_blank" rel="noopener">理解 Go interface 的 5 个关键点</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
 });
 </script></body></html>

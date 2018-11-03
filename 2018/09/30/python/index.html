@@ -1,0 +1,572 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>python | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-09-30</div></div></div><div class="container post-header"><h1>python</h1></div><div class="container post-content"><p><strong>Built-in Functions</strong></p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abs</td>
+<td style="text-align:left">Return the absolute value of a number.</td>
+</tr>
+<tr>
+<td>all</td>
+<td style="text-align:left">Return True if all elements of the iterable are true .</td>
+</tr>
+<tr>
+<td>any</td>
+<td style="text-align:left">Return True if any element of the iterable is true.</td>
+</tr>
+<tr>
+<td>ascii</td>
+<td style="text-align:left">Return a string containing a printable representation of an object.</td>
+</tr>
+<tr>
+<td>bin</td>
+<td style="text-align:left">Convert an integer number to a binary string.</td>
+</tr>
+<tr>
+<td>bool</td>
+<td style="text-align:left">Return a Boolean value, one of True or False.</td>
+</tr>
+<tr>
+<td>breakpoint</td>
+<td style="text-align:left">Drops into the debugger at the call site.</td>
+</tr>
+<tr>
+<td>bytearray</td>
+<td style="text-align:left">Return a new array of bytes. (0 &lt;= x &lt; 256)</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td style="text-align:left">Return a new “bytes” object. (0 &lt;= x &lt; 256)</td>
+</tr>
+<tr>
+<td>callable</td>
+<td style="text-align:left">Return True if the object argument appears callable, False if not.</td>
+</tr>
+<tr>
+<td>chr</td>
+<td style="text-align:left">Return the string representing a character whose Unicode code point is the integer i.</td>
+</tr>
+<tr>
+<td>classmethod</td>
+<td style="text-align:left">Transform a method into a class method. <code>C.f()</code></td>
+</tr>
+<tr>
+<td>compile</td>
+<td style="text-align:left">Compile the source into a code or AST object. (executed by exec() or eval())</td>
+</tr>
+<tr>
+<td>delattr</td>
+<td style="text-align:left">Deletes the named attribute, provided the object allows it.</td>
+</tr>
+<tr>
+<td>dict</td>
+<td style="text-align:left">Create a new dictionary.</td>
+</tr>
+<tr>
+<td>dir</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>divmod</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>enumerate</td>
+<td style="text-align:left">Return an enumerate object.</td>
+</tr>
+<tr>
+<td>eval</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>exec</td>
+<td style="text-align:left">Dynamic execution of Python code</td>
+</tr>
+<tr>
+<td>filter</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>float</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>format</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>frozenset</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>getattr</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>globals</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>hasattr</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>hash</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>help</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>hex</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>input</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>int</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>isinstance</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>issubclass</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>iter</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>len</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>list</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>locals</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>map</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>max</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>memoryview</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>min</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>next</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>object</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>oct</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>open</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>ord</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>pow</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>print</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>property</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>repr</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>reversed</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>round</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>set</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>setattr</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>slice</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>sorted</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>staticmethod</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>str</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>sum</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>super</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>tuple</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>type</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>vars</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>zip</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td><strong>import</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><code>Functional Programming Modules</code></p>
+<p><strong>itertools</strong> : Functions creating iterators for efficient looping</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th style="text-align:left">description</th>
+<th style="text-align:left">example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count</td>
+<td style="text-align:left">start, start+step …</td>
+<td style="text-align:left">count(1) –&gt; 1 2 3 …</td>
+</tr>
+<tr>
+<td>cycle</td>
+<td style="text-align:left">p0, p1, … , p0, p1, …</td>
+<td style="text-align:left">cycle(‘ABC’) –&gt; A B C A B C …</td>
+</tr>
+<tr>
+<td>repeat</td>
+<td style="text-align:left">elem, elem, … endlessly or up to n times</td>
+<td style="text-align:left">repeat(10, 3) –&gt; 10 10 10</td>
+</tr>
+<tr>
+<td>accumulate</td>
+<td style="text-align:left">p0, p0+p1, p0+p1+p2, …</td>
+<td style="text-align:left">accumulate([1,2,3,4,5]) –&gt; 1 3 6 10 15</td>
+</tr>
+<tr>
+<td>chain</td>
+<td style="text-align:left">p0, p1, … q0, q1, …</td>
+<td style="text-align:left">chain(‘ABC’, ‘DEF’) –&gt; A B C D E F</td>
+</tr>
+<tr>
+<td>chain.from_iterable</td>
+<td style="text-align:left">p0, p1, … q0, q1, …</td>
+<td style="text-align:left">chain.from_iterable([‘AB’, ‘DE’]) –&gt; A B D E</td>
+</tr>
+<tr>
+<td>compress</td>
+<td style="text-align:left">(d[0] if s[0]), (d[1] if s[1]), …</td>
+<td style="text-align:left">compress(‘ABCDE’, [1,0,1,0,1]) –&gt; A C E</td>
+</tr>
+<tr>
+<td>dropwhile</td>
+<td style="text-align:left">seq[n], seq[n+1], starting when pred fails</td>
+<td style="text-align:left">dropwhile(lambda x: x&lt;5, [1,4,6,4,1]) –&gt; 6 4 1</td>
+</tr>
+<tr>
+<td>filterfalse</td>
+<td style="text-align:left">elem of seq where pred(elem) is false</td>
+<td style="text-align:left">filterfalse(lambda x: x%2, range(5)) –&gt; 0 2 4</td>
+</tr>
+<tr>
+<td>groupby</td>
+<td style="text-align:left">sub-iterators grouped by value of key(v)</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>islice</td>
+<td style="text-align:left">elements from seq[start:stop:step]</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>starmap</td>
+<td style="text-align:left">func(<em>seq[0]), func(</em>seq[1]), …</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>takewhile</td>
+<td style="text-align:left">seq[0], seq[1], until pred fails</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>tee</td>
+<td style="text-align:left">it1, it2, … itn splits one iterator into n</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td>zip_longest</td>
+<td style="text-align:left">(p[0], q[0]), (p[1], q[1]), …</td>
+<td style="text-align:left">zip_longest(‘AB’, ‘x’, fillvalue=’-‘) –&gt; Ax B-</td>
+</tr>
+</tbody>
+</table>
+<p><strong>functools</strong> : Higher-order functions and operations on callable objects</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th style="text-align:left">description</th>
+<th style="text-align:left">example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<p><strong>operator</strong> : Standard operators as functions<br>| name  | description    | example    |<br>| —-  | :———–   | :——— |<br>||||<br>||||<br>||||<br>||||<br>||||<br>||||<br>||||</p>
+<hr>
+<p>##IPython</p>
+<p><code>IPython</code> (interactive Python) 作为一个增强的 Python 解释器致力于提供“科学计算的全生命周期开发工具”。如果将 Python 看作数据科学任务的引擎，那么 IPython 就是一个交互式控制面板。IPython 被紧密地连接在 Jupyter 项目中，提供一个基于浏览器的 Notebook。Jupyter Notebook 不仅可以执行 Python/IPython 语句，还允许用户添加格式化文本、静态和动态的可视化图像、数学公式、JavaScript 插件等等。</p>
+<p><em>用符号?获取文档</em></p>
+<p>每一个 <code>Python</code> 对象都有一个字符串的引用(docstring)，该字符串包含对象的简要介绍和使用方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">In [1]: len?</span><br><span class="line">Signature: len(obj, /)</span><br><span class="line">Docstring: Return the number of items in a container.</span><br><span class="line">Type:      builtin_function_or_method</span><br><span class="line"></span><br><span class="line">In [2]: l = [1,2,3]</span><br><span class="line"></span><br><span class="line">In [3]: l?</span><br><span class="line">Type:        list</span><br><span class="line">String form: [1, 2, 3]</span><br><span class="line">Length:      3</span><br><span class="line">Docstring:</span><br><span class="line">Built-in mutable sequence.</span><br><span class="line"></span><br><span class="line">If no argument is given, the constructor creates a new empty list.</span><br><span class="line">The argument must be an iterable if specified.</span><br><span class="line"></span><br><span class="line">In [4]: l.append?</span><br><span class="line">Signature: l.append(object, /)</span><br><span class="line">Docstring: Append object to the end of the list.</span><br><span class="line">Type:      builtin_function_or_method</span><br></pre></td></tr></table></figure>
+<p><em>通过符号??获取源代码</em></p>
+<p>IPython 提供了获取源代码， 两个问好 (??)，就是比看 doc 多一些好奇~:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [13]: def swap(x, y): return y,x</span><br><span class="line"></span><br><span class="line">In [14]: swap??</span><br><span class="line">Signature: swap(x, y)</span><br><span class="line">Docstring: &lt;no docstring&gt;</span><br><span class="line">Source:    def swap(x, y): return y,x</span><br><span class="line">File:      ~/&lt;ipython-input-13-124656e4654a&gt;</span><br><span class="line">Type:      function</span><br></pre></td></tr></table></figure>
+<p><em>用Tab补全的方式探索模块</em></p>
+<p>IPython 用 Tab 键自动补全和探索对象、模块及命名空间的内容。</p>
+<p><em>通配符匹配</em></p>
+<p>IPython 提供了用 <code>*</code> 符号来实现的通配符匹配方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">In [15]: *Warning?</span><br><span class="line">BytesWarning</span><br><span class="line">DeprecationWarning</span><br><span class="line">FutureWarning</span><br><span class="line">ImportWarning</span><br><span class="line">PendingDeprecationWarning</span><br><span class="line">ResourceWarning</span><br><span class="line">RuntimeWarning</span><br><span class="line">SyntaxWarning</span><br><span class="line">UnicodeWarning</span><br><span class="line">UserWarning</span><br><span class="line">Warning</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>command</th>
+<th style="text-align:left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl + a</td>
+<td style="text-align:left">将光标移到本行的开始处</td>
+</tr>
+<tr>
+<td>Ctrl + e</td>
+<td style="text-align:left">将光标移到本行的结尾处</td>
+</tr>
+<tr>
+<td>Ctrl + b</td>
+<td style="text-align:left">将光标回退一个字符</td>
+</tr>
+<tr>
+<td>Ctrl + f</td>
+<td style="text-align:left">将光标前进一个字符</td>
+</tr>
+<tr>
+<td>Backspace</td>
+<td style="text-align:left">删除前一个字符</td>
+</tr>
+<tr>
+<td>Ctrl + d</td>
+<td style="text-align:left">删除后一个字符</td>
+</tr>
+<tr>
+<td>Ctrl + k</td>
+<td style="text-align:left">从光标开始剪切至行的末尾</td>
+</tr>
+<tr>
+<td>Ctrl + u</td>
+<td style="text-align:left">从行的开头剪切至光标</td>
+</tr>
+<tr>
+<td>Ctrl + y</td>
+<td style="text-align:left">粘贴剪切的文本</td>
+</tr>
+<tr>
+<td>Ctrl + t</td>
+<td style="text-align:left">交换前两个字符</td>
+</tr>
+<tr>
+<td>Ctrl + p</td>
+<td style="text-align:left">获取前一个历史命令</td>
+</tr>
+<tr>
+<td>Ctrl + n</td>
+<td style="text-align:left">获取后一个历史命令</td>
+</tr>
+<tr>
+<td>Ctrl + r</td>
+<td style="text-align:left">对历史命令的反向搜索</td>
+</tr>
+<tr>
+<td>Ctrl + l</td>
+<td style="text-align:left">清除终端屏幕的内容</td>
+</tr>
+<tr>
+<td>Ctrl + c</td>
+<td style="text-align:left">中断当前的 Python 命令</td>
+</tr>
+<tr>
+<td>Ctrl + d</td>
+<td style="text-align:left">退出 IPython 会话</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>粘贴代码块：%paste和%cpaste</em></p>
+<p><em>执行外部代码：%run</em></p>
+<p><em>计算代码运行时间：%timeit</em></p>
+<p><em>魔法函数的帮助：?、%magic和%lsmagic</em></p>
+<p><em>IPython的输入和输出对象</em></p>
+<p><em>下划线快捷键和以前的输出</em></p>
+<p><em>代码段计时：%timeit和%time</em></p>
+<p><em>分析整个脚本：%prun</em></p>
+<p><em>用%lprun进行逐行分析</em></p>
+<p><em>用%memit和%mprun进行内存分析</em></p>
+<hr>
+<p>Reference :</p>
+<ol>
+<li><a href="https://docs.python.org/3/index.html" target="_blank" rel="noopener">Python 3.7.1 documentation</a></li>
+<li><a href="http://www.wklken.me/posts/2013/08/20/python-extra-itertools.html" target="_blank" rel="noopener">PYTHON-进阶-ITERTOOLS模块小结</a></li>
+<li><a href="http://www.wklken.me/posts/2015/09/29/python-source-gc.html" target="_blank" rel="noopener">PYTHON 源码阅读 - 垃圾回收机制</a></li>
+<li><a href="https://www.saltycrane.com/blog/2008/01/how-to-use-args-and-kwargs-in-python/" target="_blank" rel="noopener">How to use *args and **kwargs in Python</a></li>
+<li><a href="http://www.ituring.com.cn/book/tupubarticle/19702" target="_blank" rel="noopener">Python数据科学手册</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

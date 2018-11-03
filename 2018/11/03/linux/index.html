@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>linux | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/linux/">linux</a></div><div class="post-time">2018-11-03</div></div></div><div class="container post-header"><h1>linux</h1></div><div class="container post-content"><p><strong>CPU Load Balancing</strong></p>
+<p>所谓CPU负载均衡就是将进程从繁忙的CPU迁移到比较空闲的CPU上，目的是为了提高系统的整体效率。</p>
+<p>进程在不同CPU之间迁移通常会影响cache的命中率，例如：</p>
+<ol>
+<li><p><code>支持超线程技术</code>(SMT)的CPU内部的虚CPU之间完全共享cache，在它们之间迁移进程对cache几乎没有影响，所以尽量保证它们之间的进程数均衡。</p>
+</li>
+<li><p>单个CPU的多个核有各自的L1缓存，但共享L2和L3缓存，在这些核之间迁移进程会导致L1缓存的失效，但是L2和L3缓存不受影响。</p>
+</li>
+<li><p>多CPU，每个CPU有各自独享的缓存，在这些CPU之间迁移进程会导致缓存失效。</p>
+</li>
+<li><p>多CPU，多内存节点（NUMA），不同CPU对于不同内存结点访问的效率不同，在这些CPU之间迁移进程不仅会影响缓存，而且会出现内存访问效率的问题。</p>
+</li>
+<li><p>多CPU+NUMA组成的阵列。</p>
+</li>
+</ol>
+<p>内核根据迁移进程所造成的影响情况设置了不同的调度域（sched_domain），最小一级的调度域是SMT的情况，SMT中的多个虚拟CPU位于同一调度域内；次小一级是单个CPU的多个核的情况，这些核位于同一调度域内；往上是多个CPU的情况以及多CPU+NUMA的情况，最上面就是阵列情况，自下而上所有的sched_domain形成一棵树形结构，越往上迁移进程导致的影响越大，所以越往上内核会增大迁移的阻力。</p>
+<hr>
+<p><strong>Virtual Memory</strong></p>
+<p>Linux内核对整个系统的物理内存是通过类型为struct page的数组mem_map来管理的。</p>
+<p>Linux的内核地址空间大小为1G 用户空间0~3G，内核空间3G~4G。</p>
+<p>如果把这1G线性地址空间全部拿来直接一一映射物理内存的话，在内核态的所有进程能使用的物理内存总共最多只有1G,为了能使在内核态的所有进程能使用更多的物理内存，Linux采取了一种变通的形式：它将1G内核线性地址空间分为几部分，第一部分为1G的前896M，这部分内核线性空间与物理内存的0~896M一一映射，后面128M的线性空间拿来动态映射剩下的所有物理内存，由于动态映射的方法不一样，后面的128M又分成了几个部分。</p>
+<p>前面896M线性空间对应的物理内存就是所谓的低端物理内存，剩下的物理内存就是高端物理内存。</p>
+<p>进程中使用的所有地址都是虚地址，在linux下这个虚地址就是所谓的线性地址。Linux中进程可运行在用户态和内核态，（典型配置情况下）当进程运行在用户态时，它使用的线性地址只能位于0~3G范围内，当进程运行于内核态时，它使用的线性地址地址范围为3G~4G。</p>
+<p>为了把线性地址转化为物理地址，每个进程都有自己私有的页目录和页表。</p>
+<p>Linux在建立进程页目录时，把用户地址空间的页目录项（0~767项）清空而将内核页目录表（swapper_pg_dir）的第768项到1023项拷贝到进程的页目录表的第768项到1023项中。</p>
+<p>由于内核在初始化时也只映射了物理内存的前896M，我们可以知道内核也目录表只能保证第768项开始的224项中有有效映射。从这里我们可以知道，所有的进程都共享了其内核线性地址空间。</p>
+<p>当一个进程在内核空间发生缺页故障的时候，这主要发生在访问内核空间动态映射区线性地址，在其处理程序中，就要通过0号进程的页目录（swapper_pg_dir）来同步本进程的内核页目录，实际上就是拷贝0号进程的内核页目录到本进程中（内核页表与进程0共享，故不需要复制）。如果进程0的该地址处的内核页目录也不存在，则出错，具体代码可以参考vmalloc的实现源码。</p>
+<p>当进程运行于用户态时，若其需要申请内存空间，内核首先会在其用户线性空间中分配需要的线性地址空间，再通过伙伴分配系统分配物理内存并把分配的物理内存跟用户空间线性地址映射起来，最后再修改进程的页目录项及页表项写入这些映射关系。</p>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>
