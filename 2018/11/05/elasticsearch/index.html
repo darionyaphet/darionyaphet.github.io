@@ -1,0 +1,174 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>elasticsearch | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/elasticsearch/">elasticsearch</a></div><div class="post-time">2018-11-05</div></div></div><div class="container post-header"><h1>elasticsearch</h1></div><div class="container post-content"><p><img src="elasticsearch/SearchEngine.png" alt="SearchEngine"></p>
+<p>ElasticSearch节点启动时，使用广播技术发现集群中其他节点，进行连接。集群中有一个节点被选举为<code>主节点(master)</code>，该节点负责集群状态管理与集群拓扑结构变化时做出反应。</p>
+<p>shard = hash(document_id) % (num_of_primary_shards)</p>
+<p>Read operations consist of two parts:</p>
+<ul>
+<li>Query Phase</li>
+<li>Fetch Phase</li>
+</ul>
+<p><strong>Query Phase</strong></p>
+<p><strong>Fetch Phase</strong></p>
+<p><strong>Analyzer</strong></p>
+<p>Elasticsearch 利用 Analysis 模块来构建 Index 以及Query，可以在定义 <code>mapping</code> 时指定 <code>analyzer</code>。</p>
+<p><code>Analyzer</code> 由一个到数个 <code>Tokenizer</code>、零到多个 <code>Char Filter</code> 与 <code>Token Filter</code> 组成。<code>Analyzer</code>、<code>Tokenizer</code> 以及 <code>Token Filter</code> 都可以在 mapping 中指定。</p>
+<p><code>Char Filter</code> 替换字符串中的内容，常用语过滤HTML语法，或是把特殊字符转换为有意义的单字，例如把 <code>&amp;</code> 转换为 <code>和</code>。</p>
+<p><code>Tokenizer</code> 用于将字符串拆分为一组token，每个token都可以带有一些特殊属性。</p>
+<p><code>Token Filter</code> 用来更改token内容，删除特定token以及增加token。，例如：lower case 和 去除停用词。</p>
+<p><img src="elasticsearch/analysis.png" alt="Analysis"></p>
+<hr>
+<p><img src="elasticsearch/architecture.jpg" alt="Architecture"></p>
+<p>Gateway是ES用来存储索引的文件系统，支持多种类型。<br>Gateway的上层是一个分布式的lucene框架。</p>
+<p>Lucene之上是ES的模块，包括：索引模块、搜索模块、映射解析模块等<br>ES模块之上是 Discovery、Scripting和第三方插件。Discovery是ES的节点发现模块，不同机器上的ES节点要组成集群需要进行消息通信，集群内部需要选举master节点，这些工作都是由Discovery模块完成。支持多种发现机制，如 Zen 、EC2、gce、Azure。Scripting用来支持在查询语句中插入javascript、python等脚本语言，scripting模块负责解析这些脚本，使用脚本语句性能稍低。ES也支持多种第三方插件。<br>再上层是ES的传输模块和JMX.传输模块支持多种传输协议，如 Thrift、memecached、http，默认使用http。JMX是java的管理框架，用来管理ES应用。<br>最上层是ES提供给用户的接口，可以通过RESTful接口和ES集群进行交互。</p>
+<hr>
+<hr>
+<p><img src="elasticsearch/write.jpeg" alt="Write"></p>
+<hr>
+<p><img src="elasticsearch/query.jpeg" alt="Query"></p>
+<hr>
+<p><strong>Query</strong></p>
+<ul>
+<li><p>Match Query and Multi-Match Query</p>
+<p>  ss</p>
+</li>
+<li><p>Multi-Match Query</p>
+</li>
+</ul>
+<ul>
+<li>Bool Query</li>
+</ul>
+<ul>
+<li>Boosting Query</li>
+</ul>
+<ul>
+<li>Common Term Query</li>
+</ul>
+<ul>
+<li>Constant Score Query</li>
+</ul>
+<ul>
+<li>Dismax Query</li>
+</ul>
+<ul>
+<li>Filtered Query</li>
+</ul>
+<ul>
+<li>Fuzzy Query</li>
+</ul>
+<ul>
+<li>Function score Query</li>
+</ul>
+<ul>
+<li>Geoshape Query</li>
+</ul>
+<ul>
+<li>Has Child Query and Has Parent Query and Top Children Query</li>
+</ul>
+<ul>
+<li>Ids Query</li>
+</ul>
+<ul>
+<li>Indices Query</li>
+</ul>
+<ul>
+<li>More Like This and More Like This Field Query</li>
+</ul>
+<ul>
+<li>Nested Query</li>
+</ul>
+<ul>
+<li>Prefix Query</li>
+</ul>
+<ul>
+<li>Query String Query and Simple Query String Query</li>
+</ul>
+<ul>
+<li>Range Query and Regrex Query and Wildcard Query</li>
+</ul>
+<ul>
+<li>Span Query</li>
+</ul>
+<ul>
+<li>Term Query and Terms Query</li>
+</ul>
+<ul>
+<li>Template Query</li>
+</ul>
+<hr>
+<p><strong>ElasticSearch 5.6.X Query DSL汇总</strong></p>
+<p>特定领域语言(Domain Specific Language DSL)指的是专注于某个应用程序领域的计算机语言。<br>外部DSL：不同于应用系统主要使用语言的语言，通常采用自定义语法，宿主应用的代码采用文本解析技术对外部DSL编写的脚本进行解析。SQL<br>内部DSL：通用语言的特定语法，用内部DSL写成的脚本是一段合法的程序，但是它具有特定的风格，而且仅仅用到了语言的一部分特性，用于处理整个系统一个小方面的问题；</p>
+<p><code>ElasticSearch</code> 提供丰富且灵活的查询语言叫做DSL查询(Query DSL)，使用JSON格式，允许构建更加复杂、强大的查询。 </p>
+<blockquote>
+<p>查询所有文档(match_all)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET /_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_all&quot;: &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>词语匹配(match)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;FIELD&quot;: &quot;TEXT&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>短语匹配(match_phrase)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_phrase&quot;: &#123;</span><br><span class="line">      &quot;FIELD&quot;: &quot;PHRASE&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>短语前缀匹配(match_phrase_prefix)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_phrase_prefix&quot;: &#123;</span><br><span class="line">      &quot;FIELD&quot;: &quot;PREFIX&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="查询模型"><a href="#查询模型" class="headerlink" title="查询模型"></a>查询模型</h3><p><strong>布尔模型(Boolean Model)</strong><br>布尔模型是一种常用检索模型，数学基础是集合论。布尔模型之中，文档与查询由其包含的单词集合来表示，两者间相似性由布尔代数运算表示。<br>布尔模型一般使用与、或、非来将用户查询连接起来，查询布尔表达式和所有文档的布尔表达式进行匹配，匹配成功的文档的得分为1，否则为0。</p>
+<p>例如：苹果 AND (IPad2 OR IPhone) 表示一篇文档必须包含苹果 同时也要包含IPad2或者IPhone</p>
+<p>D1：IPhone 5于9月13号问世。<br>D2: 苹果公司于9月13号发布新一代IPhone。<br>D3：IPad2将于3月11日在美上市。<br>D4：IPhone和IPad2的外观设计精美时尚<br>D5：80后90后都喜欢IPhone，但不喜欢吃苹果。</p>
+<p>检索结果就是D2和D5符合搜索条件。</p>
+<p>优点在于形式简洁、结构简单。</p>
+<p>缺点在于准确匹配可能导致检出文档过多或过少。<br>因为布尔模型只是判断文档要么相关、要么不相关，检索策略基于二值判定标准，无法描述与查询条件部分匹配情况。<br>因此，布尔模型实际上是一个数值检索模型而不是信息检索模型。</p>
+<p><strong>向量空间模型(Vector Space Model，VSM)</strong></p>
+<p>上世纪70年代，由康奈尔大学Salton等人提出，基本思想将文档看成由N维特征组成向量，采用单词作为特征，每个特征会根据一定依据计算其权重，N维带权特征共同构成了一个文档，来表示文档主题内容。</p>
+<p>计算文档相似性可以采用余弦定义，求文档在N维空间中查询词向量和文档向量夹角，越小越相似；特征权重，可以采用TF-IDF，TF是词频，IDF是逆文档频率因子(同一个单词在文档集合范围的出现次数)。<br>IDF是一种全局因子，考虑特征单词之间的相对重要性，特征词出现在其中的文档数目越多，IDF值越低，区分不同文档能力越差。</p>
+<p>向量表示：</p>
+<p>文档Dj向量可以表示为Dj(w1j， w2j ，…，wnj ) ，其中n是系统中的单词数目，wij 代表了标引词i在文档Dj中权重。<br>查询Q向量可以表示为Q(w1q， w2q ，…，wnq ) ，wiq代表了单词i在查询Q中权重。</p>
+<p>文档-单词矩阵：N篇文档，M个词构成的矩阵，每列可以看成每篇文档的向量表示，每行也可以可以看成单词的向量表示。</p>
+<p>权重：<br>布尔权重：标引词i在文档j中的权重wij =0或1（出现取1，否则取0）。<br>TF权重：单词在文档中出现的次数。权重wij = TFij或者归一化后的TF值。<br>TF归一化：将一篇文档中所有的标引词的TF值归一化到[0,1]之间。<br>单词文档频率：单词在文档集合中出现文档篇数，反映了单词的区分度， 越高表示单词越普遍，因此其区分度越低，其权重也越低。<br>逆文档频率：DF的倒数。</p>
+<p>计算权重：向量空间模型中通常采用TF<em> IDF的方式计算权重，即标引词i在文档dj的权重Wij = TFij </em> IDFij。<br>相似度计算：文档和查询词的相关程度由各自向量在向量空间中的相对位置来决定。主要采用余弦函数定义相似度。</p>
+<p>余弦相似性将每个文档以及查询看做N维特征空间的一个数值点。每个特征形成n维空间中的一个维度，链接特征空间原点和数值点形成一个向量，余弦相似性就是计算特征空间中两个向量之间夹角。<br>夹角越小，两个特征向量内容越相似。两个完全相同的文档，其在向量空间中的两个向量是重叠的，余弦相似性值为1。</p>
+<p>优点：简洁直观，支持部分匹配和近似匹配，<br>缺点：计算量大，单词不同位置会代表不同权重，而不同关键词长度也会影响权重大小，单词之间独立性假设与实际不符：实际上，单词的出现之间是有关系的，不是完全独立的。</p>
+<p><strong>概率模型(Statistical Model)</strong></p>
+<p>概率模型是从概率排序原理推导出来的。通过概率方法将查询和文档联系起来，给定一个查询，如果搜索系统能够在搜索结果排序时按照文档和查询相关性由高到底排序，那么这个搜索系统准确性是最优的。</p>
+<p>相似度计算：<br>将查询Q和文档D根据有没有单词表示为二值向量，Q={q1,q2,…}，D={d1,d2,…}，di=0或1表示文献中没有或有第i个单词. 用R表示文献相关，表示文献不相关。<br>条件概率P(R|dj )表示文档 dj与查询qi相关的概率。</p>
+<p>条件概率P(|dj)表示文档dj与查询qi不相关的概率。</p>
+<p>利用它们的比值计算文档与查询的相似度。<br>若P(R|d)&gt; P( |d)，即比值大于1，则文献相关程度大于不相关程度，认为文献d是相关的，否则认为文献d不相关。在两者相等时，人为地认为它是不相关的。</p>
+<p>优点：采用严格数学理论为依据，采用相关反馈原理，在其中没有使用用户难以运用的布尔逻辑方法，在操作过程中使用了词的依赖性和相互关系。<br>缺点：计算复杂度大,不适合大型网络，参数估计难度较大，条件概率值难估计，需与其他检索模型结合。</p>
+<p><strong>语言模型(Language Modeling)</strong></p>
+<p>借鉴语音识别领域采用的语言模型技术，将语言模型和信息检索模型相互融合的结果。语言模型代表了单词或者单词序列在文档中的分布情况；</p>
+<p>其他的检索模型的思考路径是从查询到文档，即给定用户查询，如何找出相关的文档。</p>
+<p>语言模型思路正好相反，是文档到查询，即为每个文档建立不同的语言模型，判断由文档生成用户查询的可能性有多大，然后按照概率由高到低排序，作为搜索结果。</p>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://blog.insightdatascience.com/anatomy-of-an-elasticsearch-cluster-part-i-7ac9a13b05db" target="_blank" rel="noopener">Anatomy of an Elasticsearch Cluster: Part I</a></li>
+<li><a href="https://blog.insightdatascience.com/anatomy-of-an-elasticsearch-cluster-part-ii-6db4e821b571" target="_blank" rel="noopener">Anatomy of an Elasticsearch Cluster: Part II</a></li>
+<li><a href="https://blog.insightdatascience.com/anatomy-of-an-elasticsearch-cluster-part-iii-8bb6ac84488d" target="_blank" rel="noopener">Anatomy of an Elasticsearch Cluster: Part III</a></li>
+<li><a href="https://blog.csdn.net/g1969119894/article/details/80111067" target="_blank" rel="noopener">Elasticsearch5.6.X 的Query DSL种类汇总</a></li>
+<li><a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882896" target="_blank" rel="noopener">Bool 查询</a></li>
+<li><a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882902" target="_blank" rel="noopener">Dis Max 查询</a></li>
+<li><a href="https://yq.aliyun.com/articles/573660" target="_blank" rel="noopener">Elasticsearch 写入流程剖析</a></li>
+<li><a href="https://yq.aliyun.com/articles/576223" target="_blank" rel="noopener">Elasticsearch 查询流程剖析</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

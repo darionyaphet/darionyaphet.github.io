@@ -1,4 +1,15 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>machine-learning | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-02</div></div></div><div class="container post-header"><h1>machine-learning</h1></div><div class="container post-content"><p><strong>Hacker News的热门排名算法</strong></p>
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>machine-learning | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-02</div></div></div><div class="container post-header"><h1>machine-learning</h1></div><div class="container post-content"><p><code>机器学习（Machine Learning）</code>是让计算机能够自动地从某些数据中总结出规律，并得出某种预测模型，进而利用该模型对未知数据进行预测的一种方法。它是一种实现人工智能的方式，是一门综合了统计学、概率论、逼近论、凸分析、计算复杂性理论等的交叉学科。</p>
+<p><code>模式识别</code>是机器学习中通过数学方法来研究模式处理的一类问题；数据挖掘是从数据库管理、数据分析、算法的角度探索机器学习问题；而统计学习则是站在统计学的视角来研究机器学习问题。</p>
+<p>机器学习大致可以分为以下几类：</p>
+<ol>
+<li><strong>有监督学习</strong>（Supervised learning）</li>
+<li><strong>无监督学习</strong>（Unsupervised learning）</li>
+<li><strong>半监督学习</strong>（Semi-supervised learning）</li>
+<li><strong>强化学习</strong>（Reinforcement learning）</li>
+</ol>
+<p>机器学习问题的一般流程：数据收集 –&gt; 数据预处理 –&gt; 特征工程 –&gt; 模型的选择 –&gt; 模型的评估</p>
+<hr>
+<p><strong>Hacker News的热门排名算法</strong></p>
 <p><a href="https://news.ycombinator.com/" target="_blank" rel="noopener">Hacker News</a> 是一家关于计算机黑客和创业公司的社会化新闻网站，没有踩或反对一条提交新闻的选项，只可以赞或是完全不投票。Hacker News 允许提交任何可以被理解为“任何满足人们求知欲”的新闻。</p>
 <p><code>Hacker News</code> 采用公式 (p – 1) / (t + 2)^1.5 做为排行依据。其中P是投票数量，t是发表以来的时间，小时计。在其他条件不变的情况下，得票越多，排名越高。</p>
 <p>为什么是<code>P-1</code>？很多文章作者在提交的时候会给自己投上一票。文章发布初期的投票数对排名影响非常大，仅仅是给自己投一票，也会起到非常大的作用。换在国内，估计P-100还不够。</p>
@@ -58,6 +69,7 @@
 <h4 id="学习法"><a href="#学习法" class="headerlink" title="学习法"></a><a>学习法</a></h4><h3 id="Adaboost"><a href="#Adaboost" class="headerlink" title="Adaboost"></a><a>Adaboost</a></h3><hr>
 <h3 id="Parameter-Server"><a href="#Parameter-Server" class="headerlink" title="Parameter Server"></a><a>Parameter Server</a></h3><p><img src="machine-learning/parameter_server.png" alt="Parameter Server"></p>
 <hr>
+<h3 id="KNN-k-nearest-neighbor"><a href="#KNN-k-nearest-neighbor" class="headerlink" title="KNN (k-nearest neighbor)"></a><a>KNN (k-nearest neighbor)</a></h3><hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.biaodianfu.com/hacker-news-popularity-algorithm.html" target="_blank" rel="noopener">Hacker News的热门排名算法</a></li>
