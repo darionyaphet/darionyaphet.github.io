@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>git | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>git</h1></div><div class="container post-content"><p>如同生活中的许多伟大事件一样，<code>Git</code> 诞生于一个极富纷争大举创新的年代。Linux 内核开源项目绝大多数的维护工作都花在了提交补丁和保存归档的繁琐事务上。2005 年，开发 BitKeeper 的商业公司同 Linux 内核开源社区的合作关系结束，他们收回了免费使用 BitKeeper 的权力。迫使 Linux 开源社区不得不吸取教训，只有开发一套属于自己的版本控制系统才不至于重蹈覆辙。</p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>git | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-08-01</div></div></div><div class="container post-header"><h1>git</h1></div><div class="container post-content"><p>如同生活中的许多伟大事件一样，<code>Git</code> 诞生于一个极富纷争大举创新的年代。Linux 内核开源项目绝大多数的维护工作都花在了提交补丁和保存归档的繁琐事务上。2005 年，开发 BitKeeper 的商业公司同 Linux 内核开源社区的合作关系结束，他们收回了免费使用 BitKeeper 的权力。迫使 Linux 开源社区不得不吸取教训，只有开发一套属于自己的版本控制系统才不至于重蹈覆辙。</p>
 <hr>
 <p><strong>Git 基础</strong></p>
 <p><code>Git</code> 和其他版本控制系统主要差别在于，<code>Git</code> 只关心文件数据的整体是否发生变化，而其他系统只关心文件内容的具体差异。<code>Git</code> 并不保存这些前后变化的差异数据。<code>Git</code> 更像是把变化的文件作快照后，记录在一个微型的文件系统中。每次提交更新时，它会遍历所有文件的指纹信息并对文件作快照，然后保存一个指向这次快照的索引。</p>
@@ -91,6 +91,35 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello</span><br></pre></td></tr></table></figure>
 <p><strong><em>we</em></strong></p>
 <hr>
+<p><strong>Git 钩子</strong></p>
+<p>Git 能在特定重要动作发生时触发自定义脚本。有两组钩子：<code>客户端钩子</code>由诸如提交和合并这样的操作所调用，而<code>服务器端钩子</code>作用于诸如接收被推送的提交这样的联网操作。钩子都被存储在 Git 目录下的 <code>hooks</code> 子目录中。<code>git init</code> 初始化一个新版本库时，Git 会在这个目录中放置一些示例脚本。</p>
+<p><code>客户端钩子</code>分为：<code>提交工作流钩子</code>、<code>电子邮件工作流钩子</code>和<code>其它钩子</code>。</p>
+<ul>
+<li>提交工作流钩子<ul>
+<li><code>pre-commit</code> 键入提交信息前运行。</li>
+<li><code>prepare-commit-msg</code> 启动提交信息编辑器之前，默认信息被创建之后运行。</li>
+<li><code>commit-msg</code> 接收存有当前提交信息的临时文件的路径，可用来在提交通过前验证项目状态或提交信息。</li>
+<li><code>post-commit</code> 整个提交过程完成后运行。</li>
+</ul>
+</li>
+<li>电子邮件工作流钩子<ul>
+<li><code>applypatch-msg</code> 接收包含请求合并信息的临时文件的名字，可用来确保提交信息符合格式，或直接用脚本修正格式错误。</li>
+<li><code>pre-applypatch</code> 运行于应用补丁 之后，产生提交之前，所以你可以用它在提交前检查快照。</li>
+<li><code>post-applypatch</code> 运行于提交产生之后，是在 <code>git am</code> 运行期间最后被调用的钩子。</li>
+</ul>
+</li>
+<li>其它客户端钩子：<ul>
+<li><code>pre-rebase</code> </li>
+<li><code>post-rewrite</code> </li>
+<li><code>pre-push</code></li>
+</ul>
+</li>
+</ul>
+<p><code>服务器端钩子</code> 在推送到服务器之前和之后运行。</p>
+<p><code>pre-receive</code> 从标准输入获取一系列被推送的引用。如果它以非零值退出，所有的推送内容都不会被接受。 </p>
+<p><code>update</code> 它会为每一个准备更新的分支各运行一次。 它不会从标准输入读取内容，而是接受三个参数：引用的名字（分支），推送前的引用指向的内容的 SHA-1 值，以及用户准备推送的内容的 SHA-1 值。 如果 update 脚本以非零值退出，只有相应的那一个引用会被拒绝；其余的依然会被更新。</p>
+<p><code>post-receive</code> 用来更新其他系统服务或者通知用户。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener">Pro Git</a></li>
@@ -101,6 +130,7 @@
 <li><a href="https://danielkummer.github.io/git-flow-cheatsheet/index.zh_CN.html" target="_blank" rel="noopener">git-flow 备忘清单</a></li>
 <li><a href="https://learngitbranching.js.org/" target="_blank" rel="noopener">learn git branching</a></li>
 <li><a href="https://www.cnblogs.com/ludashi/p/8052739.html" target="_blank" rel="noopener">Git知识总览(一) 从 git clone 和 git status 谈起</a></li>
+<li><a href="https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子" target="_blank" rel="noopener">自定义-Git-Git-钩子</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

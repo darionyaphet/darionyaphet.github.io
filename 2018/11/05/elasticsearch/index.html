@@ -1,4 +1,39 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>elasticsearch | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/elasticsearch/">elasticsearch</a></div><div class="post-time">2018-11-05</div></div></div><div class="container post-header"><h1>elasticsearch</h1></div><div class="container post-content"><p><img src="elasticsearch/SearchEngine.png" alt="SearchEngine"></p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>elasticsearch | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/elasticsearch/">elasticsearch</a></div><div class="post-time">2018-11-05</div></div></div><div class="container post-header"><h1>elasticsearch</h1></div><div class="container post-content"><h3 id="Information-Retrieval"><a href="#Information-Retrieval" class="headerlink" title="Information Retrieval"></a>Information Retrieval</h3><p>从大规模非结构化数据集合中找出满足用户信息需求的资料的过程。</p>
+<p>IR不仅仅是搜索，IR系统也不仅仅是搜索引擎。</p>
+<ul>
+<li>返回与信息检索相关的网页 -&gt; 搜索引擎(Search Engine)</li>
+<li>曾哥是狮子座的吗？-&gt; 问答系统(Question Answering)</li>
+<li>返回IPad各种型号、配置、价格等 -&gt; 信息抽取 (Information Extraction)</li>
+<li>使用Google Reader订阅新闻，并获取推荐 -&gt; 信息过滤(Information Filtering)、信息推荐(Information Recommending)</li>
+</ul>
+<p>数据挖掘（Data Mining）从大量的、不完全的、有噪声的、模糊的、随机的实际应用数据中，提取隐含在其中的、人们事先不知道的、但又是潜在有用的信息和知识的过程。</p>
+<p><code>信息检索</code>中相关度是一个函数R，输入是查询Q、文档D和文档集合C，返回的是一个实数值 <code>R=f(Q,D,C)</code>。信息检索就是给定一个查询Q，从文档集合C中计算每<br>篇文档D与Q的相关度并排序。</p>
+<h4 id="信息检索系统的基本组成"><a href="#信息检索系统的基本组成" class="headerlink" title="信息检索系统的基本组成"></a>信息检索系统的基本组成</h4><p><code>文本处理</code>(Text Operations)：对查询和文本进行的预处理操作</p>
+<p><code>查询处理</code>(Query operations)：对经过文本处理后的查询进行进一<br>步处理，得到查询的内部表示(Query Representation)</p>
+<p><code>文本索引</code>(Indexing)：对经过文本处理后的文本进行进一步处理，<br>得到文本的内部表示(Text Representation)，通常基于索引项<br>(Term)来表示</p>
+<h3 id="布尔检索及倒排索引"><a href="#布尔检索及倒排索引" class="headerlink" title="布尔检索及倒排索引"></a>布尔检索及倒排索引</h3><h4 id="信息检索模型概述"><a href="#信息检索模型概述" class="headerlink" title="信息检索模型概述"></a>信息检索模型概述</h4><p><code>信息检索模型</code>是描述信息检索中的文档、查询和它们之间的关系(匹配函数)的数学模型。包括 <code>基于文本内容的检索模型</code> 和 <code>与内容无关的其他检索模型</code> 两大类。</p>
+<p><strong>布尔模型「基于内容」</strong></p>
+<p><code>文档表示</code>：一个文档被表示为关键词的集合。</p>
+<p><code>查询表示</code>：查询式(Queries)被表示为关键词的布尔组合，用“与、或、非”连接起来。</p>
+<p><code>相关度计算</code>：检索策略是二值匹配，当且仅当它能够满足布尔查询式时，才将其检索出来。</p>
+<p><strong>向量空间模型「基于内容」</strong></p>
+<p><code>文档表示</code>：一个文档被表示为关键词构成的向量，可以表示为D(t1,t2,…,tn)，其中n就代表了关键字的数量。</p>
+<p><code>特征项权重Wk</code>（Term Weight）：指特征项tn能够代表文档D能力的大小，体现了特征项在文档中的重要程度。</p>
+<p><code>查询表示</code>：文档被表示为关键词构成的向量Q(t1,t2,…,tn) 。</p>
+<p><code>相关度计算</code>：向量间的距离： D(t1,t2,…,tn)， Q(t1,t2,…,tn) </p>
+<p><strong>统计语言模型（Probabilistic Language Models）「基于内容」</strong></p>
+<p><code>语言</code>就是其字母表上的某种概率分布，反映了任何一个字母序列成为该语言的一个句子的可能性，称这个概率分布为语言模型。给定一个语言，对于一个语言句子可以估计其出现的概率。</p>
+<p><strong>链接分析模型「内容无关」</strong></p>
+<p><code>Sergey Brin</code> 和<code>Larry Page</code> 在1998 年提出了<code>PageRank</code> 算法，<code>J.Kleinberg</code> 于1998年提出了<code>HITS</code> 算法。</p>
+<p><strong>基于关联的模型</strong></p>
+<p>同一个类型下的两个对象,如果经常连接到相同的其他对象，那么这两个对象的相似性应该很高。</p>
+<hr>
+<p><strong>词项—文档关联矩阵（incidence matrix）</strong></p>
+<p><strong>返回文档的好坏</strong></p>
+<p><code>查准率</code>：返回的能满足用户信息需求的文档占总的返回文档的百分比。</p>
+<p><code>召回率</code>：返回的能满足用户信息需求的文档占总的能满足用户信息需求的文档的百分比。</p>
+<hr>
+<p><img src="elasticsearch/SearchEngine.png" alt="SearchEngine"></p>
 <p>ElasticSearch节点启动时，使用广播技术发现集群中其他节点，进行连接。集群中有一个节点被选举为<code>主节点(master)</code>，该节点负责集群状态管理与集群拓扑结构变化时做出反应。</p>
 <p>shard = hash(document_id) % (num_of_primary_shards)</p>
 <p>Read operations consist of two parts:</p>
@@ -167,6 +202,7 @@
 <li><a href="http://cwiki.apachecn.org/pages/viewpage.action?pageId=4882902" target="_blank" rel="noopener">Dis Max 查询</a></li>
 <li><a href="https://yq.aliyun.com/articles/573660" target="_blank" rel="noopener">Elasticsearch 写入流程剖析</a></li>
 <li><a href="https://yq.aliyun.com/articles/576223" target="_blank" rel="noopener">Elasticsearch 查询流程剖析</a></li>
+<li><a href="http://home.ustc.edu.cn/~zhufengx/ir/" target="_blank" rel="noopener">中科大 信息检索与数据挖掘 2015</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>raft | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Consistency-Algorithm/">Consistency Algorithm</a></div><div class="post-time">2019-01-08</div></div></div><div class="container post-header"><h1>raft</h1></div><div class="container post-content"><p><code>一致性算法</code>允许多台机器作为一个集群协同工作，并且在其中某几台机器出故障时集群仍然能正常工作。</p>
+<p><code>Raft</code> 是用来管理复制日志（replicated log）的一致性协议。<code>Raft</code> 将一致性的关键元素分开，如 <code>leader 选举</code>、<code>日志复制</code>和<code>安全性</code>，并且它实施更强的一致性以减少必须考虑的状态数量。<code>Raft</code> 还包括一个用于变更集群成员的新机制，它使用重叠的大多数（overlapping majorities）来保证安全性。</p>
+<p><code>Raft</code> 有几个新特性：</p>
+<ul>
+<li>Strong leader：日志条目（log entries）只从 leader 流向其他服务器。</li>
+<li>Leader 选举：Raft 使用随机计时器进行 leader 选举。 </li>
+<li>成员变更：Raft 使用了一种新的联合一致性方法，其中两个不同配置的大多数在过渡期间重叠。</li>
+</ul>
+<p><code>复制状态机</code>用于解决分布式系统中的各种容错问题。具有单个 leader 的大规模系统，通常使用单独的复制状态机来进行 <code>leader 选举</code>和<code>存储 leader 崩溃后重新选举需要的配置信息</code>。复制状态机通常使用复制日志实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行日志中的命令。 每个日志中命令都相同并且顺序也一样，因此每个状态机处理相同的命令序列。</p>
+<p>一致性算法保证复制日志一致性。 每台服务器上的一致性模块接收客户端的命令，并将它们添加到其日志中。 它与其他服务器上的一致性模块通信，以确保每个日志最终以相同的顺序包含相同的命令。 一旦命令被正确复制，每个服务器上的状态机按日志顺序处理它们，并将输出返回给客户端。</p>
+<p>一致性算法以下属性：</p>
+<ul>
+<li>确保在所有非拜占庭条件下的安全性。</li>
+<li>只要任何大多数（过半）服务器都可以运行，并且可以相互通信和与客户通信，一致性算法就可用。</li>
+<li>不依赖于时序来确保日志的一致性。</li>
+<li>只要集群的大部分（过半服务器）已经响应了单轮远程过程调用，命令就可以完成; 少数（一半以下）慢服务器不会影响整个系统性能。</li>
+</ul>
+<hr>
+<p>Reference :</p>
+<ol>
+<li><a href="https://www.cnblogs.com/linbingdong/p/6442673.html" target="_blank" rel="noopener">分布式一致性算法：Raft 算法（论文翻译）</a></li>
+<li><a href="https://raft.github.io/" target="_blank" rel="noopener">raft.github.io</a></li>
+<li><a href="https://github.com/willemt/raft" target="_blank" rel="noopener">GitHub willemt/raft</a></li>
+<li><a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="noopener">寻找一种易于理解的一致性算法（扩展版）</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>
