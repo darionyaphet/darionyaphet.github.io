@@ -6,7 +6,7 @@
 <li>Leader 选举：Raft 使用随机计时器进行 leader 选举。 </li>
 <li>成员变更：Raft 使用了一种新的联合一致性方法，其中两个不同配置的大多数在过渡期间重叠。</li>
 </ul>
-<p><code>复制状态机</code>用于解决分布式系统中的各种容错问题。具有单个 leader 的大规模系统，通常使用单独的复制状态机来进行 <code>leader 选举</code>和<code>存储 leader 崩溃后重新选举需要的配置信息</code>。复制状态机通常使用复制日志实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行日志中的命令。 每个日志中命令都相同并且顺序也一样，因此每个状态机处理相同的命令序列。</p>
+<p><code>复制状态机</code>用于解决分布式系统中的各种容错问题。具有单个 lead<strong>follower</strong>er 的大规模系统，通常使用单独的复制状态机来进行 <code>leader 选举</code>和<code>存储 leader 崩溃后重新选举需要的配置信息</code>。复制状态机通常使用复制日志实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行日志中的命令。 每个日志中命令都相同并且顺序也一样，因此每个状态机处理相同的命令序列。</p>
 <p>一致性算法保证复制日志一致性。 每台服务器上的一致性模块接收客户端的命令，并将它们添加到其日志中。 它与其他服务器上的一致性模块通信，以确保每个日志最终以相同的顺序包含相同的命令。 一旦命令被正确复制，每个服务器上的状态机按日志顺序处理它们，并将输出返回给客户端。</p>
 <p>一致性算法以下属性：</p>
 <ul>
@@ -15,6 +15,323 @@
 <li>不依赖于时序来确保日志的一致性。</li>
 <li>只要集群的大部分（过半服务器）已经响应了单轮远程过程调用，命令就可以完成; 少数（一半以下）慢服务器不会影响整个系统性能。</li>
 </ul>
+<p><strong>Raft选举</strong></p>
+<p>Raft协议中，一个节点有三个状态：<code>Leader</code>、<code>Follower</code> 和 <code>Candidate</code>，但同一时刻只能处于其中一种状态。</p>
+<p>如果一个<code>Follower</code>和它的<code>Leader</code>失联（失联时长超过一个<code>Term</code>），则它自动转为<code>Candidate</code>，并发起选举。</p>
+<p><code>Candidate</code>请求（<code>Request</code>）其它所有节点投票给自己，如果<code>Candidate</code>获得多数节点（a majority of nodes）的投票（<code>Votes</code>），则自动成为<code>Leader</code>。</p>
+<p>如果一个<code>Follower</code>在一个<code>Term</code>内没有接收到<code>Leader</code>发来的<code>AppendEntries RPC</code>，则它在延迟随机时间（150ms~300ms）后，即向所有其它节点发起选举。</p>
+<ul>
+<li><p>选举超时（Election Timeout）: </p>
+<p>  Follower等待成为Candidate的时间。如果在超时之前收到了其它的AppendEntries，则重置选举超时重新计时，否则在选举超时后，Follower成为Candidate，投票给自己（Votes for itself）并发起新的选举任期（Term），发送RequestVote给所有其它节点，以请求投票给自己。</p>
+<p>  如果在这个Term时间内仍然没有获得投票，则重置选举超时，以准备重新发起选举。而一旦获得多数节点的投票，则成为Leader。成为Leader后，定期性的发送AppendEntries给所有Followers，以维持Leader地位。发送AppendEntries的间隔叫作心跳超时。 </p>
+</li>
+<li><p>心跳超时（Heartbeat Timeout）:</p>
+<p>  Follower会应答每一个AppendEntries，一个选举任期（Election Term）会一直存在，直到有新的Follower成为Candidate。</p>
+<p>  Leader节点通过定期发送AppendEntries维护自己的Leader地位，定期的间隔时长即为心跳超时时长。</p>
+<p>  在Raft中，心跳方向是：Leader -&gt; Follower。</p>
+</li>
+</ul>
+<hr>
+<p><strong>状态</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>所有服务器上持久存在的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>currentTerm</td>
+<td>服务器最后一次知道的任期号（初始化为 0，持续递增）</td>
+</tr>
+<tr>
+<td>votedFor</td>
+<td>在当前获得选票的candidate的 Id</td>
+</tr>
+<tr>
+<td>log[]</td>
+<td>日志条目集；每一个条目包含一个用户状态机执行的指令，和收到时的任期号</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>所有服务器上经常变的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>commitIndex</td>
+<td>已知的最大的已经被提交的日志条目的索引值</td>
+</tr>
+<tr>
+<td>lastApplied</td>
+<td>最后被应用到状态机的日志条目索引值（初始化为 0，持续递增）</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>在leader里经常改变的 （选举后重新初始化）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nextIndex[]</td>
+<td>对于每一个服务器，需要发送给他的下一个日志条目的索引值（初始化为leader最后索引值加一）</td>
+</tr>
+<tr>
+<td>matchIndex[]</td>
+<td>对于每一个服务器，已经复制给他的日志的最高索引值</td>
+</tr>
+</tbody>
+</table>
+<p><strong>附加日志 RPC</strong>：</p>
+<p>由leader负责调用来复制日志指令；也会用作heartbeat</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>leader的任期号</td>
+</tr>
+<tr>
+<td>leaderId</td>
+<td>leader的 Id，以便于follower重定向请求</td>
+</tr>
+<tr>
+<td>prevLogIndex</td>
+<td>新的日志条目紧随之前的索引值</td>
+</tr>
+<tr>
+<td>prevLogTerm</td>
+<td>prevLogIndex 条目的任期号</td>
+</tr>
+<tr>
+<td>entries[]</td>
+<td>准备存储的日志条目（表示心跳时为空；一次性发送多个是为了提高效率）</td>
+</tr>
+<tr>
+<td>leaderCommit</td>
+<td>leader已经提交的日志的索引值</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>当前的任期号，用于leader去更新自己</td>
+</tr>
+<tr>
+<td>success</td>
+<td>follower包含了匹配上 prevLogIndex 和 prevLogTerm 的日志时为真</td>
+</tr>
+</tbody>
+</table>
+<p>接收者实现：</p>
+<ol>
+<li>如果 <code>term &lt; currentTerm</code> 就返回 false</li>
+<li>如果日志在 prevLogIndex 位置处的日志条目的任期号和 prevLogTerm 不匹配，则返回 false</li>
+<li>如果已经存在的日志条目和新的产生冲突（索引值相同但是任期号不同），删除这一条和之后所有的</li>
+<li>附加日志中尚未存在的任何新条目</li>
+<li>如果 <code>leaderCommit &gt; commitIndex</code>，令 commitIndex 等于 leaderCommit 和 新日志条目索引值中较小的一个</li>
+</ol>
+<p><strong>请求投票 RPC</strong>：</p>
+<p>由candidate人负责调用用来征集选票</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>candidate的任期号</td>
+</tr>
+<tr>
+<td>candidateId</td>
+<td>请求选票的candidate的 Id</td>
+</tr>
+<tr>
+<td>lastLogIndex</td>
+<td>candidate的最后日志条目的索引值</td>
+</tr>
+<tr>
+<td>lastLogTerm</td>
+<td>candidate最后日志条目的任期号</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>term</td>
+<td>当前任期号，以便于candidate去更新自己的任期号</td>
+</tr>
+<tr>
+<td>voteGranted</td>
+<td>candidate赢得了此张选票时为真</td>
+</tr>
+</tbody>
+</table>
+<p>接收者实现：</p>
+<ol>
+<li>如果<code>term &lt; currentTerm</code>返回 false</li>
+<li>如果 votedFor 为空或者为 candidateId，并且candidate的日志至少和自己一样新，那么就投票给他</li>
+</ol>
+<hr>
+<p>Paxos 算法的问题</p>
+<p>特别的难以理解（exceptionally difficult to understand）</p>
+<hr>
+<p><code>一致性算法</code>是从复制状态机的背景下提出的，一组服务器上的状态机产生相同状态的副本，并且在一些机器宕掉的情况下也可以继续运行。</p>
+<p>一致性算法管理来自客户端指令的复制日志。</p>
+<p>状态机从日志中处理相同顺序的相同指令，所以产生的结果也是相同的。</p>
+<p>每一个服务器存储一个包含一系列指令的日志，并且按照日志的顺序进行执行。</p>
+<p>每一个日志都按照相同的顺序包含相同的指令，所以每一个服务器都执行相同的指令序列。</p>
+<p>因为每个状态机都是确定的，每一次执行操作都产生相同的状态和同样的序列。</p>
+<hr>
+<p>Raft 通过选举一个leader，然后给予他全部管理复制日志责任来实现一致性。</p>
+<p>leader从客户端接收日志条目，把日志条目复制到其他服务器上，并且当保证安全性的时候告诉其他的服务器应用日志条目到状态机中。</p>
+<p>Raft 将一致性问题分解成了三个相对独立的子问题:</p>
+<ul>
+<li>领导选举：当现存的leader宕机的时候，一个新的leader需要被选举出来。</li>
+<li>日志复制：leader必须从客户端接收日志然后复制到集群中的其他节点，并且强制要求其他节点的日志保持和自己相同。</li>
+<li>安全性：如果有任何的服务器节点已经应用了一个确定的日志条目到它的状态机中，那么其他服务器节点不能在同一个日志索引位置应用一个不同的指令。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>选举安全特性</td>
+<td>对于一个给定的任期号，最多只会有一个leader被选举出来</td>
+</tr>
+<tr>
+<td>leader只附加原则</td>
+<td>leader绝对不会删除或者覆盖自己的日志，只会增加</td>
+</tr>
+<tr>
+<td>日志匹配原则</td>
+<td>如果两个日志在相同的索引位置的日志条目的任期号相同，那么我们就认为这个日志从头到这个索引位置之间全部完全相同</td>
+</tr>
+<tr>
+<td>leader完全特性</td>
+<td>如果某个日志条目在某个任期号中已经被提交，那么这个条目必然出现在更大任期号的所有leader中</td>
+</tr>
+<tr>
+<td>状态机安全特性</td>
+<td>如果一个leader已经在给定的索引值位置的日志条目应用到状态机中，那么其他任何的服务器在这个索引位置不会提交一个不同的日志</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>在任何时刻，每一个服务器节点都处于这三个状态之一：leader、follower或者candidate。</p>
+<p>系统中只有一个leader并且其他的节点全部都是follower。</p>
+<p>follower都是被动的，他们不会发送任何请求，只是简单的响应来自领导者或者candidate的请求。</p>
+<p>candidate用来选举新leader。</p>
+<p><img src="raft/raft-4.png" alt="transfer"></p>
+<p><code>leader</code>：</p>
+<ul>
+<li>一旦成为leader：发送心跳给其他所有的服务器；在一定的空余时间之后不停的重复发送，以阻止follower超时</li>
+<li>如果接收到来自客户端的请求：附加条目到本地日志中，在条目被应用到状态机后响应客户端</li>
+<li>如果对于一个follower，最后日志条目的索引值大于等于 nextIndex，那么：发送从 nextIndex 开始的所有日志条目：<ul>
+<li>如果成功：更新相应follower的 nextIndex 和 matchIndex</li>
+<li>如果因为日志不一致而失败，减少 nextIndex 重试</li>
+</ul>
+</li>
+<li>如果存在一个满足<code>N &gt; commitIndex</code>的 N，并且大多数的<code>matchIndex[i] ≥ N</code>成立，并且<code>log[N].term == currentTerm</code>成立，那么令 commitIndex 等于这个 N</li>
+</ul>
+<p><code>candidate</code>：</p>
+<ul>
+<li><p>在转变成candidate后就立即开始选举过程</p>
+<ul>
+<li>自增当前的任期号（currentTerm）</li>
+<li>给自己投票</li>
+<li>重置选举超时计时器</li>
+<li>发送请求投票的 RPC 给其他所有服务器</li>
+</ul>
+</li>
+<li><p>如果接收到大多数服务器的选票，那么就变成leader</p>
+</li>
+<li>如果接收到来自新的leader的附加日志 RPC，转变成follower</li>
+<li>如果选举过程超时，再次发起一轮选举</li>
+</ul>
+<p><code>follower</code>：</p>
+<ul>
+<li>响应来自candidate和领导者的请求</li>
+<li>如果在超过选举超时时间的情况之前都没有收到leader的心跳，或者是candidate请求投票的，就自己变成candidate</li>
+</ul>
+<p>Raft 把时间分割成任意长度的任期，每一段任期从一次选举开始，一个或者多个candidate尝试成为领导者。</p>
+<p><img src="raft/raft-5.png" alt="term"></p>
+<hr>
+<p><strong>leader选举</strong></p>
+<p>Raft 使用一种心跳机制来触发leader选举。当服务器程序启动时，他们都是follower身份。</p>
+<p>领导者周期性的向所有follower发送心跳包维持自己的领导地位。</p>
+<p>如果follower在一段时间里没有接收到任何消息，也就是选举超时，那么他就会认为系统中没有可用的领导者,并且发起选举以选出新的领导者。</p>
+<p>(a) 他自己赢得了这次的选举</p>
+<p>每一个服务器最多会对一个任期号投出一张选票，先到先得。</p>
+<p>大多数选票的规则确保了最多只会有一个candidate赢得此次选举。</p>
+<p>(b) 其他的服务器成为领导者</p>
+<p>candidate可能会从其他的服务器接收到声明它是leader的附加日志项 RPC。如果这个leader的任期号不小于candidate当前的任期号，那么candidate会承认leader合法并回到follower状态。 </p>
+<p>如果此次 RPC 中的任期号比自己小，那么candidate就会拒绝这次的 RPC 并且继续保持candidate状态。</p>
+<p>(c) 一段时间之后没有任何一个获胜的人。</p>
+<p>如果有多个follower同时成为candidate，那么选票可能会被瓜分以至于没有candidate可以赢得大多数人的支持。</p>
+<p>当这种情况发生的时候，每一个candidate都会超时，然后通过增加当前任期号来开始一轮新的选举。</p>
+<hr>
+<p><strong>日志复制</strong></p>
+<p>客户端的每一个请求都包含一条被复制状态机执行的指令。leader把这条指令作为一条新的日志条目附加到日志中去，然后并行的发起附加条目 RPC 给其他的服务器，让他们复制这条日志条目。</p>
+<p>每一个日志条目存储一条状态机指令和从leader收到这条指令时的任期号。</p>
+<p>Raft 算法保证所有已提交的日志条目都是持久化的并且最终会被所有可用的状态机执行。</p>
+<p>在leader将创建的日志条目复制到大多数的服务器上的时候，日志条目就会被提交。</p>
+<p><img src="raft/raft-6.png" alt="term"></p>
+<p>leader崩溃的情况会使得日志处于不一致的状态，follower中的冲突的日志条目会被leader的日志覆盖。</p>
+<p>leader必须找到最后两者达成一致的地方，然后删除从那个点之后的所有日志条目，发送自己的日志给follower。</p>
+<hr>
+<p><strong>日志压缩</strong></p>
+<p>Raft 的日志在正常操作中不断的增长，占用越来越多的空间，花费越来越多的时间来处理。</p>
+<p>整个系统状态以快照的形式写入到稳定的持久化存储中，然后到那个时间点之前的日志全部丢弃。</p>
+<p>每个服务器独立的创建快照，只包括已经被提交的日志。</p>
+<p><code>最后被包含索引</code>指的是被快照取代的最后的条目在日志中的索引值，<code>最后被包含的任期</code>指的是该条目的任期号。</p>
+<p><img src="raft/raft-12.png" alt="compress"></p>
+<hr>
+<p><strong>选举限制</strong></p>
+<p>leader都必须存储所有已经提交的日志条目。</p>
+<p>所有之前的任期号中已经提交的日志条目在选举的时候都会出现在新的leader中，不需要传送这些日志条目给leader。</p>
+<p>日志条目的传送是单向的，只从leader传给follower，并且leader从不会覆盖自身本地日志中已经存在的条目。</p>
+<p>如果candidate的日志至少和大多数的服务器节点一样新，那么他一定持有了所有已经提交的日志条目。</p>
+<p><strong>follower和candidate崩溃</strong></p>
+<p>如果follower或者candidate崩溃了，那么后续发送给他们的 RPC 都会失败。</p>
+<p>Raft 中处理这种失败就是简单的通过无限的重试；</p>
+<p>Raft 的 RPC 都是幂等的，所以这样重试不会造成任何问题。</p>
 <hr>
 <p>Reference :</p>
 <ol>
@@ -22,6 +339,9 @@
 <li><a href="https://raft.github.io/" target="_blank" rel="noopener">raft.github.io</a></li>
 <li><a href="https://github.com/willemt/raft" target="_blank" rel="noopener">GitHub willemt/raft</a></li>
 <li><a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="noopener">寻找一种易于理解的一致性算法（扩展版）</a></li>
+<li><a href="https://i6448038.github.io/2018/12/12/raft/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="noopener">raft一致性算法详解</a></li>
+<li><a href="https://mp.weixin.qq.com/s/i6ULr-aW7MOxQotCQpqBCQ?" target="_blank" rel="noopener">分布式强一致性数据库的灵魂 - Raft 算法</a></li>
+<li><a href="https://www.cnblogs.com/aquester/p/10308335.html" target="_blank" rel="noopener">Raft协议学习笔记</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

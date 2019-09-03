@@ -1,0 +1,89 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>cpp | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-06-28</div></div></div><div class="container post-header"><h1>cpp</h1></div><div class="container post-content"><p><strong><strong>attribute</strong></strong></p>
+<p><code>__attribute__</code> 可以设置函数属性（Function Attribute ）、变量属性（Variable Attribute ）和类型属性（Type Attribute ）。</p>
+<p><code>__attribute__</code> 书写特征是：<code>__attribute__</code> 前后都有两个下划线，并切后面会紧跟一对原括弧，括弧里面是相应的参数。</p>
+<p><code>__attribute__</code> 语法格式为：<strong>attribute</strong> ((attribute-list))</p>
+<p>其位置约束为：放于声明的尾部“ ；” 之前。</p>
+<p>关键字<code>__attribute__</code> 也可以对结构体（struct ）或共用体（union ）进行属性设置。</p>
+<p>大致有六个参数值可以被设定，即：aligned, packed, transparent_union, unused, deprecated 和 may_alias 。</p>
+<p>在使用<code>__attribute__</code> 参数时，你也可以在参数的前后都加上“<strong>” （两个下划线），例如，使用</strong>aligned__而不是aligned ，这样，你就可以在相应的头文件里使用它而不用关心头文件里是否有重名的宏定义。</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>aligned</td>
+<td>设定一个指定大小的对齐格式。</td>
+</tr>
+<tr>
+<td>packed</td>
+<td>使用该属性对struct 或者union 类型进行定义，设定其类型的每一个变量的内存约束。</td>
+</tr>
+<tr>
+<td>Function Attribute</td>
+<td>把一些特性添加到函数声明中，从而可以使编译器在错误检查方面的功能更强大。</td>
+</tr>
+</tbody>
+</table>
+<p><code>__attribute__((constructor))</code> 在main() 之前执行, <code>__attribute__((destructor))</code> 在main()执行结束之后执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">static  __attribute__((constructor)) void before() &#123;</span><br><span class="line"></span><br><span class="line">    printf(&quot;Hello&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static  __attribute__((destructor)) void after() &#123;</span><br><span class="line">    printf(&quot; World!\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int args, char **argv) &#123;</span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>左值&amp;右值</strong></p>
+<p><code>左值</code>指的是既能够出现在等号左边也能出现在等号右边的变量或表达式</p>
+<p><code>右值</code>指的则是只能出现在等号右边的变量或表达式</p>
+<p>有名字的变量就是左值，而由运算操作所产生的中间结果就是右值(1+2)</p>
+<p><code>左值</code>就是在程序中能够寻值的东西，<code>右值</code>就是没法取到它的地址的东西</p>
+<p>对于基础类型，右值是不可被修改的，也不可被 const, volatile 所修饰</p>
+<p>对于自定义的类型，右值却允许通过它的成员函数进行修改</p>
+<p><code>左值</code>是可以放在赋值号左边可以被赋值的值；<code>左值</code>必须要在内存中有实体；</p>
+<p><code>右值</code>当在赋值号右边取出值赋给其他变量的值；<code>右值</code>可以在内存也可以在CPU寄存器。</p>
+<hr>
+<p><strong>RAII</strong></p>
+<p><code>RAII</code>全称是<code>Resource Acquisition is Initialization</code>，直译过来是<code>资源获取即初始化</code>，也就是说在构造函数中申请分配资源，在析构函数中释放资源。因为C++的语言机制保证了，当一个对象创建的时候，自动调用构造函数，当对象超出作用域的时候会自动调用析构函数。所以，在RAII的指导下，我们应该使用类来管理资源，将资源和对象的生命周期绑定。</p>
+<p>智能指针（<code>std::shared_ptr</code>和<code>std::unique_ptr</code>）即<code>RAII</code>最具代表的实现，使用智能指针，可以实现自动的内存管理，再也不需要担心忘记delete造成的内存泄漏。毫不夸张的来讲，有了智能指针，代码中几乎不需要再出现delete了。</p>
+<hr>
+<p><strong>Thread</strong></p>
+<hr>
+<p><strong>noexcept</strong></p>
+<p>该关键字告诉编译器，函数中不会发生异常,这有利于编译器对程序做更多的优化。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(Type&amp; x, Type&amp; y)</span> <span class="keyword">noexcept</span>  <span class="comment">//C++11</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    x.swap(y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>有条件的noexcecpt</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果操作x.swap(y)不发生异常，那么函数swap(Type&amp; x, Type&amp; y)一定不发生异常。</span></span><br><span class="line">void swap(Type&amp; x, Type&amp; y) noexcept(noexcept(x.swap(y)))    //C++11</span><br><span class="line">&#123;</span><br><span class="line">    x.swap(y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>STL</strong></p>
+<ul>
+<li>连续内存容器: 元素存放在一块或多块内存，每块内存中存有多个元素。</li>
+<li>每一个内存块中只存储一个元素。</li>
+</ul>
+<ol>
+<li>是否需要在容器任意位置插入新元素？</li>
+<li></li>
+</ol>
+<hr>
+<p><strong>SFINAE</strong></p>
+<p>Substitution failure is not an error: 匹配失败不是错误</p>
+<p>当调用模板函数时编译器会根据传入参数推导最合适的模板函数，在这个推导过程中如果某一个或者某几个模板函数推导出来是编译无法通过的，只要有一个可以正确推导出来，那么那几个推导得到的可能产生编译错误的模板函数并不会引发编译错误。</p>
+<hr>
+<p><strong>Differences between std::make_unique and std::unique_ptr with new</strong></p>
+<p>make_unique is safe for creating temporaries, whereas with explicit use of new you have to remember the rule about not using unnamed temporaries.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo(make_unique&lt;T&gt;(), make_unique&lt;U&gt;()); // exception safe</span><br><span class="line"></span><br><span class="line">foo(unique_ptr&lt;T&gt;(new T()), unique_ptr&lt;U&gt;(new U())); // unsafe*</span><br></pre></td></tr></table></figure>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://www.cnblogs.com/jiangbin/p/6986511.html" target="_blank" rel="noopener">C++中的RAII介绍</a></li>
+<li><a href="https://www.jianshu.com/p/2b100d78a315" target="_blank" rel="noopener">C++之左值、右值、左值引用、右值引用</a></li>
+<li><a href="https://www.cnblogs.com/sword03/p/10020344.html" target="_blank" rel="noopener">C++11 带来的新特性 （3）—— 关键字noexcept</a></li>
+<li><a href="pan.baidu.com">EFFECTIVE+STL中文版：50条有效使用STL的经验_11577044</a></li>
+<li><a href="https://www.jianshu.com/p/d19fc8447eaa" target="_blank" rel="noopener">[c++11]我理解的右值引用、移动语义和完美转发</a></li>
+<li><a href="https://www.cnblogs.com/embedded-linux/p/5801999.html" target="_blank" rel="noopener">C之attribute用法</a></li>
+<li><a href="https://isocpp.org/blog/2019/06/quick-q-differences-between-stdmake-unique-and-stdunique-ptr-with-new" target="_blank" rel="noopener">Differences between std::make_unique and std::unique_ptr with new</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>
