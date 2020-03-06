@@ -2,7 +2,7 @@
 <hr>
 <p><strong>Git 基础</strong></p>
 <p><code>Git</code> 和其他版本控制系统主要差别在于，<code>Git</code> 只关心文件数据的整体是否发生变化，而其他系统只关心文件内容的具体差异。<code>Git</code> 并不保存这些前后变化的差异数据。<code>Git</code> 更像是把变化的文件作快照后，记录在一个微型的文件系统中。每次提交更新时，它会遍历所有文件的指纹信息并对文件作快照，然后保存一个指向这次快照的索引。</p>
-<p><img src="git/18333fig0105-tn.png" alt="Git工作方式"></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/git/18333fig0105-tn.png" alt="Git工作方式"></p>
 <p>保存到 <code>Git</code> 之前，所有数据都要进行内容的校验和计算，并将此结果作为数据的唯一标识和索引。换句话说，不可能在你修改了文件或目录之后，<code>Git</code> 一无所知。这项特性作为 <code>Git</code> 的设计哲学。</p>
 <p><strong>文件的三种状态</strong></p>
 <p>Git 内文件只有三种状态：已提交（committed），已修改（modified）和已暂存（staged）。</p>
@@ -16,7 +16,7 @@
 <li>对修改后的文件进行快照，然后保存到暂存区域。</li>
 <li>提交更新，将保存在暂存区域的文件快照永久转储。</li>
 </ol>
-<p><img src="git/18333fig0106-tn.png" alt="工作目录，暂存区域，以及本地仓库"></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/git/18333fig0106-tn.png" alt="工作目录，暂存区域，以及本地仓库"></p>
 <p>工作目录下所有文件不外乎两种状态：已跟踪或未跟踪。<br>已跟踪的文件是指本来就被纳入版本控制管理的文件，在上次快照中有它们的记录，工作一段时间后，它们的状态可能是未更新，已修改或者已放入暂存区。而所有其他文件都属于未跟踪文件。它们既没有上次更新时的快照，也不在当前的暂存区域。初次克隆某个仓库时，工作目录中的所有文件都属于已跟踪文件，且状态为未修改。</p>
 <p>在编辑过某些文件之后，Git 将这些文件标为已修改。我们逐步把这些修改过的文件放到暂存区域，直到最后一次性提交所有这些暂存起来的文件，如此重复。</p>
 <p><img src="git/18333fig0201-tn.png" alt="文件的状态变化周期"></p>
@@ -49,12 +49,12 @@
 <p><strong>Git 分支</strong></p>
 <p><code>git commit</code> 新建提交对象前，Git 会先计算每一个子目录校验和，在 Git 仓库中将目录保存为树对象。<code>Git</code> 创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象的指针。</p>
 <p><code>Git</code> 的分支，本质上仅仅是指向提交对象的可变指针，提交对象会包含一个指向上次提交对象的指针。默认分支名字是 <code>master</code>。 特殊指针 <code>HEAD</code> 指向当前所在的本地分支。</p>
-<p><img src="18333fig0302-tn.png" alt=""></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/18333fig0302-tn.png" alt=""></p>
 <p>分支实际上仅是一个包含所指对象校验和的文件，所以创建和销毁一个分支就变得非常廉价。<code>git branch [branch-name]</code> 创建一个新的分支指针。<code>HEAD</code>指针是一个指向你正在工作中的本地分支的指针。<code>git branch</code> 仅仅是建立了一个新分支，但不会自动切换到这个分支。</p>
 <p><code>git checkout [branch-name]</code> 切换到其他分支。每次提交后 HEAD 随着分支一起向前移动。</p>
 <hr>
 <p><strong>git-flow 的工作流程</strong></p>
-<p><img src="git-flow.png" alt="Git Flow"></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/git-flow.png" alt="Git Flow"></p>
 <p>团队开发中使用版本控制系统时，商定一个统一的工作流程是至关重要的。<br><code>git-flow</code> 并不是要替代 <code>Git</code>，它仅仅是非常聪明有效地把标准的 <code>Git</code> 命令用脚本组合了起来。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/tmp/git.flow » git flow init</span><br><span class="line"></span><br><span class="line">Initialized empty Git repository in /private/tmp/git.flow/.git/</span><br><span class="line">No branches exist yet. Base branches must be created now.</span><br><span class="line">Branch name for production releases: [master]</span><br><span class="line">Branch name for &quot;next release&quot; development: [develop]</span><br><span class="line"></span><br><span class="line">How to name your supporting branch prefixes?</span><br><span class="line">Feature branches? [feature/]</span><br><span class="line">Release branches? [release/]</span><br><span class="line">Hotfix branches? [hotfix/]</span><br><span class="line">Support branches? [support/]</span><br><span class="line">Version tag prefix? []</span><br></pre></td></tr></table></figure>
 <p><code>git-flow</code> 模式会预设两个主分支在仓库中：</p>

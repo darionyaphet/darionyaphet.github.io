@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>spark | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-09-20</div></div></div><div class="container post-header"><h1>spark</h1></div><div class="container post-content"><p><strong>GraphX</strong></p>
+<p><code>Spark GraphX</code>是一个分布式图处理框架，基于Spark，提供对图计算和图挖掘简洁、易用、丰富接口，极大的方便了对分布式图处理的需求。GraphX的特点是离线批量处理，基于同步的BSP模型（Bulk Synchronous Parallel Computing Model，整体同步并行计算模型），优势在于可以提升数据处理的吞吐量和规模。GraphX核心抽象是弹性分布式属性图（Resilient Distribute Property Graph）,一种点和边都带有属性的有向多重图。在逻辑上，图计算等价于一系列RDD的转换。具备了RDD的3个关键特性：Immutable、Distributed和Fault-Tolerant。</p>
+<p>Graph也包含一个三元组视图，逻辑上将顶点和边的属性保存为一个RDD[EdgeTriplet[VD, ED]]。<br>下面的SQL表达式表示这个连接。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT src.id, dst.id, src.attr, e.attr, dst.attr</span><br><span class="line"></span><br><span class="line">FROM edges AS e LEFT JOIN vertices AS src, vertices AS dst</span><br><span class="line"></span><br><span class="line">ON e.srcId = src.Id AND e.dstId = dst.Id</span><br></pre></td></tr></table></figure>
+<p><code>GraphFrame</code> 是类似于 Spark 的 GraphX 库，支持图处理。但 GraphFrame 建立在 Spark DataFrame 之上，具有以下重要的优势：</p>
+<pre><code>支持 Scala ，Java 和 Python API：GraphFrame 提供统一的三种编程语言 APIs.
+
+方便、简单的图查询：GraphFrame 允许用户使用 Spark SQL 和 DataFrame 的 API 查询
+
+支持导出和导入图：GraphFrame 支持 DataFrame 数据源，使得可以读取和写入多种格式的图，比如，Parquet、JSON 和 CSV 格式。
+</code></pre><p>备用：</p>
+<p>边分割（Edge-Cut）：<br>    每个顶点都存储一次，但有的边会被打断分到两台机器上。这样做的好处是节省存储空间；坏处是对图进行基于边的计算时，对于一条两个顶点被分到不同机器上的边来说，要跨机器通信传输数据，内网通信流量大。</p>
+<p>点分割（Vertex-Cut）：<br>    每条边只存储一次，都只会出现在一台机器上。邻居多的点会被复制到多台机器上，增加了存储开销，同时会引发数据同步问题。好处是可以大幅减少内网通信量。</p>
+<p>Graphx 使用的是Vertex-Cut(点分割)方式存储图，</p>
+<p><code>Bulk Synchronous Parallell</code>，即整体同步并行，它将计算分成一系列的超步（superstep）的迭代（iteration）。从纵向上看，它是一个串行模式，而从横向上看，它是一个并行的模式，每两个superstep之间设置一个栅栏（barrier），即整体同步点，确定所有并行的计算都完成后再启动下一轮superstep。</p>
+<p>属性图对应一对类型化的集合RDD，包含了每一个顶点和边属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Graph[VD, ED]&#123;</span><br><span class="line">    val vertices: VertexRDD[VD]</span><br><span class="line">    val edges: EdgeRDD[ED]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>GraphX的整体架构可以分为三个部分：</p>
+<pre><code>存储层和原语层: Graph类是图计算的核心类，内部含有VertexRDD、EdgeRDD和RDD[EdgeTriplet].
+</code></pre><p>reference :</p>
+<ol>
+<li><a href="https://www.cnblogs.com/shishanyuan/p/4747793.html" target="_blank" rel="noopener">Spark入门实战系列–9.Spark图计算GraphX介绍及实例</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

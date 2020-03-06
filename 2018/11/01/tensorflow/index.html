@@ -1,4 +1,28 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>tensorflow | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/tensorflow/">tensorflow</a></div><div class="post-time">2018-11-01</div></div></div><div class="container post-header"><h1>tensorflow</h1></div><div class="container post-content"><p>Reference :</p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>tensorflow | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/tensorflow/">tensorflow</a></div><div class="post-time">2018-11-01</div></div></div><div class="container post-header"><h1>tensorflow</h1></div><div class="container post-content"><h3 id="TensorFlow"><a href="#TensorFlow" class="headerlink" title="TensorFlow"></a>TensorFlow</h3><p><strong>Basic Concepts</strong></p>
+<p><em>张量(Tensor)</em></p>
+<p>直观来看，就是张量的流动。</p>
+<p>张量(tensor)，即任意维度的数据，张量的流动则是指保持计算节点不变，让数据进行流动。</p>
+<p>连接式的机器学习算法可以把算法表达成一张图，张量从图中从前到后走一遍就完成了前向运算；而残差从后往前走一遍，就完成了后向传播。</p>
+<p><em>算子(operation)</em></p>
+<p>机器学习算法被表达成图，图中的节点是算子(operation)，节点会有0到多个输出。</p>
+<p><em>核(kernel)</em></p>
+<p>kernel是operation在某种设备上的具体实现。</p>
+<p><em>边(edge)</em></p>
+<p>TF的图中的边分为两种：</p>
+<ul>
+<li>正常边，正常边上可以流动数据，即正常边就是tensor</li>
+<li>特殊边，又称作控制依赖(control dependencies)</li>
+<li>没有数据从特殊边上流动，但是特殊边却可以控制节点之间的依赖关系，在特殊边的起始节点完成运算之前，特殊边的结束节点不会被执行。</li>
+<li>也不仅仅非得有依赖关系才可以用特殊边，还可以有其他用法，比如为了控制内存的时候，可以让两个实际上并没有前后依赖关系的运算分开执行。</li>
+<li>特殊边可以在client端被直接使用。</li>
+</ul>
+<p><em>会话(Session)</em></p>
+<p>客户端使用会话来和TF系统交互。</p>
+<p>一般的模式是，建立会话，此时会生成一张空图；在会话中添加节点和边，形成一张图，然后执行。</p>
+<p><em>Variables</em></p>
+<p>机器学习算法都会有参数，而参数的状态是需要保存的。而参数是在图中有其固定的位置的，不能像普通数据那样正常流动。因而，TF中将Variables实现为一个特殊的算子，该算子会返回它所保存的可变tensor的句柄。</p>
+<hr>
+<p>Reference :</p>
 <ol>
 <li><a href="http://baijiahao.baidu.com/s?id=1587378061168798378&amp;wfr=spider&amp;for=pc" target="_blank" rel="noopener">谷歌大神带你十分钟看懂TensorFlow</a></li>
 <li><a href="https://blog.csdn.net/geyunfei_/article/details/78782804" target="_blank" rel="noopener">TensorFlow入门：第一个机器学习Demo</a></li>

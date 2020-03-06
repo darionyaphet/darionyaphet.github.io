@@ -11,10 +11,19 @@
 <p><strong>关于行锁与表锁</strong></p>
 <p><code>MyISAM</code>只支持表锁，<code>InnoDB</code>可以支持行锁。<code>MyISAM</code>执行读写SQL语句时，会对表加锁，所以数据量大，并发量高时，性能会急剧下降。<code>InnoDB</code>细粒度行锁，在数据量大，并发量高时，性能比较优异。</p>
 <hr>
+<p><strong>InnoDB 数据页解析</strong></p>
+<p>MySQL默认的非压缩数据页为16KB。数据页的头尾除了一些元信息外，还有Checksum校验值，这些校验值在写入磁盘前计算得到，当从磁盘中读取时，重新计算校验值并与数据页中存储的对比，如果发现不同，则会导致MySQL crash。</p>
+<p>InnoDB的数据页有很多种，比如：索引页，Undo页，Inode页，系统页，BloB页等。</p>
+<p>数据页包括七个部分，数据页文件头，数据页头，最大最小记录，用户记录，空闲空间，数据目录，数据页尾部。 </p>
+<p>数据页分两大部分，一部分存储<code>数据记录</code>，按照记录的大小通过记录的指针连接起来。另外一部分存储<code>数据页的目录</code>，用来加速查找。</p>
+<p><em>数据页文件头(Fil Header)</em></p>
+<p><code>FIL_PAGE_SPACE_OR_CHKSUM</code>: 占四字节，用来存储数据页的checksum。</p>
+<p><code>FIL_PAGE_OFFSET</code>：对应数据页的page number，每个表空间从0开始，即这个值乘以数据页的大小就可以得到数据页在文件中的起始偏移量。</p>
 <p>Reference :</p>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651961428&amp;idx=1&amp;sn=31a9eb967941d888fbd4bb2112e9602b&amp;chksm=bd2d0d888a5a849e7ebaa7756a8bc1b3d4e2f493f3a76383fc80f7e9ce7657e4ed2f6c01777d&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">InnoDB，5项最佳实践，知其所以然？</a></li>
 <li><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651961471&amp;idx=1&amp;sn=da257b4f77ac464d5119b915b409ba9c&amp;chksm=bd2d0da38a5a84b5fc1417667fe123f2fbd2d7610b89ace8e97e3b9f28b794ad147c1290ceea&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">InnoDB，select为啥会阻塞insert？</a></li>
+<li><a href="http://mysql.taobao.org/monthly/2018/04/03/" target="_blank" rel="noopener">MySQL · 引擎特性 · InnoDB 数据页解析</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
