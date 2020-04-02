@@ -1,0 +1,14 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>pregel | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-02</div></div></div><div class="container post-header"><h1>pregel</h1></div><div class="container post-content"><p><code>Pregel</code> 最初是为了解决<code>PageRank</code>计算问题，由于<code>MapReduce</code>并不适于这种场景，所以需要发展新的计算模型去完成这项计算任务，在这个过程中逐步提炼出一个通用的图计算框架，并用来解决更多的问题。核心思想源自BSP模型。</p>
+<p>很多现实中的计算问题都会涉及到大规模的图。例如网页链接关系和社交关系等。这些图的规模可能达到数十亿的顶点和数万亿的边，这使得如何对它们进行高效处理成为一个巨大的挑战。</p>
+<p>在Pregel中，提出了一种适于处理这类问题的计算模型。程序使用一系列的迭代过程来表达，在每一次迭代中，每个顶点会接收来自上一次迭代的信息，并发送信息给其它顶点，同时可能修改其自身状态以及以它为顶点的出边的状态，或改变整个图的拓扑结构。</p>
+<p>图算法常常表现出比较差的内存访问局部性，针对单个顶点的处理工作过少，以及计算过程中伴随着的并行度的改变等问题。分布式的介入更是加剧了locality的问题，并且增加了在计算过程中机器发生故障的概率。</p>
+<p><code>Pregel</code>系统的灵感来自Valiant提出的BSP(Bluk Synchronous Parallell)模型。Pregel的计算过程由一系列被称为超级步(superstep)的迭代(iterations)组成。在每一个超级步中，计算框架都会针对每个顶点调用用户自定义的函数，这个过程是并行的{!即不是一个一个顶点的串行调用，同一时刻可能有多个顶点被调用}。该函数描述的是一个顶点V在一个superstep S中需要执行的操作。该函数可以读取前一个超级步(S-1)中发送给V的消息，并发送消息给其他顶点，这些消息将会在下一个超级步(S+1)中被接收，并且在此过程中修改顶点V及其出边的状态。消息通常沿着顶点的出边发送，但一个消息可能会被发送到任意已知ID的顶点上去。</p>
+<p>Reference:</p>
+<ol>
+<li><a href="http://people.apache.org/~edwardyoon/documents/pregel.pdf" target="_blank" rel="noopener">PREGEL</a></li>
+<li><a href="http://duanple.com/?p=71" target="_blank" rel="noopener">Pregel: A System for Large-Scale Graph Processing</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>megastore | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-02</div></div></div><div class="container post-header"><h1>megastore</h1></div><div class="container post-content"><p><code>Megastore</code> 底层数据存储依赖BigTable，但是和传统的NoSQL不同，<code>Megastore</code> 实现了类似RDBMS的数据模型，同时提供数据的强一致性解决方案，并且将数据进行细颗粒度的分区，将数据更新在机房间进行同步复制。</p>
+<p><code>Megastore</code> 数据复制通过 <code>paxos</code> 进行同步复制的，如果更新一个数据，所有机房都会进行同步更新，因为使用paxos进行复制，所以不同机房针对同一条数据的更新复制到所有机房的更新顺序都是一致的。</p>
+<p>同步复制保证数据的实时可见性，采用paxos算法则保证了所有机房更新的一致性，所以个人认为megastore的更新可能会比较慢，而所有读都是实时读(对于不同机房是一致的)，因为部署有多个机房，并且数据总是最新。</p>
+<p>为了达到高可用性，<code>Megastore</code> 实现了一个同步的，容错的，适合长距离连接的日志同步器</p>
+<p>为了达到高可扩展性，<code>Megastore</code> 将数据分区成一个个小的数据库，每一个数据库都有它们自己的日志，这些日志存储在NoSQL中。</p>
+<hr>
+<p>Megastore 结合了 NoSQL 的可拓展性和传统 RDBMS 的易用性，在此基础上提供了强一致性和高可用性。</p>
+<p>他们提供了完全序列化的 ACID 语义和良好的数据分区，这种分区借助网络进行跨地域地副本同步，保证延迟在可接受的范围内且提供无缝的故障转移。</p>
+<p>高可用: 实现了一种同步的、可容错的 log replicator 来优化长距离连接<br>拓展性: 提供将数据分区存储在许多小数据中心里，且每个数据中心的 replicated log 存储在一个 per-replica 的 NoSQL 数据中心中。</p>
+<p>仅仅在数据中心里的不同节点上复制数据其实是不够的，考虑到机房故障时，因此决定在地理上进行大范围复制。</p>
+<p>三种复制模型: 异步主从(丢数据风险和需要一致性协议保证 mastership)，同步主从(不丢数据但需要外部failure探测)，优化复制(一个replica group每个都能接收改变，异步传递变化给整个group，拓展性低延迟非常好，但是不可能支持事务)。</p>
+<p>为了提高吞吐量和本地使用率，提出了Entity Groups的概念。</p>
+<p>数据分区存储在一系列 Entity Groups 中，每个都是独立的且在大范围地域上进行同步复制。一个 Group 中的 Entities 通过一条 ACID 事务进行变更（通过 Paxos 进行日志复制）。跨 Group 的操作通过两阶段提交，Group 间的异步交流通过 Queue，外加一些本地索引和全局索引。</p>
+<p>数据模型：分为 root table 和 child table ，每个 child table 必须声明一个具有区分意义的外键指向 root table。</p>
+<p>每个 Entity Group 提供 ACID 语义，一个事务在对 group修改时先写日志，然后修改数据。</p>
+<p>BigTable 时间戳特性从而实现了 MVCC，当事务中的变更提交之后，值随着时间戳写入，然后读操作带上最后一次被完全采纳的事务时间戳来避免读到历史数据，且读写操作在事务持续期间可以彼此隔离。</p>
+<p>Megastore 提供 current、snapshot 和 inconsistent 读操作，<br>current 会等待所有事务日志提交完成且数据变更也完成之后读取；<br>snapshot 则是只从最后一次事务完全提交处读取，忽略有些日志提交了但数据尚未变更的情况；<br>inconsistent 则是只读最新值，忽略日志状态。</p>
+<p>What is Megastore</p>
+<pre><code>Megastore combines the scalability and availability of NoSQL datastore
+</code></pre><p>with ACID semantics of RDBMS in an innovative way so that it can meet<br>the requirement of interactive online services. Megastore provides both the<br>high consistency as well as high availability which can not be provided by<br>NoSQL or RDBMS alone.</p>
+<pre><code>Megastore uses Paxos replication and consensus algorithm for high
+</code></pre><p>availability and with low latency.</p>
+<pre><code>Partitions the data to a fine granularity and ACID semantics within the
+</code></pre><p>partition across wide area network with low latency.</p>
+<p>Online interactive services requires high availability as well as high<br>consistency.</p>
+<p>Asynchronous master/slave</p>
+<p>Reference:</p>
+<ol>
+<li><a href="https://www.slideshare.net/ankitakapratwar/megastore-by-google" target="_blank" rel="noopener">Megastore by Google</a></li>
+<li><a href="https://www.cnblogs.com/zhaoyx/articles/1958047.html" target="_blank" rel="noopener">Google Megastore分布式存储技术全揭秘</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

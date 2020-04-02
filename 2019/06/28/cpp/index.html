@@ -133,6 +133,16 @@
 <p>make_unique is safe for creating temporaries, whereas with explicit use of new you have to remember the rule about not using unnamed temporaries.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo(make_unique&lt;T&gt;(), make_unique&lt;U&gt;()); // exception safe</span><br><span class="line"></span><br><span class="line">foo(unique_ptr&lt;T&gt;(new T()), unique_ptr&lt;U&gt;(new U())); // unsafe*</span><br></pre></td></tr></table></figure>
 <hr>
+<p><strong>STL</strong></p>
+<ul>
+<li>容器(container)：常用数据结构，大致分为两类，序列容器，如vector，list，deque，关联容器，如set，map。在实现上，是类模板(class template)</li>
+<li>迭代器(iterator)：一套访问容器的接口，行为类似于指针。它为不同算法提供的相对统一的容器访问方式，使得设计算法时无需关注过多关注数据。</li>
+<li>算法(algorithm)：提供一套常用的算法，如sort，search，copy，erase … 在实现上，可以认为是一种函数模板(function template)。</li>
+<li>配置器(allocator)：为容器提供空间配置和释放，对象构造和析构的服务，也是一个class template。</li>
+<li>仿函数(functor)：作为函数使用的对象，用于泛化算法中的操作。</li>
+<li>配接器(adapter)：将一种容器修饰为功能不同的另一种容器，如以容器vector为基础，在其上实现stack，stack的行为也是一种容器。这就是一种配接器。除此之外，还有迭代器配接器和仿函数配接器。</li>
+</ul>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.cnblogs.com/jiangbin/p/6986511.html" target="_blank" rel="noopener">C++中的RAII介绍</a></li>

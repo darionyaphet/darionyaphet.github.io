@@ -1,10 +1,35 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>flink | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-09-20</div></div></div><div class="container post-header"><h1>flink</h1></div><div class="container post-content"><p><strong>DataStream API</strong></p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>flink | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-09-20</div></div></div><div class="container post-header"><h1>flink</h1></div><div class="container post-content"><p><code>Apache Flink</code>是目前业界公认最好的流计算引擎之一，其计算能力不仅仅局限于做流处理，而是一套兼具流、批、机器学习等多种计算功能的大数据引擎，用户只需根据业务逻辑开发一套代码，无论是全量数据还是增量数据，亦或者实时处理，一套方案即可全部支持。</p>
+<p><strong>Apache Flink 的定义、架构及原理</strong></p>
+<p><code>Apache Flink</code> 是一个分布式大数据处理引擎，可对有限数据流和无限数据流进行有状态或无状态的计算，能够部署在各种集群环境，对各种规模大小的数据进行快速计算。</p>
+<ul>
+<li>Streams: 分为有限数据流与无限数据流，无限数据流的数据会随时间的推演而持续增加，计算持续进行且不存在结束的状态，相对的有限数据流数据大小固定，计算最终会完成并处于结束的状态。</li>
+</ul>
+<ul>
+<li>State: 状态是计算过程中的数据信息，在容错恢复和 Checkpoint 中有重要的作用，流计算在本质上是 Incremental Processing，因此需要不断查询并更新状态；另外，为了确保 Exactly- once 语义，需要数据能够写入到状态中；而持久化存储，能够保证在整个分布式系统运行失败或者挂掉的情况下做到 Exactly- once，这是状态的另外一个价值。</li>
+</ul>
+<ul>
+<li>Time: 分为 Event time、Ingestion time、Processing time。时间是我们判断业务状态是否滞后，数据处理是否及时的重要依据。</li>
+</ul>
+<ul>
+<li>API: 由上而下可分为 SQL / Table API、DataStream API、ProcessFunction 三层</li>
+</ul>
+<p><strong>有状态的流式处理</strong></p>
+<p>传统批处理方法持续收取数据，以时间作为划分多个批次的依据，再周期性地执行批次运算。假设需要计算每小时出现事件转换的次数，如果事件转换跨越了所定义的时间划分，传统批处理会将中介运算结果带到下一个批次进行计算；除此之外，当出现接收到的事件顺序颠倒情况下，传统批处理仍会将中介状态带到下一批次的运算结果中，这种处理方式也不尽如人意。</p>
+<p><img src="flink/batch_1.png" alt="batch"></p>
+<p>引擎必须要有能力可以累积状态和维护状态，累积状态代表着过去历史中接收过的所有事件，会影响到输出。</p>
+<p><code>时间</code>意味着引擎对于数据完整性有机制可以操控，当所有数据都完全接受到后，输出计算结果。</p>
+<p>理想方法模型需要实时产生结果，但更重要的是采用新的持续性数据处理模型来处理实时数据，这样才最符合 continuous data 的特性。</p>
+<p><img src="flink/batch_2.png" alt="batch"></p>
+<hr>
+<p><strong>DataStream API</strong></p>
 <p><code>Apache Flink</code> 提供了 <code>DataStream API</code> 来实现有状态的流处理应用程序。<code>Flink</code> 支持对状态和时间的细粒度控制，以此来实现复杂的事件驱动数据处理系统。</p>
 <p>Flink Maven Archetype:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mvn archetype:generate \</span><br><span class="line">    -DarchetypeGroupId=org.apache.flink \</span><br><span class="line">    -DarchetypeArtifactId=flink-walkthrough-datastream-java \</span><br><span class="line">    -DarchetypeVersion=1.10.0 \</span><br><span class="line">    -DgroupId=frauddetection \</span><br><span class="line">    -DartifactId=frauddetection \</span><br><span class="line">    -Dversion=0.1 \</span><br><span class="line">    -Dpackage=spendreport \</span><br><span class="line">    -DinteractiveMode=false</span><br><span class="line"></span><br><span class="line">mvn archetype:generate \</span><br><span class="line">    -DarchetypeGroupId=org.apache.flink \</span><br><span class="line">    -DarchetypeArtifactId=flink-walkthrough-datastream-scala \</span><br><span class="line">    -DarchetypeVersion=1.10.0 \</span><br><span class="line">    -DgroupId=frauddetection \</span><br><span class="line">    -DartifactId=frauddetection \</span><br><span class="line">    -Dversion=0.1 \</span><br><span class="line">    -Dpackage=spendreport \</span><br><span class="line">    -DinteractiveMode=false</span><br></pre></td></tr></table></figure>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.bookstack.cn/books/flink-1.10-zh" target="_blank" rel="noopener">Apache Flink v1.10 官方中文文档</a></li>
+<li><a href="https://www.infoq.cn/theme/28" target="_blank" rel="noopener">Apache Flink零基础入门到进阶</a></li>
+<li><a href="https://flink.apache.org/zh/flink-architecture.html" target="_blank" rel="noopener">Apache Flink 是什么？</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
