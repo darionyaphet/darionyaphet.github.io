@@ -11,8 +11,8 @@
 <blockquote>
 <p>BlockBasedTableOptions</p>
 <blockquote>
-<p>flush_block_policy_factory</p>
-<p>cache_index_and_filter_blocks [false]</p>
+<p><code>flush_block_policy_factory</code></p>
+<p><code>cache_index_and_filter_blocks</code> [false]</p>
 </blockquote>
 </blockquote>
 <p>BlockHandle is a pointer to the extent of a file that stores a data block or a meta block.</p>
@@ -32,10 +32,58 @@
 <li>ZSTD Not Final Compression</li>
 <li>Disable Compression Option</li>
 </ul>
+<hr>
+<p><strong>LSM Compaction</strong></p>
+<p><code>Google</code>发表<code>BigTable</code>的论文，推动了基于<code>LSM</code>系统架构流行。数据首先写<code>WAL</code>，再写<code>Memtable</code>，满足一定条件后冻结<code>Memtable</code>，执行转储操作形成一个<code>SSTable</code>。随着数据写入不断增多，转储次数也会不断增多，进而转储<code>SSTable</code>也会越来越多。然而，太多<code>SSTable</code>会导致数据查询IO次数增多，因此后台尝试着不断对这些SSTable进行合并，这个合并过程称为Compaction。Compaction分为两类：<code>Minor Compaction</code>和<code>Major Compaction</code>。</p>
+<p><code>Minor Compaction</code>是指选取一个或多个小的、相邻的转储SSTable与0个或多个Frozen Memtable，将它们合并成一个更大的SSTable。一次Minor Compaction的结果是更少并且更大的SSTable。</p>
+<p><code>Major Compaction</code>是指将所有的转储SSTable和一个或多个Frozen Memtable合并成一个SSTable，这个过程会清理被删除的数据。一般情况下，Major Compaction时间会持续比较长，整个过程会消耗大量系统资源，对系统有比较大的影响。</p>
+<p>通常Compaction涉及到三个放大因子，Compaction需要在三者之间做取舍。</p>
+<p><code>Write Amplification</code> : 写放大，假设每秒写入10MB的数据，但观察到硬盘的写入是30MB/s，那么写放大就是3。写分为立即写和延迟写，比如<code>Redo Log</code>是立即写，传统基于<code>B Tree</code>数据库刷脏页和<code>LSM Compaction</code>是延迟写。<code>Redo Log</code>使用direct IO写时至少以512字节对齐，假如log记录为100字节，磁盘需要写入512字节，写放大为5。</p>
+<p><code>Read Amplification</code> : 读放大，对应于一个简单query需要读取硬盘的次数。比如一个简单query读取了5个页面，发生了5次IO，那么读放大就是 5。假如<code>B Tree</code>的非叶子节点都缓存在内存中，point read-amp 为1，一次磁盘读取就可以获取到Leaf Block；short range read-amp 为1~2，1~2次磁盘读取可以获取到所需的Leaf Block。</p>
+<p><code>Space Amplification</code> : 空间放大，假设我需要存储10MB数据，但实际硬盘占用了30MB，那么空间放大就是3。有比较多的因素会影响空间放大，比如在Compaction过程中需要临时存储空间，空间碎片，Block中有效数据的比例小，旧版本数据未及时删除等等。</p>
+<p>RocksDB放大系数高达42倍，LevelDB也高达27倍。写放大意味着更多的读写，会造成系统性能波动，比如对SSD来说会加速寿命衰减，从成本角度说也更加耗电，采用更优的避免写放大的算法可以使用成本更低廉的SSD，写放大还影响数据库系统的持续写入的带宽，假如磁盘带宽为500M/s，写放大为10，那么数据库持续写入的的最大带宽为50M/s，所以解决写放大就成了一个很重要的问题。</p>
+<p>放大问题的本质是一个系统对<em>随时全局有序</em>的需求有多么的强烈。</p>
+<p>随时，就是任何的写入都不能导致系统无序；</p>
+<p>全局，即系统内任意元单位之间都要保持有序。</p>
+<p>B-Tree系列是随时全局有序的典型代表，而Fractal Tree打破了全局的约束，允许局部无序，提升了随机写能力；LSM系列进一步打破了随时的约束，允许通过后台的Compaction来整理排序。在LSM这种依靠后台整理来保序的系统里面，系统对序的要求越强烈，写放大越严重。</p>
+<p>要同时将写放大，读放大，空间放大优化到最优是很难的，比如SSD内部的碎片整理，碎片越多，空间放大和读放大越严重，为了改善空间放大和读放大，将page中的有效数据拷贝到新的page里（copy-out），这样会带来写放大，如果page中有效数据率越低，那么空间放大越大，copy-out的写放大越低，反之，空间放大越小，copy-out写放大越大。</p>
+<p>随着数据写入不断增加，Minor Freeze不断触发，转储数据不断增多，一次查询可能需要越来越多的IO操作，读取延时也在不断变大。而执行Minor Compaction会使得转储文件数基本稳定，进而IO Seek次数会比较稳定，延迟就会稳定在一定范围。然而，Minor Compaction操作重写文件会带来很大的带宽压力以及短时间IO压力。因此可以认为，Minor Compaction就是使用短时间的IO消耗以及带宽消耗换取后续查询的低延迟。</p>
+<p>为了换取后续查询的低延迟，除了短时间的读放大之外，Compaction对写入也会有很大的影响。当写请求非常多，导致不断触发Minor Compaction生成转储SSTable，多次Minor Freeze会触发Major Freeze，从而导致Major Compaction，但Compaction的速度远远跟不上数据写入速度，Memtable内存不足时，会限制用户数据写入。如果Compaction消耗大量IO和带宽，也会导致读性能急剧下降。为了避免这种情况，在Memtable内存紧张时候会限制写请求的速度。</p>
+<p>Minor Compaction释放Memtable内存，清理不必要的多版本数据，同时保证转储SSTable数量稳定，降低读延迟；Major Compaction清除删除和过期的数据，有效降低存储空间，也可以有效降低读取时延。Compaction会使得数据读取延迟一直比较平稳，但付出的代价是大量的读延迟毛刺和一定的写阻塞。</p>
+<p>Compaction的设计总是会追求一个平衡点，一方面需要保证Compaction的基本效果，另一方面又不会带来严重的IO压力。然而，并没有一种设计策略能够适用于所有应用场景或所有数据集。Compaction选择什么样的策略需要根据不同的业务场景、不同数据集特征进行确定。设计Compaction策略需要根据业务数据特点，目标就是降低各种放大，不断权衡如下几点：</p>
+<ul>
+<li><p>合理控制读放大：避免因Minor Freeze增多导致读取时延出现明显增大，避免请求读取过多SSTable；</p>
+</li>
+<li><p>合理控制写放大：避免一次又一次地Compact相同的数据；</p>
+</li>
+<li><p>合理控制空间放大：避免让不需要的多版本数据，已经删除的数据和过期的数据长时间占据存储空间，避免在Compaction过程中占用过多临时存储空间，及时释放已经Compact完成的无用SSTable的存储空间；</p>
+</li>
+<li><p>控制Compaction使用的资源：在业务高峰期少使用资源，业务低峰期使用更多的资源；</p>
+</li>
+<li><p>控制Compaction平滑度：在一定的负载下，业务的响应时间和吞吐量稳定可预期；</p>
+</li>
+</ul>
+<p><em>Compaction算法演进</em></p>
+<ol>
+<li>Memtable(增量数据) + L1(基线数据)： 业务每天的修改几乎可以全部存储在Memtable中，采用每日Major Compaction的方式将增量数据与基线数据进行合并。</li>
+<li>Memtable(增量数据)+L0(增量转储数据)+L1(基线数据)：Memtable已经不能存储整天的修改数据，当系统内存紧张时，触发Minor Freeze，然后转储生成SSTable。</li>
+</ol>
+<p><em>根据场景选择Compaction策略</em></p>
+<p>Write Only，大量随机rowkey insert/update/delete</p>
+<p>优化写放大，采用Memtable + L0 + L1模式，每次转储生成一个SSTable，L0的总大小与L1相同时进行Major Compaction写放大最小。</p>
+<p>Write Mostly，大量随机rowkey insert/update/delete</p>
+<p>优化写放大，容忍稍大的读放大，采用Memtable + L0 + L1模式，L0层累积多次Major Freeze的增量SSTable数据，L0层包含多个SSTable，按照优化写放大策略控制L0层SSTable数量和大小，使用Stripe Compaction和渐进合并策略减少Major Compaction的写放大和临时空间放大。</p>
+<p>Read Only，或write很少</p>
+<p>最优写放大，读放大和空间放大，采用Memtable + L1模式，Memtable没有数据或只有少量数据。</p>
+<p>Read Mostly，少量随机rowkey insert/update/delete</p>
+<p>优化读放大，采用Memtable + L0 + L1模式，每次转储Frozen Memtable与前一个L0层SSTable合并成一个新的L0层SSTable，如果delete range比较多，则在Memtable和L0层SSTable中标记delete range，L0与L1进行Major Compaction的写放大比较小。</p>
+<p>Read Mostly，大量随机rowkey insert/update/delete</p>
+<p>优化写放大和读放大，采用Memtable + L0 + L1模式，L0层累积多次Major Freeze的增量SSTable数据，L0层包含多个SSTable，根据用户的访问热点决定哪些range内的L0层SSTable合并，如果delete range比较多，则在Memtable和L0层SSTable中标记delete range，将L0和L1分成多个sub-range条带，每个sub-range积累了足够增量数据后才进行Major Compaction，类似渐进合并的方式，每次Major Freeze都合并L0和L1的部分range数据。如果delete比较多，空间放大不优，不能即使释放已经删除数据的存储空间。</p>
 <p>Reference </p>
 <ol>
 <li><a href="https://github.com/facebook/rocksdb/wiki/A-Tutorial-of-RocksDB-SST-formats" target="_blank" rel="noopener">A Tutorial of RocksDB SST formats</a></li>
 <li><a href="https://segmentfault.com/a/1190000017027723" target="_blank" rel="noopener">看图了解RocksDB</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/37003275" target="_blank" rel="noopener">一文带你了解LSM Compaction</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

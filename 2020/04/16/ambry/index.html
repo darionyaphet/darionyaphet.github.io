@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>ambry | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-16</div></div></div><div class="container post-header"><h1>ambry</h1></div><div class="container post-content"><p>在当今互联网时代，多媒体内容越来越普遍。随着<code>LinkedIn</code>业务量的增长，传统的后台存储系统暴露了很多在扩展性，可用性和易操作性上的问题。</p>
+<p>分布式文件系统对于小对象的处理并不是很好，并且为了一致性牺牲了可用性，没有关注于实时应用并且难以操作维护。有一些对象存储解决方案，但是大部分不成熟，不适用于不同大小的对象存储，而且在性能上没有达到我们对于实时传输的要求。</p>
+<p><code>Ambry</code>适用于存储多媒体对象并且提供多媒体服务。多媒体内容对于任何一个网站在提高用户交互品质，提升用户体验上都是至关重要的。<code>Ambry</code>是一个分布式不可变高可用对象存储系统，并且易于扩展。 <code>Ambry</code>适用于存储从几KB到几GB的多媒体对象，并能保证高吞吐量以及低延迟。它也能实现从客户端到存储层端到端的直接通信，反之亦可。系统可以跨机房多活热部署，并且能提供非常廉价的存储。</p>
+<p>LinkedIn之前用的系统包括多媒体对象存储的文件系统和一个Oracle数据库。系统前台是一些无状态运行着SOLARIS 系统的机器，将客户端的请求转发到对应的后台文件系统或者数据库。文件系统是挂载在这些无状态机器上的NFS，通过远程的Java File API访问。系统前台还设置有缓存，为了确保低延迟和防止性能问题和下游系统问题造成的服务运行中断。</p>
+<p>随着业务需求量的增长，这个系统有比较严重的限制。因为如下的原因决定替换掉它：</p>
+<ul>
+<li>频繁的可用性问题：</li>
+<li>扩容困难：</li>
+<li>低效率的小对象-大对象支持：</li>
+<li>很差的MTTR（Mean time to repair）：</li>
+<li>成本昂贵：</li>
+</ul>
+<p><strong>设计目标</strong></p>
+<p>Reference:</p>
+<ol>
+<li><a href="https://blog.csdn.net/zhxdick/article/details/52964676" target="_blank" rel="noopener">分布式对象存储Ambry简介</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

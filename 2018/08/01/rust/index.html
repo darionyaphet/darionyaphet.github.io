@@ -29,11 +29,68 @@
 <p><code>cargo build</code> 命令对项目进行编译：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cargo build   </span><br><span class="line">   Compiling hello_world v0.1.0 (file:///private/tmp/hello_world)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 1.48 secs</span><br></pre></td></tr></table></figure>
 <p><code>cargo run</code></p>
+<hr>
+<p><strong>关键字</strong></p>
+<p>Rust 语言有一组保留的关键字（keywords），就像大部分语言一样，它们只能由语言本身使用。<br>不能使用这些关键字作为变量或函数的名称。大部分关键字有特殊的意义，一些关键字目前没有相应的功能，是为将来可能添加的功能保留的。</p>
+<p><strong>格式化输出</strong></p>
+<p><code>std::fmt</code> 包含多种 <code>traits</code> 来控制文字显示，其中重要的两种 <code>trait</code> 的基本形式如下：</p>
+<ul>
+<li><code>fmt::Debug</code>: 使用 <code>{:?}</code> 标记。</li>
+<li><code>fmt::Display</code>: 使用 <code>{}</code> 标记。</li>
+</ul>
+<p>若想用 <code>std::fmt</code> 的格式化 <code>trait</code> 打印出来，都要求实现这个 trait。</p>
+<p><code>fmt::Debug</code> 通常看起来不太简洁，自定义输出外观通常更可取。这需要手动实现 <code>fmt::Display</code> 。</p>
+<p>打印操作由 <code>std::fmt</code> 里面所定义的一系列<code>宏</code>来处理，包括：</p>
+<ul>
+<li><code>format!</code> 将格式化文本写到字符串。</li>
+<li><code>print!</code> 将文本输出到控制台。</li>
+<li><code>println!</code> 将文本输出到控制台，输出结果追加一个换行符。</li>
+<li><code>eprint!</code> 将文本输出到标准错误。</li>
+<li><code>eprintln!</code> 将文本输出到标准错误，输出结果追加一个换行符。</li>
+</ul>
+<hr>
+<p><code>所有权</code>是 Rust 最为与众不同的特性，它让 Rust 无需垃圾回收即可保障内存安全。</p>
+<p>所有运行的程序都必须管理其使用计算机内存的方式。一些语言中具有垃圾回收机制，在程序运行时不断地寻找不再使用的内存；在另一些语言中，你必须亲自分配和释放内存。Rust 则选择了第三种方式：通过所有权系统管理内存，编译器在编译时会根据一系列规则进行检查。在运行时，所有权系统的任何功能都不会减慢程序。</p>
+<p>在像 Rust 这样的系统编程语言中，值是位于栈上还是堆上在更大程度上影响了语言的行为以及为何必须做出这样的抉择。</p>
+<p>栈和堆都是代码在运行时可供使用的内存，但是它们的结构不同。</p>
+<p>栈以放入值的顺序存储值并以相反顺序取出值。这也被称作 <code>后进先出</code>。栈中所有数据都必须占用已知且固定的大小。在编译时大小未知或大小可能变化的数据，要改为存储在堆上。堆是缺乏组织的：当向堆放入数据时，你要请求一定大小的空间。操作系统在堆的某处找到一块足够大的空位，把它标记为已使用，并返回一个表示该位置地址的 <code>指针</code>。这个过程称作 <code>在堆上分配内存</code>，简称为 <code>分配</code>。将数据推入栈中并不被认为是分配。因为指针的大小是已知并且固定的，你可以将指针存储在栈上，不过当需要实际数据时，必须访问指针。</p>
+<p>入栈比在堆上分配内存要快，因为入栈时操作系统无需为存储新数据去搜索内存空间；其位置总是在栈顶。相比之下，在堆上分配内存则需要更多的工作，这是因为操作系统必须首先找到一块足够存放数据的内存空间，并接着做一些记录为下一次分配做准备。</p>
+<p>访问堆上的数据比访问栈上的数据慢，因为必须通过指针来访问。现代处理器在内存中跳转越少就越快。处理器在处理的数据彼此较近的时候（比如在栈上）比较远的时候（比如可能在堆上）能更好的工作。在堆上分配大量的空间也可能消耗时间。当你的代码调用一个函数时，传递给函数的值和函数的局部变量被压入栈中。当函数结束时，这些值被移出栈。</p>
+<p>跟踪哪部分代码正在使用堆上的哪些数据，最大限度的减少堆上的重复数据的数量，以及清理堆上不再使用的数据确保不会耗尽空间，这些问题正是所有权系统要处理的。一旦理解了所有权，你就不需要经常考虑栈和堆了，不过明白了所有权的存在就是为了管理堆数据，能够帮助解释为什么所有权要以这种方式工作。</p>
+<p><em>所有权规则</em></p>
+<ol>
+<li>Rust 中的每一个值都有一个被称为其 所有者（owner）的变量。</li>
+<li>值有且只有一个所有者。</li>
+<li>当所有者（变量）离开作用域，这个值将被丢弃。</li>
+</ol>
+<p>作用域（scope）是一个项（item）在程序中有效的范围。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;                      // s 在这里无效, 它尚未声明</span><br><span class="line">    let s = &quot;hello&quot;;   // 从此处起，s 是有效的</span><br><span class="line"></span><br><span class="line">    // 使用 s</span><br><span class="line">&#125;                      // 此作用域已结束，s 不再有效</span><br></pre></td></tr></table></figure>
+<p>这里有两个重要的时间点： 当 s 进入作用域 时，它就是有效的。 这一直持续到它 离开作用域 为止。</p>
+<p><strong>数据类型</strong></p>
+<p>在 Rust 中，每一个值都属于某一个数据类型，这告诉 Rust 它被指定为何种数据，以便明确数据处理方式。<br>我们将看到两类数据类型子集：标量（scalar）和复合（compound）。</p>
+<p>Rust 是 静态类型（statically typed）语言，也就是说在编译时就必须知道所有变量的类型。</p>
+<p>标量（scalar）类型代表一个单独的值。</p>
+<p>Rust 有四种基本的标量类型：整型、浮点型、布尔类型和字符类型。</p>
+<p><code>整数</code> 是一个没有小数部分的数字。</p>
+<p>Rust 也有两个原生的 <code>浮点数</code>类型，它们是带小数点的数字。<br>Rust 的浮点数类型是 <code>f32</code> 和 <code>f64</code>，分别占 32 位和 64 位。默认类型是 f64。</p>
+<p>复合类型（Compound types）可以将多个值组合成一个类型。</p>
+<p>Rust 有两个原生的复合类型：<code>元组</code>（tuple）和<code>数组</code>（array）。</p>
+<p>元组是一个将多个其他类型的值组合进一个复合类型的主要方式。元组长度固定：一旦声明，其长度不会增大或缩小。</p>
+<p>与元组不同，数组中的每个元素的类型必须相同。Rust 中的数组与一些其他语言中的数组不同，因为 Rust 中的数组是固定长度的：一旦声明，它们的长度不能增长或缩小。</p>
+<p><strong>结构体</strong></p>
+<p>结构体有 3 种类型，使用 struct 关键字来创建：</p>
+<ul>
+<li>元组结构体，实际上就是具名元组。</li>
+<li>C 语言风格结构体。</li>
+<li>单元结构体，不带字段。</li>
+</ul>
+<hr>
 <p>Reference :</p>
 <ol>
 <li><a href="https://legacy.gitbook.com/book/rustcc/rustprimer/details" target="_blank" rel="noopener">Rust Primer</a></li>
 <li><a href="https://mirrors.ustc.edu.cn/help/crates.io-index.html" target="_blank" rel="noopener">Rust Crates 源使用帮助</a></li>
 <li><a href="https://legacy.gitbook.com/book/kaisery/rust-book-chinese/details" target="_blank" rel="noopener">Rust 程序设计语言（第一版） 简体中文版</a></li>
+<li><a href="https://coolshell.cn/articles/20845.html" target="_blank" rel="noopener">RUST语言的编程范式</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
