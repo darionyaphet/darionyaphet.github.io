@@ -7,6 +7,37 @@
 <li>很容易地升级应用程序容器的新版本</li>
 <li>提供容器弹性，如果容器失效就替换它</li>
 </ul>
+<hr>
+<p><strong>集群</strong></p>
+<p><code>集群</code>是一组节点，可以是物理服务器或者虚拟机。</p>
+<p><img src="kubernetes/cluster.png" alt="cluster"></p>
+<p><strong>Pod</strong></p>
+<p>Pod包含一组容器和卷。同一个Pod里的容器共享同一个网络命名空间，可以使用localhost互相通信。Pod是短暂的，不是持续性实体。</p>
+<p><strong>Lable</strong></p>
+<p>一些<code>Pod</code>有<code>Label</code>，一个<code>Label</code>是attach到<code>Pod</code>的一对键/值对，用来传递用户定义的属性。</p>
+<p><strong>Replication Controller</strong></p>
+<p><code>Replication Controller</code>确保任意时间都有指定数量的<code>Pod副本</code>在运行。如果为某个<code>Pod</code>创建了<code>Replication Controller</code>并且指定3个副本，它会创建3个Pod，并且持续监控它们。如果某个Pod不响应，那么<code>Replication Controller</code>会替换它，保持总数为3。</p>
+<p><img src="kubernetes/replication_controller.gif" alt="cluster"></p>
+<p>当创建<code>Replication Controller</code>时，需要指定：</p>
+<ol>
+<li>Pod模板：用来创建Pod副本的模板</li>
+<li>Label：Replication Controller需要监控的Pod的标签。</li>
+</ol>
+<p><strong>Service</strong></p>
+<p><code>Service</code>是定义一系列<code>Pod</code>以及访问这些Pod的策略的一层抽象。<br><code>Service</code>通过<code>Label</code>找到Pod组。因为Service是抽象的，所以在图表里通常看不到它们的存在，这也就让这一概念更难以理解。</p>
+<p><img src="kubernetes/service.gif" alt="cluster"></p>
+<p><strong>Node</strong></p>
+<p>节点是物理或者虚拟机器，作为<code>Kubernetes worker</code>，通常称为Minion。每个节点都运行如下Kubernetes关键组件：</p>
+<ul>
+<li>Kubelet：是主节点代理。</li>
+<li>Kube-proxy：Service使用其将链接路由到Pod，如上文所述。</li>
+<li>Docker或Rocket：Kubernetes使用的容器技术来创建容器。</li>
+</ul>
+<p><strong>Kubernetes Master</strong></p>
+<p>集群拥有一个<code>Kubernetes Maste</code>。</p>
+<p><code>Kubernetes Master</code>提供集群的独特视角，并且拥有一系列组件，比如<code>Kubernetes API Server</code>。</p>
+<p><code>API Server</code>提供可以用来和集群交互的REST端点。master节点包括用来创建和复制Pod的<code>Replication Controller</code>。</p>
+<hr>
 <p>Reference :</p>
 <ol>
 <li><a href="http://www.dockone.io/article/932" target="_blank" rel="noopener">十分钟带你理解Kubernetes核心概念</a></li>

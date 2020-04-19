@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>data_structure | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-17</div></div></div><div class="container post-header"><h1>data_structure</h1></div><div class="container post-content"><p><strong>ABA问题</strong></p>
+<blockquote>
+<p>在进行CAS操作的时候，因为在更改V之前，CAS主要询问“V的值是否仍然为A”，所以在第一次读取V之后以及对V执行CAS操作之前，如果将值从A改为B，然后再改回A，会使基于CAS的算法混乱。在这种情况下，CAS操作会成功。这类问题称为ABA问题。</p>
+</blockquote>
+<p>CAS：对于内存中的某一个值V，提供一个旧值A和一个新值B。如果提供的旧值A和V相等就把B写入V。这个过程是原子性的。CAS执行结果要么成功要么失败，对于失败的情形下一班采用不断重试。或者放弃。</p>
+<p>ABA：如果另一个线程修改V值假设原来是A，先修改成B，再修改回成A。当前线程的CAS操作无法分辨当前V值是否发生过变化。</p>
+<p>关于ABA问题我想了一个例子：在你非常渴的情况下你发现一个盛满水的杯子，你一饮而尽。之后再给杯子里重新倒满水。然后你离开，当杯子的真正主人回来时看到杯子还是盛满水，他当然不知道是否被人喝完重新倒满。</p>
+<p>解决这个问题的方案的一个策略是每一次倒水假设有一个自动记录仪记录下，这样主人回来就可以分辨在她离开后是否发生过重新倒满的情况。这也是解决ABA问题目前采用的策略。</p>
+<p><strong>Hazard pointer</strong></p>
+<p>The Hazard Pointers are one approach to solving the problems posed by dynamic memory management of the nodes in a lock-free data structure. </p>
+<blockquote>
+<p>Each reader thread owns a single-writer/multi-reader shared pointer called “hazard pointer.” When a reader thread assigns the address of a map to its hazard pointer, it is basically announcing to other threads (writers), “I am reading this map. You can replace it if you want, but don’t change its contents and certainly keep your deleteing hands off it.”</p>
+</blockquote>
+<p>Hazard Pointer使用的数据存储结构：</p>
+<ul>
+<li>pointers:用来存储这个线程当前正在访问的内存对象，正在访问的内存对象不能被任何线程释放。</li>
+<li>retire list:被这个线程删除的内存对象，但还没有释放。</li>
+</ul>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/ABA_problem" target="_blank" rel="noopener">ABA problem</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Hazard_pointer" target="_blank" rel="noopener">Hazard pointer</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

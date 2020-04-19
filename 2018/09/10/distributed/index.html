@@ -137,6 +137,19 @@
 <p><code>Percolator</code> 提供了跨行、跨表的、基于快照隔离的ACID事务。</p>
 <p><code>Percolator</code> 通过一个全局的授时服务器给予事务一个全局时间戳来解决分布式环境下事务的全局时序问题；通过经典的两阶段提交来解决分布式事务原子提交的问题。</p>
 <p><code>Percolator</code> 不仅仅是一个改进版的两阶段提交，它涵盖的内容更多，可以认为是一个完整的分布式事务解决方案，它还包括了依据全局时间戳实现 Snapshot Isolation 隔离级别的并发控制协议，并给出了在故障发生如何进行自动 failover 的细节。</p>
+<hr>
+<p><strong>Lamport 逻辑时钟</strong></p>
+<p>在分布式系统中，一个事件发生在另一个事件之前，用它描述了事件的偏序关系。 给出了一种分布式算法，该算法用于同步逻辑时钟系统，逻辑时钟系统可以用于确定事件的全序关系。 全序关系的用途被作为一种解决同步问题的方法给出。 这个方法之后被专门用于解决同步物理时钟，并且限定同步时钟的误差。</p>
+<p>在我们的思维中，时间是一个非常基础的概念。它来源于更基础的概念——时间的发生顺序。事件时间顺序的概念贯穿我们对系统的思考，但在分布式系统中，我们需要重新审视这个概念。</p>
+<p>分布式系统由一系列空间上分离，通过交换信息来通信的进程组成。与单个进程内事件发生的间隔时间相比，系统中消息传递延迟不可以被忽略，这个系统可以被认为是一个分布式系统。</p>
+<p>在一个分布式系统中，有时候无法确定一个事件发生于另一个事件之前。而<code>发生之前</code>的关系只是系统中事件的一个偏序关系。我们发现由于人们没有弄清楚这一点而导致一些问题问题的出现。</p>
+<p>我们讨论偏序关系，并给出一个分布式算法将其拓展为所有事件的全序关系。这个算法能够提供有效的机制来实现一个分布式系统。我们通过一个解决同步问题的简单方法来说明它的用法。不幸的是，如果通过这个算法得出的顺序和用于感知的不一样，可能会发生异常的行为。这可以通过引入真实的物理时钟来避免。我们描述了同于同步这些时钟的简单方法，并且推导出了时钟偏差的范围。</p>
+<hr>
+<p><strong>向量时钟</strong></p>
+<p><code>向量时钟</code>是在 <code>Lamport 时间戳</code>基础上演进的另一种逻辑时钟方法，它通过向量结构不但记录本节点的 <code>Lamport 时间戳</code>，同时也记录了其他节点的 <code>Lamport 时间戳</code>，因此能够很好描述同时发生关系以及事件的因果关系。</p>
+<p>PS：因果关系指的是时序关系，即时间的前后，并不是逻辑上的原因和结果。时间戳如无特别说明，都指的是逻辑时钟的时间戳，不是物理时钟的时间戳。</p>
+<p><code>Lamport 逻辑时钟算法</code>，提供了一种判断分布式系统中事件全序关系的方法：如果 a -&gt; b，那么 C(a) &lt; C(b)，但是 C(a) &lt; C(b) 并不能说明 a -&gt; b。也就是说C(a) &lt; C(b) 是 a -&gt; b 的必要不充分条件，我们不能通过 Lamport 时间戳对事件 a、b 的因果关系进行判断。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://zhuanlan.zhihu.com/p/53197633" target="_blank" rel="noopener">Google Percolator事务</a></li>
@@ -146,6 +159,10 @@
 <li><a href="https://www.iteblog.com/archives/2505.html" target="_blank" rel="noopener">分布式原理：一文了解 Gossip 协议</a></li>
 <li><a href="http://lamport.azurewebsites.net/" target="_blank" rel="noopener">Leslie Lamport</a></li>
 <li><a href="http://mysql.taobao.org/monthly/2018/11/02/" target="_blank" rel="noopener">Database · 原理介绍 · Google Percolator 分布式事务实现原理解读</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/56146800" target="_blank" rel="noopener">分布式系统：Lamport 逻辑时钟</a></li>
+<li><a href="https://lamport.azurewebsites.net/pubs/time-clocks.pdf" target="_blank" rel="noopener">Time, Clocks and the Ordering of Events in a Distributed System</a></li>
+<li><a href="https://www.cnblogs.com/hzmark/p/Time_Clocks_Ordering.html" target="_blank" rel="noopener">译 Time, Clocks, and the Ordering of Events in a Distributed System</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/56886156" target="_blank" rel="noopener">分布式系统：向量时钟</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
