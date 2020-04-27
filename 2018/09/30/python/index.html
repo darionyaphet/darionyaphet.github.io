@@ -617,7 +617,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p><code>`</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">***</span><br><span class="line"></span><br><span class="line">**Pandas 使用小技巧**</span><br><span class="line"></span><br><span class="line">*随机选取一小部分数据，然后读入内存，快速了解数据。* </span><br><span class="line"></span><br><span class="line">使用 skiprows 参数，x &gt; 0 确保首行读入，np.random.rand() &gt; 0.01 表示 99% 的数据都会被随机过滤掉，只有全部数据的 1% 才有机会选入内存中。</span><br></pre></td></tr></table></figure>
+<p>import pandas as pd<br>import numpy as np<br>df = pd.read_csv(“big_data.csv”, skiprows = lambda x: x&gt;0 and np.random.rand() &gt; 0.01)<br>print(“The shape of the df is {}. It has been reduced 100 times!”.format(df.shape))<br><code>`</code></p>
+<p><em>某列上使用 replace 方法和正则，快速完成值的清洗。</em></p>
 <hr>
 <p>Reference :</p>
 <ol>

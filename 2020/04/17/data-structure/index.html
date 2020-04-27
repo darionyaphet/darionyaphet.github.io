@@ -1,4 +1,18 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>data_structure | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-17</div></div></div><div class="container post-header"><h1>data_structure</h1></div><div class="container post-content"><p><strong>ABA问题</strong></p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>data_structure | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-04-17</div></div></div><div class="container post-header"><h1>data_structure</h1></div><div class="container post-content"><p><strong>False Sharing</strong></p>
+<p>为了弥合<code>CPU</code> 与<code>Memory</code>之间的速度差距，两者之间存在着至少两级缓存(L1 Cache、L2 Cache)。越靠近 CPU 的缓存越快也越小。<code>L1 Cache</code>很小但很快，并且与 CPU 很近。<code>L2 Cache</code> 稍微大一些，也慢一些，并且仍然只能被一个单独的 CPU 使用。<code>Memory</code> 保存着程序运行的所有数据，它更大，更慢，由所有 CPU 共享。</p>
+<p>缓存中是以缓存行（Cache Line）为单位存储的。<code>Cache Line</code>是2的整数幂个连续字节，一般为32-256个字节。最常见的<code>Cache Line</code>大小是64个字节。</p>
+<p>当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是<code>伪共享</code>。</p>
+<p>缓存行上的写竞争是运行在SMP系统中并行线程实现可伸缩性最重要的限制因素。为了让可伸缩性与线程数呈线性关系，就必须确保不会有两个线程往同一个变量或缓存行中写。</p>
+<hr>
+<p><strong>Lock Free</strong></p>
+<p>无锁数据结构的实现主要基于两个方面：<em>原子性操作</em>和<em>内存访问控制方法</em>。</p>
+<p>原子操作是一个不可分的操作；要么发生，要么不发生，不存在部分结果（partial effects）。</p>
+<p>原子性操作可以简单地分为<code>读写</code>（read and write）、<code>原子性交换操作</code>（read-modify-write，RMW）两部分。</p>
+<p>构建无锁数据结构时需要用到RMW操作，其包括：<code>compare-and-swap</code> (CAS)、<code>fetch-and-add</code> (FAA)、<code>test-and-set</code> (TAS) 等。</p>
+<p><code>C++ 11</code>中CAS为<code>std::atomic::compare_exchange_weak</code>和<code>std::atomic::compare_exchange_strong</code>。</p>
+<p>其如同用std::memcmp 原子地比较 <em>this 的对象表示和 expected 的对象表示，而若它们逐位相等，则以 desired 替换前者。否则，将 </em>this 中的实际值加载进 expected。如同用 std::memcpy 进行复制。</p>
+<hr>
+<p><strong>ABA问题</strong></p>
 <blockquote>
 <p>在进行CAS操作的时候，因为在更改V之前，CAS主要询问“V的值是否仍然为A”，所以在第一次读取V之后以及对V执行CAS操作之前，如果将值从A改为B，然后再改回A，会使基于CAS的算法混乱。在这种情况下，CAS操作会成功。这类问题称为ABA问题。</p>
 </blockquote>
@@ -21,6 +35,8 @@
 <ol>
 <li><a href="https://en.wikipedia.org/wiki/ABA_problem" target="_blank" rel="noopener">ABA problem</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Hazard_pointer" target="_blank" rel="noopener">Hazard pointer</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Non-blocking_algorithm" target="_blank" rel="noopener">Non-blocking algorithm</a></li>
+<li><a href="https://en.wikipedia.org/wiki/False_sharing" target="_blank" rel="noopener">False sharing</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

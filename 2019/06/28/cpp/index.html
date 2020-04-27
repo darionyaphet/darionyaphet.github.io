@@ -186,6 +186,32 @@
 </tr>
 </tbody>
 </table>
+<p><code>memory_order_acq_rel</code>并不是一个内存模型，只是<code>memory_order_acquire</code>和<code>memory_order_release</code>的合并，在一些读取并修改的操作中会用到。</p>
+<p><code>memory_order_seq_cst</code> / <code>memory_order_seq_cst</code> : <code>seq_cst</code>是<code>sequentially consistent</code>的缩写，持严格的代码线性执行顺序。</p>
+<p><code>memory_order_acquire</code> / <code>memory_order_release</code> : 这种模型比memory_order_seq_cst稍微宽松一些，它移除了不相关的原子变量的顺序一致性。</p>
+<p><code>memory_order_consume</code> / <code>memory_order_release</code> : 这种内存模型又比<code>memory_order_seq_cst</code>更加宽松，它不仅移除了不相关的原子变量的顺序一致性，还移除了不相关普通变量的一致性。 </p>
+<p><code>memory_order_relaxed</code> : 这种模型最宽松，他并不对任何顺序做保证，仅仅保证操作的原子性。</p>
+<p><strong>Relaxed ordering</strong></p>
+<p><code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上<code>memory_order_relaxed</code>参数。</p>
+<p>仅仅保证<code>load()</code>和<code>store()</code>是原子操作，除此之外，不提供任何跨线程的同步。</p>
+<p><strong>Release-Acquire ordering</strong></p>
+<p><code>store()</code>使用<code>memory_order_release</code>，而<code>load()</code>使用<code>memory_order_acquire</code>。</p>
+<p>这种模型有两种效果，第一种是可以限制 CPU 指令的重排：</p>
+<ul>
+<li>在<code>store()</code>之前的所有读写操作，不允许被移动到这个<code>store()</code>的后面。</li>
+<li>在<code>load()</code>之后的所有读写操作，不允许被移动到这个<code>load()</code>的前面。</li>
+</ul>
+<p>Sequential consistency有两个特性</p>
+<ol>
+<li>所有线程执行指令的顺序都是按照源代码的顺序；</li>
+<li>每个线程所能看到其他线程的操作的执行顺序都是一样的。</li>
+</ol>
+<p>Acquire-release: 在同一个原子变量的release操作和acquire操作间同步，同时也就建立起了执行序列约束。所有的读和写动作不能移动到acquire操作之前。所有的读和写动作不能移动到release操作之后。</p>
+<p>std::memory_order_consume</p>
+<ol>
+<li>carries-a-dependency-to：如果操作A的结果用于操作B的操作当中，那么A carries-a-dependency-to（将依赖带入） B</li>
+<li>dependency-ordered-before：如果操作B的结果进一步在相同的线程内被操作C使用，那么A的store操作是dependency-ordered-before（在依赖执行序列X之前）B的load操作(with std::memory_order_consume)。</li>
+</ol>
 <hr>
 <p>Reference:</p>
 <ol>
@@ -197,6 +223,9 @@
 <li><a href="https://www.cnblogs.com/embedded-linux/p/5801999.html" target="_blank" rel="noopener">C之attribute用法</a></li>
 <li><a href="https://isocpp.org/blog/2019/06/quick-q-differences-between-stdmake-unique-and-stdunique-ptr-with-new" target="_blank" rel="noopener">Differences between std::make_unique and std::unique_ptr with new</a></li>
 <li><a href="https://zh.cppreference.com/w/cpp/atomic/memory_order" target="_blank" rel="noopener">cppreference: memory_order</a></li>
+<li><a href="http://senlinzhan.github.io/2017/12/04/cpp-memory-order/" target="_blank" rel="noopener">理解 C++ 的 Memory Order</a></li>
+<li><a href="https://tyzual.com/2019/02/11/mem-order/" target="_blank" rel="noopener">C++11 中的内存模型</a></li>
+<li><a href="https://www.cnblogs.com/navono007/p/5746048.html" target="_blank" rel="noopener">C++11内存模型的粗略解释</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
