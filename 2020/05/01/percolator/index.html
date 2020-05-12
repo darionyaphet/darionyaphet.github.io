@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>percolator | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-05-01</div></div></div><div class="container post-header"><h1>percolator</h1></div><div class="container post-content"><p><strong>Google Percolator</strong></p>
+<p><code>Percolator</code> is Google’s internal-only system used to make incremental updates to the Google search index. Google published its architecture in 2010. Percolator achieved a 50% reduction in the delay between page crawling and page availability in the search index, in comparison to the MapReduce-based batch processing system it replaced.</p>
+<p><code>Percolator</code> is designed on top of <code>BigTable</code>, Google’s original wide-column NoSQL store first introduced to the world in 2006. It adds cross-shard ACID transactions using a <code>two-phase commit protocol</code> on top of BigTable’s single row atomicity. This enhancement was necessary because the process of updating an index is now divided into multiple concurrent transactions.</p>
+<p><em>Isolation Levels &amp; Time Tracking</em></p>
+<p><code>Percolator</code> provides <code>Snapshot Isolation</code>, implemented using <code>MVCC</code> and a monotonically increasing timestamp allocated by a Timestamp Oracle. Every transaction requires contacting this <code>Oracle</code> twice, thus making the scalability and availability of this component a significant concern.</p>
+<p><em>Practical Implications</em></p>
+<p>As highlighted in the <code>Percolator</code> paper itself, it’s design is not suitable for an OLTP database where user-facing transactions have to be processed with low latency.</p>
+<hr>
+<p>倒排索引是Google搜索引擎中最为关键的技术之一。应对海量数据时，高效的索引创建和索引的实时更新都是必须解决的难题。Google设计了<code>MapReduece</code>系统解决了海量数据索引创建的问题，但并没有解决增量数据的实时更新问题。</p>
+<p>因此，Google设计<code>Percolator</code>的初衷是：<code>支持海量数据存储、并行随机读写、跨行事务的分布式数据库。</code></p>
+<p>由于<code>Percolator</code>构建在不支持跨行事务的<code>BigTable</code>之上，基于<code>BigTable</code>达到<code>Percolator</code>的设计目标便是其要解决的核心问题。<code>Percolator</code> 提供了跨行、跨表的、基于快照隔离的<code>ACID</code>事务。</p>
+<p><em>缺点</em></p>
+<p><em>清理无效行的开销</em></p>
+<p><code>Percolator</code>系统还需要一组purge后台进程，把那些没有任何事务可以看到的行版本清除掉，以及清除掉那些被删除掉的行。由于行的所有版本都是存储在big table系统的数据表中的，所以后台的purge 任务也会对<code>BigTable</code>系统构成很大的负载。这个问题是PostgreSQL也有的问题。Innodb没有这个问题是因为数据表上面永远只有最新版本的行，老版本的行是通过undo日志临时生成的。Innodb Undo日志集中存放在undo表空间中，清理的代价要低很多。</p>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://medium.com/yugabyte/implementing-distributed-transactions-the-google-way-percolator-vs-spanner-6cbccfc1f2ed" target="_blank" rel="noopener">Implementing Distributed Transactions the Google Way: Percolator vs. Spanner</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/59115828" target="_blank" rel="noopener">Google Percolator 事务模型的利弊分析</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

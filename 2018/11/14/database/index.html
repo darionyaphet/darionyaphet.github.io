@@ -8,9 +8,41 @@
 </ul>
 <p><strong>Snapshot Isolation</strong></p>
 <hr>
+<p>表膨胀是指表的数据和索引所占文件系统的空间，在有效数据量并未发生大的变化的情况下，不断增大。</p>
+<p>表膨胀的直接触发因素是表上的大量更新，如全表的update操作、大量的insert+delete操作等。而我们知道，PG在更新数据时，是不直接删除老数据的。一个update操作执行后，被更改的数据的旧版本也被保留下来，直到对表做vacuum操作的时候，才考虑回收旧版本。做数据更新时，这些旧版本不及时回收就会造成表膨胀。</p>
+<hr>
+<p><strong>MVCC</strong></p>
+<p>如果数据库中的所有事务都是串行执行的，那么它非常容易成为整个应用的性能瓶颈，虽然说没法水平扩展的节点在最后都会成为瓶颈，但是串行执行事务的数据库会加速这一过程；而并发（Concurrency）使一切事情的发生都有了可能，它能够解决一定的性能问题，但是它会带来更多诡异的错误。</p>
+<p><code>MVCC(Multiversion Concurrency Control) 多版本并发控制</code>是数据库引擎实现中常用的处理读写冲突的手段，目的在于提高数据库高并发场景下的吞吐性能。<code>MVCC</code>意图解决读写锁造成的多个、长时间的读操作饿死写操作问题。每个事务读到的数据项都是一个历史快照（snapshot)并依赖于实现的隔离级别。写操作不覆盖已有数据项，而是创建一个新的版本，直至所在操作提交时才变为可见。快照隔离使得事物看到它启动时的数据状态。</p>
+<p><code>MVCC</code>使用<code>时间戳</code>或<code>自动增量的事务ID</code>实现<code>事务一致性</code>。MVCC可以确保每个事务(T)通常不必“读等待”数据库对象(P)。这通过对象有多个版本，每个版本有创建时间戳 与废止时间戳 (WTS)做到的。</p>
+<p>事务Ti读取对象P时，只有比事务Ti的时间戳早，但是时间上最接近事务Ti的对象版本可见，且该版本应该没有被废止。<br>事务Ti写入对象P时，如果还有事务Tk要写入同一对象，则(Ti)必须早于(Tk)，即 (Ti) &lt; (Tk)，才能成功。</p>
+<p>MVCC可以无锁实现。</p>
+<hr>
+<p><strong>Volcano</strong></p>
+<p>Volcano-An Extensible and Parallel Query Evaluation System</p>
+<p>Volcano重点关注的是扩展性和并行性。Volcano是第一个融合扩展性和并行性的查询引擎。</p>
+<p>扩展性：查询引擎可以比较容易的应用在不同数据库系统里，通过简单修改就可以适配新数据类型，新算法，新算子。</p>
+<p>并行性：不同的算子可以很方便的并行运行，不同的数据分片可以很方便的被并行处理。</p>
+<p>Volcano将系统设计分为两个部分，下面的模块是文件系统，上面模块是查询处理系统。</p>
+<p>Volcano文件系统包括缓存管理，文件记录，B树索引等。底层模块提供机制，上层调用指定策略决定如何组合底层的机制来解决问题，这也是扩展性的一个方面。</p>
+<p>Volcano查询处理系统中每个算子都应该实现成一个iterator，有三个接口，分别是open/next/close，其中open可以做一些资源初始化，比如打开文件，next将游标向前推进返回Next-Record，close负责销毁资源。每个算子并不关心其他算子是干什么或者怎么干的，只要实现这三个接口大家就可以配合工作。</p>
+<p>易于添加新的iterator：整个算子体系就是一堆实现了open/next/close迭代器的组合，那么想实现了一个新的算子放入这个体系也变得非常容易，并且对系统其它部分无感知。</p>
+<p>易于异构化，并行化：本质上上游的iterator只关心下游iterator送来的数据，至于该下游iterator是如何得到这些数据的则完全不关心，所以这就使得我们很容易将iterator放到不同的CPU（分布式系统里面就是不同计算节点）运行，简化了并行化的复杂度，并可以将并行化做成标准流程，为所有算子共享。</p>
+<p>易于重新组合算子：查询优化中可以基于一些重写规则或者统计信息来重新定义各个算子执行的顺序，从而达到优化查询的目的，而Volcano体系结构中，允许各个算子自由组合，那么这就使得查询优化变得更加容易实现。</p>
+<p><code>input</code>就是来自下游iterator的输出，理论上是一片字节数据，解释这些数据靠的是支持函数。</p>
+<p><code>支持函数(support function)</code>作用上可以理解为虚拟文件系统的file_operations结构，里面以函数指针的形式规定了众多文件操作声明。</p>
+<p><code>chose plan operator</code>执行过程中允许动态的选择一些执行路径。动态执行不是通过iterator加一层实现的，而是在查询优化阶段就确定了，而查询优化阶段跟执行阶段是并列的，并不从属。</p>
+<p><code>exchange operator</code>用于自动并行化的标准算子。并行有两类，一类是将数据分成很多分区，每个分区执行一样的operator树，这些执行是并行的，最后结果合并起来；一类是数据只有一份，要执行的各个算子之间可以并行。</p>
+<p>Volcano中，并行化operator交互使用的就是exchange operator，不管是单机或者多机。exchange 可以理解成一个异步信号，当这个信号发出后，接收方就开始干活，发送方不会停下来等待结果，而是继续前进，当接收方干完活返回结果的时候，发送方按照预定逻辑处理就可以了。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://blog.csdn.net/songchuwang1868/article/details/97630005" target="_blank" rel="noopener">隔离级别、SI 和 SSI（四种隔离级别和快照隔离）</a></li>
+<li><a href="https://draveness.me/database-concurrency-control/" target="_blank" rel="noopener">浅谈数据库并发控制 - 锁和 MVCC</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/多版本并发控制" target="_blank" rel="noopener">多版本并发控制</a></li>
+<li><a href="http://mysql.taobao.org/monthly/2015/12/07/" target="_blank" rel="noopener">PgSQL · 答疑解惑 · 表膨胀</a></li>
+<li><a href="http://mysql.taobao.org/monthly/2017/10/01/" target="_blank" rel="noopener">PgSQL · 特性分析 · MVCC机制浅析</a></li>
+<li><a href="https://cloud.tencent.com/developer/news/128684" target="_blank" rel="noopener">读后感：Volcano-An Extensible and Parallel Query Evaluation System</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

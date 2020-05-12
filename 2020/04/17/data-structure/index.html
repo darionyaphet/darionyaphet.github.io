@@ -31,12 +31,32 @@
 <li>retire list:被这个线程删除的内存对象，但还没有释放。</li>
 </ul>
 <hr>
+<p><strong>红黑树</strong></p>
+<p>红黑树本质上是一颗二叉查找树，它是在二叉查找树的基础上给节点增加红黑颜色属性以及五条约束的性质。</p>
+<p>红黑树与二叉查找树的查找操作是一模一样的，所以掌握了二叉查找树之后，学习红黑树就只剩下增加及删除节点了。</p>
+<p>红黑树（Red-Black-Tree）是在 1972 年由鲁道夫·贝尔发明，被称为<code>对称二叉 B树</code>，是一种由红黑节点组成并能自平衡的二叉查找树。红黑树保证了最坏情形下在 O(logn) 时间复杂度内完成查找、插入及删除操作；<br>红黑树另外一个熟知的应用场景就是面试了，红黑树作为数据结构当中最典型的一种树，常被拿来当面试题考查树的相关知识。</p>
+<p><em>性质</em></p>
+<ol>
+<li>每个节点或者是黑色或者是红色。</li>
+<li>根节点是黑色。</li>
+<li>每个叶子节点（null）是黑色。</li>
+<li>如果一个节点是红色，则它的子节点必须是黑色，即两个红色节点不能直接相连。</li>
+<li>从一个节点到该节点的子孙节点的所有路径上包含相同数目的黑色节点。</li>
+</ol>
+<p>二叉查找树遍历</p>
+<p>前序遍历：先访问根节点然后遍历左子树，最后遍历右子树。</p>
+<p>中序遍历：先遍历左子树然后访问根节点，最后遍历右子树。</p>
+<p>后序遍历：先遍历左子树然后遍历右子树，最后访问根节点。</p>
+<p>二叉查找树并非平衡树，它只限制了左右子树与根点之间的大小关系，只有在平衡二叉查找树时，其时间复杂度才能达到 <em>O(logn)</em>，并且在极端情况下它甚至会退化成链表；</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://en.wikipedia.org/wiki/ABA_problem" target="_blank" rel="noopener">ABA problem</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Hazard_pointer" target="_blank" rel="noopener">Hazard pointer</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Non-blocking_algorithm" target="_blank" rel="noopener">Non-blocking algorithm</a></li>
 <li><a href="https://en.wikipedia.org/wiki/False_sharing" target="_blank" rel="noopener">False sharing</a></li>
+<li><a href="https://juejin.im/post/5dff59cb6fb9a0163c53ce1d" target="_blank" rel="noopener">通俗易懂的红黑树图解(上)</a></li>
+<li><a href="https://juejin.im/post/5e8b28d551882573c66cfbc4" target="_blank" rel="noopener">通俗易懂的红黑树图解(下)</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

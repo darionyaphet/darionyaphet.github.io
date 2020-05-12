@@ -50,7 +50,9 @@
 <p>但是该事务之后新的事务所产生的数据对本次事务是不可见的.</p>
 <hr>
 <p><strong>Percolator</strong></p>
-<p>Percolator提供跨表、跨行的分布式事务，隔离级别为快照隔离（snapshot-isolation）。快照隔离级别中，如果两个事务同时修改同一个行，那么事务冲突，其中一个事务必须回滚然后重试。</p>
+<p><code>Percolator</code> 是为了提升Google的搜索引擎索引系统效率而设计的。主要是用于增量事务，并且延迟不敏感，因为 <code>Percolator</code>里很多设计都是高延时的，所以要求应用不太在意延时。</p>
+<p><code>Percolator</code> 事务依赖 <code>Bigtable</code> 时间戳的多版本数据保存和事务。每个Value都绑定了一系列元数据列，写入到 <code>Bigtable</code> 的同一个本地组（Locality group）里。因为一个 Locality group 的物理部署在同一组 <code>Bigtable</code> 节点上，这样可以实现对同一个 Locality group 的多列进行原子操作，也能加快关联数据的查找速度。</p>
+<p><code>Percolator</code> 提供跨表、跨行的分布式事务，隔离级别为快照隔离（snapshot-isolation）。快照隔离级别中，如果两个事务同时修改同一个行，那么事务冲突，其中一个事务必须回滚然后重试。</p>
 <p><code>Percolator</code>中为事务提供支持的元数据是列的方式存储在Bigtable对应的行中。</p>
 <p>可以认为Percolator为每行记录都新增了一些隐藏列，这些列保证了事务的正确执行或回滚。</p>
 <p>快照隔离需要能够有效的处理写冲突，当有一个事务A和一个事务B同时写入同一个cell时，最多只有一个能提交成功。</p>
@@ -145,10 +147,16 @@
 <p>在一个分布式系统中，有时候无法确定一个事件发生于另一个事件之前。而<code>发生之前</code>的关系只是系统中事件的一个偏序关系。我们发现由于人们没有弄清楚这一点而导致一些问题问题的出现。</p>
 <p>我们讨论偏序关系，并给出一个分布式算法将其拓展为所有事件的全序关系。这个算法能够提供有效的机制来实现一个分布式系统。我们通过一个解决同步问题的简单方法来说明它的用法。不幸的是，如果通过这个算法得出的顺序和用于感知的不一样，可能会发生异常的行为。这可以通过引入真实的物理时钟来避免。我们描述了同于同步这些时钟的简单方法，并且推导出了时钟偏差的范围。</p>
 <hr>
+<p><strong>Spanner</strong></p>
+<p><code>Spanner</code> 的特点是基于时间戳多版本数据库，查询语言基于SQL，支持分布式事务，支持跨行事务，支持原子更新，副本管理可以随着数据量增长动态分配，也可以由应用程序控制。数据在数据中心中的迁移对应用层是透明的。</p>
+<p><code>Spanner</code> 设计有两个难点:对外的读写一致性，全局读的强一致性，即某个时间点在整个集群任意节点读取数据都是一致的。</p>
+<hr>
 <p><strong>向量时钟</strong></p>
 <p><code>向量时钟</code>是在 <code>Lamport 时间戳</code>基础上演进的另一种逻辑时钟方法，它通过向量结构不但记录本节点的 <code>Lamport 时间戳</code>，同时也记录了其他节点的 <code>Lamport 时间戳</code>，因此能够很好描述同时发生关系以及事件的因果关系。</p>
 <p>PS：因果关系指的是时序关系，即时间的前后，并不是逻辑上的原因和结果。时间戳如无特别说明，都指的是逻辑时钟的时间戳，不是物理时钟的时间戳。</p>
 <p><code>Lamport 逻辑时钟算法</code>，提供了一种判断分布式系统中事件全序关系的方法：如果 a -&gt; b，那么 C(a) &lt; C(b)，但是 C(a) &lt; C(b) 并不能说明 a -&gt; b。也就是说C(a) &lt; C(b) 是 a -&gt; b 的必要不充分条件，我们不能通过 Lamport 时间戳对事件 a、b 的因果关系进行判断。</p>
+<hr>
+<p><strong>一致性</strong></p>
 <hr>
 <p>Reference:</p>
 <ol>
@@ -163,6 +171,7 @@
 <li><a href="https://lamport.azurewebsites.net/pubs/time-clocks.pdf" target="_blank" rel="noopener">Time, Clocks and the Ordering of Events in a Distributed System</a></li>
 <li><a href="https://www.cnblogs.com/hzmark/p/Time_Clocks_Ordering.html" target="_blank" rel="noopener">译 Time, Clocks, and the Ordering of Events in a Distributed System</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/56886156" target="_blank" rel="noopener">分布式系统：向量时钟</a></li>
+<li><a href="https://owent.net/2019/1902.html" target="_blank" rel="noopener">Google去中心化分布式系统论文三件套(Percolator、Spanner、F1)读后感</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

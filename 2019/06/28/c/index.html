@@ -30,6 +30,57 @@
 <p>C 语句可分为以下五类：表达式语句、函数调用语句、控制语句、复合语句和空语句。</p>
 <p>表达式语句：表达式语句由表达式加上分号组成。执行表达式语句就是计算表达式的值。</p>
 <p>函数调用语句：由函数名、实际参数加上分号组成。执行函数语句就是调用函数体并把实际参数赋予函数定义中的形式参数，然后执行被调函数体中的语句，求取函数值。</p>
+<p>控制语句：控制语句用于控制程序的流程， 以实现程序的各种结构方式。<br>Ｃ语言有九种控制语句。 可分成以下三类：</p>
+<ol>
+<li>条件判断语句：if 语句、switch 语句；</li>
+<li>循环执行语句：do while 语句、while 语句、for 语句；</li>
+<li>转向语句：break 语句、goto 语句、continue 语句、return 语句。</li>
+</ol>
+<p>复合语句：把多个语句用括号{}括起来组成的一个语句称复合语句。</p>
+<p>空语句：只有分号组成的语句称为空语句。</p>
+<p>赋值语句：赋值语句是由赋值表达式再加上分号构成的表达式语句。 <code>变量=表达式;</code></p>
+<p><strong>关系运算符和表达式</strong></p>
+<p>关系运算符及其优先次序</p>
+<p>Ｃ语言中提供了三种逻辑运算符：<code>&amp;&amp;</code>, <code>||</code>和 <code>!</code></p>
+<p>与运算符&amp;&amp;和或运算符||均为双目运算符。具有左结合性。非运算符!为单目运算符，具有右结合性。</p>
+<p><strong>条件运算符和条件表达式</strong></p>
+<p>条件运算符为?和：，是一个三目运算符，即有三个参与运算的量。</p>
+<p><code>表达式 1? 表达式 2： 表达式 3</code></p>
+<p>如果表达式 1 的值为真，则以表达式 2 的值作为条件表达式的值，否则以表达式 2 的值作为整个条件表达式的值。</p>
+<p><strong>switch语句</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">switch(表达式)&#123;</span><br><span class="line"> case 常量表达式 1: 语句 1;</span><br><span class="line"> case 常量表达式 2: 语句 2;</span><br><span class="line"> …</span><br><span class="line"> case 常量表达式 n: 语句 n;</span><br><span class="line"> default : 语句 n+1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>函数</strong></p>
+<p>Ｃ程序由函数组成，函数是Ｃ源程序的基本模块。</p>
+<p>从函数定义的角度看，函数可分为库函数和用户定义函数两种。</p>
+<p>Ｃ语言的函数兼有其它语言中的函数和过程两种功能，把函数分为有返回值函数和无返回值函数两种。</p>
+<p>从主调函数和被调函数之间数据传送的角度看又可分为无参函数和有参函数两种。</p>
+<p>一个函数在它的函数体内调用自身称为递归调用。</p>
+<p>局部变量和全局变量</p>
+<p>局部变量：局部变量是在函数内作定义说明的，作用域仅限于函数内。</p>
+<p>全局变量：它是在函数外部定义的变量。它不属于哪一个函数，它属于一个源程序文件。</p>
+<p>static声明局部变量</p>
+<p>C 语言允许将局部变量得值放在 CPU 中的寄存器中，这种变量叫“寄存器变量”，用关键字 register 作声明。</p>
+<p><strong>预处理命令</strong></p>
+<p>预处理是指在进行编译的第一遍扫描之前所作的工作。</p>
+<p>宏定义：</p>
+<p><em>无参宏定义</em></p>
+<p>一般形式为：<code>#define 标识符 字符串</code></p>
+<p><code>#</code>表示这是一条预处理命令。 <code>define</code>为宏定义命令。</p>
+<p><em>带参宏定义</em></p>
+<p>对带参数的宏，在调用中，不仅要宏展开，而且要用实参去代换形参。</p>
+<p>一般形式为：<code>#define 宏名(形参表) 字符串</code>。带参宏定义中，宏名和形参表之间不能有空格出现。</p>
+<p><em>文件包含</em></p>
+<p>一般形式为：<code>#include &quot;文件名&quot;</code></p>
+<p>文件包含命令的功能是把指定的文件插入该命令行位置取代该命令行，从而把指定的文件和当前的源程序文件连成一个源文件。</p>
+<p><em>条件编译</em></p>
+<p>第一种形式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifdef 标识符</span><br><span class="line"> 程序段 1</span><br><span class="line">#else</span><br><span class="line"> 程序段 2</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>如果标识符已被 #define 命令定义过则对程序段 1 进行编译；否则对程序段 2 进行编译。</p>
+<p>第二种形式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#ifndef 标识符</span><br><span class="line">程序段 1</span><br><span class="line">#else</span><br><span class="line"> 程序段 2</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>如果标识符未被#define 命令定义过则对程序段 1 进行编译，否则对程序段 2 进行编译。</p>
+<p><strong>指针</strong></p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="">C语言程序设计(第四版).pdf</a></li>
