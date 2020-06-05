@@ -1,4 +1,7 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>cpp | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-06-28</div></div></div><div class="container post-header"><h1>cpp</h1></div><div class="container post-content"><p><strong><strong>attribute</strong></strong></p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>cpp | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-06-28</div></div></div><div class="container post-header"><h1>cpp</h1></div><div class="container post-content"><p><strong>.inl 文件</strong></p>
+<p>内联函数较多的情况下，为了避免头文件过长，可以将所有的内联函数定义移到一个单独的文件中去，然后再用#include指令将它包含到类声明的后面（类的头文件的底部）。这样的文件称为一个内联函数定义文件。inl文件中也可以包含头文件的，因为内联函数中可能包含其他文件中定义的东西。</p>
+<hr>
+<p><strong><strong>attribute</strong></strong></p>
 <p><code>__attribute__</code> 可以设置函数属性（Function Attribute ）、变量属性（Variable Attribute ）和类型属性（Type Attribute ）。</p>
 <p><code>__attribute__</code> 书写特征是：<code>__attribute__</code> 前后都有两个下划线，并切后面会紧跟一对原括弧，括弧里面是相应的参数。</p>
 <p><code>__attribute__</code> 语法格式为：<strong>attribute</strong> ((attribute-list))</p>
@@ -231,6 +234,82 @@
 <p>同一声明上，弱于其他 alignas 的有效的非零对齐被忽略。</p>
 <p>始终忽略 alignas(0)。</p>
 <hr>
+<p><code>std::function</code> 是一个可调用对象包装器，是一个类模板。它可以用统一的方式处理函数、函数对象、函数指针，并允许保存和延迟它们的执行。</p>
+<p><code>std::function</code>可以取代函数指针的作用，可以延迟函数的执行，适合作为回调函数使用。</p>
+<p><code>std::bind</code> 看作一个通用的函数适配器，接受一个可调用对象，生成一个新的可调用对象来<code>适应</code>原对象参数列表。</p>
+<p><code>std::bind</code>将可调用对象与其参数一起进行绑定，绑定后的结果可以使用std::function保存。std::bind主要有两个作用：</p>
+<ul>
+<li>将可调用对象和其参数绑定成一个仿函数。</li>
+<li>只绑定部分参数，减少可调用对象传入的参数。（Carry化）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">void print_sum(int n1, int n2) &#123;</span><br><span class="line">    std::cout &lt;&lt; n1 + n2 &lt;&lt; &apos;\n&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    std::function&lt;void()&gt; f = std::bind(&amp;print_sum, 1, 1);</span><br><span class="line">    f();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>reference_wrapper</strong></p>
+<p><code>reference_wrapper</code> 将引用包装成一个对象，即引用的包装器；可以包裹一个指向对象或者指向函数指针的引用，既可以通过拷贝构造，也可以通过赋值构造；</p>
+<hr>
+<p><code>size_t</code> &amp; <code>ssize_t</code></p>
+<p><code>size_t</code>是一些C/C++标准在<code>stddef.h</code>中定义的，也是一个整型。<code>size_t</code>的真实类型与操作系统有关。<code>size_t</code>一般用来表示一种计数。sizeof操作符的结果类型是<code>size_t</code>，该类型保证能容纳实现所建立的最大对象的字节大小。</p>
+<p>32位系统中被普遍定义为：typedef unsigned int size_t;为无符号整型，长度为4个字节。64位系统中定义为：typedef unsigned long size_t;为无符号长整型，长度为8个字节。</p>
+<p><code>ssize_t</code>这个数据类型用来表示可以被执行读写操作的数据块的大小.它和<code>size_t</code>类似,但必需是signed.意即：它表示的是signed <code>size_t</code>类型的。</p>
+<hr>
+<p><strong>Lambda表达式</strong></p>
+<p><code>Lambda 表达式</code>用于定义并创建匿名的函数对象，形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[函数对象参数] (操作符重载函数参数) mutable 或 exception 声明 -&gt; 返回值类型 &#123;函数体&#125;</span><br></pre></td></tr></table></figure>
+<p><em>函数对象参数</em>是传递给编译器自动生成的函数对象类的构造函数的。</p>
+<p><em>操作符重载函数参数</em></p>
+<p><em>mutable 或 exception 声明</em></p>
+<p><em>-&gt; 返回值类型</em></p>
+<p><em>{函数体}</em> 标识函数的实现，不能省略，但可以为空。</p>
+<hr>
+<p><strong>万能引用(Universal Reference)</strong></p>
+<p>使用 <code>T&amp;&amp;</code> 类型的形参既能绑定右值，又能绑定左值。只有发生类型推导的时候，<code>T&amp;&amp;</code>才表示万能引用；否则，表示右值引用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">template&lt;typename T&gt;</span><br><span class="line">void func(T &amp;&amp;param) &#123;</span><br><span class="line">    std::cout &lt;&lt; param &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    int num = 2019;</span><br><span class="line">    func(num);</span><br><span class="line">    func(2020);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>引用折叠(Universal Collapse)</strong></p>
+<p>一个模板函数，根据定义的形参和传入的实参的类型，可以有下面四中组合：</p>
+<ul>
+<li>左值-左值: 形参是左值引用，传入的实参是左值引用</li>
+<li>左值-右值: 形参是左值引用，传入的实参是右值引用</li>
+<li>右值-左值: 形参是右值引用，传入的实参是左值引用</li>
+<li>右值-右值: 形参是右值引用，传入的实参是右值引用</li>
+</ul>
+<p>C++中不允许对引用再进行引用，所有的折叠引用最终都代表一个引用。</p>
+<blockquote>
+<p>规则是：如果任一引用为左值引用，则结果为左值引用。否则（即两个都是右值引用），结果为右值引用。</p>
+</blockquote>
+<hr>
+<p><strong>完美转发(Perfect Forwarding)</strong></p>
+<hr>
+<p><strong>Tips</strong></p>
+<table>
+<thead>
+<tr>
+<th>Option name</th>
+<th>Description                                   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>auto</td>
+<td>for(auto x:range)会拷贝一份range元素，而不会改变range中元素</td>
+</tr>
+<tr>
+<td>auto&amp;</td>
+<td>需要修改range中元素 使用for(auto&amp; x:range) </td>
+</tr>
+<tr>
+<td>const auto&amp;</td>
+<td>只读取range中元素时使用，for(const auto&amp;x:range)不会进行拷贝，也不会修改range</td>
+</tr>
+<tr>
+<td>const auto</td>
+<td>需要拷贝元素，但不可修改拷贝出来的值时使用。for(const auto x:range)避免拷贝开销 </td>
+</tr>
+</tbody>
+</table>
+<p><code>compare_exchange_weak</code>和<code>compare_exchange_strong</code>则是著名的<code>CAS</code>。参数会要求在这里传入期待的数值和新的数值。对比变量的值和期待的值是否一致，如果是，则替换为新数值。否则将变量的值和期待的值交换。</p>
+<p><code>compare_exchange_weak</code>版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.cnblogs.com/jiangbin/p/6986511.html" target="_blank" rel="noopener">C++中的RAII介绍</a></li>
@@ -245,6 +324,7 @@
 <li><a href="https://tyzual.com/2019/02/11/mem-order/" target="_blank" rel="noopener">C++11 中的内存模型</a></li>
 <li><a href="https://www.cnblogs.com/navono007/p/5746048.html" target="_blank" rel="noopener">C++11内存模型的粗略解释</a></li>
 <li><a href="https://zh.cppreference.com/w/cpp/language/alignas" target="_blank" rel="noopener">alignas 说明符 (C++11 起)</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1387860" target="_blank" rel="noopener">C++中的万能引用和完美转发</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

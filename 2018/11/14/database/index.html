@@ -1,4 +1,12 @@
 <!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>database | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2018-11-14</div></div></div><div class="container post-header"><h1>database</h1></div><div class="container post-content"><p>事务是关系数据库操作的逻辑单位。事务的存在，是为从数据库层面保证数据的安全性，减轻应用程序的负担。</p>
+<p><strong>数据库事务性</strong></p>
+<p>事务应该具有4个属性：原子性、一致性、隔离性、持久性。</p>
+<ol>
+<li>原子性（Atomicity）：事务作为一个整体被执行，其中的操作要么全部被执行，要么都不执行。</li>
+<li>一致性（Consistency）：</li>
+<li>隔离性（Isolation）：</li>
+<li>持久性（Durability）：</li>
+</ol>
 <p><strong>隔离级别</strong></p>
 <ul>
 <li>读未提交（Read Uncommitted）：会出现脏读（Dirty Read），事务会读到另一个事务的中间状态。</li>
@@ -35,6 +43,23 @@
 <p><code>exchange operator</code>用于自动并行化的标准算子。并行有两类，一类是将数据分成很多分区，每个分区执行一样的operator树，这些执行是并行的，最后结果合并起来；一类是数据只有一份，要执行的各个算子之间可以并行。</p>
 <p>Volcano中，并行化operator交互使用的就是exchange operator，不管是单机或者多机。exchange 可以理解成一个异步信号，当这个信号发出后，接收方就开始干活，发送方不会停下来等待结果，而是继续前进，当接收方干完活返回结果的时候，发送方按照预定逻辑处理就可以了。</p>
 <hr>
+<p><strong>Volcano Model</strong></p>
+<p>Volcano Model是一种经典的基于行的流式迭代模型(Row-BasedStreaming Iterator Model)，主流关系数据库中都采用了这种模型。</p>
+<p>在Volcano模型中，所有的代数运算符(operator)都被看成是一个迭代器，它们都提供一组简单的接口：open()—next()—close()，查询计划树由一个个这样的关系运算符组成，每一次的next()调用，运算符就返回一行(Row)，每一个运算符的next()都有自己的流控逻辑，数据通过运算符自上而下的next()嵌套调用而被动的进行拉取。</p>
+<p>火山模型中每一个运算符都将下层的输入看成是一张表，next()接口的一次调用就获取表中的一行数据，这样设计的优点是：</p>
+<ol>
+<li>每个运算符之间的代数计算是相互独立的，并且运算符可以伴随查询关系的变化出现在查询计划树的任意位置，这使得运算符的算法实现变得简单并且富有拓展性。</li>
+<li>数据以row的形式在运算符之间流动，只要没有sort之类破坏流水性的运算出现，每个运算符仅需要很少的buffer资源就可以很好的运行起来，非常的节省内存资源。</li>
+</ol>
+<p>但是这种运算符的嵌套模型也有它的缺点：</p>
+<ol>
+<li>火山模型的流控是一种被动拉取数据的过程，每行数据流向每一个运算符都需要额外的流控操作，所以数据在操作符之间的流动带来了很多冗余的流控指令。</li>
+<li>运算符之间的next()调用带来了很深的虚函数嵌套，编译器无法对虚函数进行inline优化，每一次虚函数的调用都需要查找虚函数表，同时也带来了更多的分支指令，复杂的虚函数嵌套对CPU的分支预测非常不友好，很容易因为预测失败而导致CPU流水线变得混乱。这些因素都会导致CPU执行效率低下。</li>
+</ol>
+<p>一个查询的直接开销主要取决于两个因素：第一个因素就是<code>跨存储和计算操作符之间的数据传输开销</code>，另一个因素就是<code>数据运算所花费的时间</code>。</p>
+<p><strong>推送模型</strong></p>
+<p><strong>拉取&amp;推送模型融合</strong></p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://blog.csdn.net/songchuwang1868/article/details/97630005" target="_blank" rel="noopener">隔离级别、SI 和 SSI（四种隔离级别和快照隔离）</a></li>
@@ -43,6 +68,7 @@
 <li><a href="http://mysql.taobao.org/monthly/2015/12/07/" target="_blank" rel="noopener">PgSQL · 答疑解惑 · 表膨胀</a></li>
 <li><a href="http://mysql.taobao.org/monthly/2017/10/01/" target="_blank" rel="noopener">PgSQL · 特性分析 · MVCC机制浅析</a></li>
 <li><a href="https://cloud.tencent.com/developer/news/128684" target="_blank" rel="noopener">读后感：Volcano-An Extensible and Parallel Query Evaluation System</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/41562506" target="_blank" rel="noopener">数据库查询引擎的进化之路</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

@@ -49,12 +49,12 @@
 <p><strong>Git 分支</strong></p>
 <p><code>git commit</code> 新建提交对象前，Git 会先计算每一个子目录校验和，在 Git 仓库中将目录保存为树对象。<code>Git</code> 创建的提交对象，除了包含相关提交信息以外，还包含着指向这个树对象的指针。</p>
 <p><code>Git</code> 的分支，本质上仅仅是指向提交对象的可变指针，提交对象会包含一个指向上次提交对象的指针。默认分支名字是 <code>master</code>。 特殊指针 <code>HEAD</code> 指向当前所在的本地分支。</p>
-<p><img src="https://darionyaphet.github.io/2018/08/01/18333fig0302-tn.png" alt=""></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/git/18333fig0302-tn.png" alt=""></p>
 <p>分支实际上仅是一个包含所指对象校验和的文件，所以创建和销毁一个分支就变得非常廉价。<code>git branch [branch-name]</code> 创建一个新的分支指针。<code>HEAD</code>指针是一个指向你正在工作中的本地分支的指针。<code>git branch</code> 仅仅是建立了一个新分支，但不会自动切换到这个分支。</p>
 <p><code>git checkout [branch-name]</code> 切换到其他分支。每次提交后 HEAD 随着分支一起向前移动。</p>
 <hr>
 <p><strong>git-flow 的工作流程</strong></p>
-<p><img src="https://darionyaphet.github.io/2018/08/01/git-flow.png" alt="Git Flow"></p>
+<p><img src="https://darionyaphet.github.io/2018/08/01/git/git-flow.png" alt="Git Flow"></p>
 <p>团队开发中使用版本控制系统时，商定一个统一的工作流程是至关重要的。<br><code>git-flow</code> 并不是要替代 <code>Git</code>，它仅仅是非常聪明有效地把标准的 <code>Git</code> 命令用脚本组合了起来。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/tmp/git.flow » git flow init</span><br><span class="line"></span><br><span class="line">Initialized empty Git repository in /private/tmp/git.flow/.git/</span><br><span class="line">No branches exist yet. Base branches must be created now.</span><br><span class="line">Branch name for production releases: [master]</span><br><span class="line">Branch name for &quot;next release&quot; development: [develop]</span><br><span class="line"></span><br><span class="line">How to name your supporting branch prefixes?</span><br><span class="line">Feature branches? [feature/]</span><br><span class="line">Release branches? [release/]</span><br><span class="line">Hotfix branches? [hotfix/]</span><br><span class="line">Support branches? [support/]</span><br><span class="line">Version tag prefix? []</span><br></pre></td></tr></table></figure>
 <p><code>git-flow</code> 模式会预设两个主分支在仓库中：</p>
@@ -79,6 +79,12 @@
 <li><code>Pull Request</code>被接受，合并进<code>master</code>，重新部署后，原来你拉出来的那个分支就被删除。</li>
 </ul>
 <p><code>Gitlab flow</code> 是 Git flow 与 Github flow 的综合。它吸取了两者的优点，既有适应不同开发环境的弹性，又有单一主分支的简单和便利。它是 Gitlab.com 推荐的做法。</p>
+<hr>
+<p><strong>cherry-pick</strong></p>
+<p>对于多分支的代码库，将代码从一个分支转移到另一个分支是常见需求。一种情况是，你需要另一个分支的所有代码变动，那么就采用合并(merge)，另一种情况是，你只需要部分代码变动（某几个提交），这时可以采用 Cherry pick。</p>
+<p><code>cherry-pick</code>的作用就是将指定的提交应用于其他分支。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick &lt;commitHash&gt;</span><br></pre></td></tr></table></figure>
+<p>git cherry-pick命令的参数不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。</p>
 <hr>
 <p><strong>Git LFS</strong></p>
 <p><code>Git LFS</code>（Large File Storage, 大文件存储）是可以把任意文件存在 <code>Git</code> 仓库之外，而在 <code>Git</code> 仓库中用一个占用空间 1KB 不到的文本指针来代替的小工具。这样可以减小 <code>Git</code> 仓库本身的体积，使克隆 <code>Git</code> 仓库的速度加快，也使得 <code>Git</code> 不会因为仓库中充满大文件而损失性能。默认情况下，只有当前签出的 <code>commit</code> 下的 LFS 对象的当前版本会被下载。</p>
@@ -134,6 +140,7 @@
 <li><a href="https://www.cnblogs.com/ludashi/p/8052739.html" target="_blank" rel="noopener">Git知识总览(一) 从 git clone 和 git status 谈起</a></li>
 <li><a href="https://git-scm.com/book/zh/v2/自定义-Git-Git-钩子" target="_blank" rel="noopener">自定义-Git-Git-钩子</a></li>
 <li><a href="https://mp.weixin.qq.com/s?__biz=MjM5OTA1MDUyMA==&amp;mid=2655438427&amp;idx=1&amp;sn=b9b0e5c3c6a81452fa918615e73f8d3a" target="_blank" rel="noopener">大白话解释 Git 和 GitHub</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html" target="_blank" rel="noopener">git cherry-pick 教程</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

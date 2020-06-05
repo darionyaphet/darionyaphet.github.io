@@ -12,6 +12,14 @@
 <p>生成如下的LLVM IR：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">; ModuleID = &apos;multiply.c&apos;</span><br><span class="line">target datalayout = &quot;e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128&quot;</span><br><span class="line">target triple = &quot;x86_64-redhat-linux-gnu&quot;</span><br><span class="line"></span><br><span class="line">; Function Attrs: nounwind uwtable</span><br><span class="line">define i32 @mult() #0 &#123;</span><br><span class="line">  %a = alloca i32, align 4</span><br><span class="line">  %b = alloca i32, align 4</span><br><span class="line">  %c = alloca i32, align 4</span><br><span class="line">  store i32 5, i32* %a, align 4</span><br><span class="line">  store i32 3, i32* %b, align 4</span><br><span class="line">  %1 = load i32* %a, align 4</span><br><span class="line">  %2 = load i32* %b, align 4</span><br><span class="line">  %3 = mul nsw i32 %1, %2</span><br><span class="line">  store i32 %3, i32* %c, align 4</span><br><span class="line">  %4 = load i32* %c, align 4</span><br><span class="line">  ret i32 %4</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">attributes #0 = &#123; nounwind uwtable &quot;less-precise-fpmad&quot;=&quot;false&quot; &quot;no-frame-pointer-elim&quot;=&quot;true&quot; &quot;no-frame-pointer-elim-non-leaf&quot; &quot;no-infs-fp-math&quot;=&quot;false&quot; &quot;no-nans-fp-math&quot;=&quot;false&quot; &quot;stack-protector-buffer-size&quot;=&quot;8&quot; &quot;unsafe-fp-math&quot;=&quot;false&quot; &quot;use-soft-float&quot;=&quot;false&quot; &#125;</span><br><span class="line"></span><br><span class="line">!llvm.ident = !&#123;!0&#125;</span><br><span class="line"></span><br><span class="line">!0 = metadata !&#123;metadata !&quot;clang version 3.4.2 (tags/RELEASE_34/dot2-final)&quot;&#125;</span><br></pre></td></tr></table></figure>
 <hr>
+<p><strong>LLVM IR 转换为 Bit Code</strong></p>
+<p><code>LLVM bitcode</code>由两部分组成：位流（可类比字节流）和将<code>LLVM IR</code>编码成位流的编码格式。</p>
+<p><code>llvm-as</code>是LLV汇编器，将 LLVM IR 转为 bitcode。为了将 <code>LLVM IR</code>转换为bitcode，引入区块（block）和记录（record）。</p>
+<p>区块表示位流的区域，记录由记录码和整数组成。</p>
+<hr>
+<p><strong>LLVM bitcode转换为目标平台汇编码</strong></p>
+<p><code>llc</code>将LLVM输入编译编译为特定架构的汇编语言</p>
+<hr>
 <p><strong>实现编译器前端</strong></p>
 <p>使用自定义的语言TOY，为其编写词法分析器和语法分析器，以及使用前端从抽象语法树生成IR代码。</p>
 <blockquote>
@@ -22,10 +30,227 @@
 <p>语法通过如下的推导规则来定义：非终结符号在左边，终结符号和非终结符的组合在右边；当遇到一个LHS，就会根据推导规则生成与之对应的RHS。</p>
 <p>一个算术表达式可以是一个数字常量：numeric_expr := number</p>
 <p>括号表达式会在左右括号之间包含一个表达式：paran_expr := ‘(‘ expression ‘)’</p>
+<p><strong>抽象语法树</strong></p>
+<p><code>抽象语法树(AST)</code>是编程语言的抽象语法结构的树形表示。</p>
+<p><code>语法分析器</code>根据语言的语法规则来解析代码</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>llvm-as</td>
+<td>将人类可读的 .ll 文件汇编成字节代码</td>
+</tr>
+<tr>
+<td>llvm-dis</td>
+<td>将字节代码文件反编成人类可读的 .ll 文件</td>
+</tr>
+<tr>
+<td>opt</td>
+<td>在一个字节代码文件上运行一系列的 LLVM 到 LLVM 的优化</td>
+</tr>
+<tr>
+<td>llc</td>
+<td>为一个字节代码文件生成本机器代码</td>
+</tr>
+<tr>
+<td>lli</td>
+<td>直接运行使用 JIT 编译器或者解释器编译成字节代码的程序</td>
+</tr>
+<tr>
+<td>llvm-link</td>
+<td>将几个字节代码文件连接成一个</td>
+</tr>
+<tr>
+<td>llvm-ar</td>
+<td>打包字节代码文件</td>
+</tr>
+<tr>
+<td>llvm-ranlib</td>
+<td>为 llvm-ar 打包的文件创建索引</td>
+</tr>
+<tr>
+<td>llvm-nm</td>
+<td>在 打印出LLVM中间格式或者object文件的符号表</td>
+</tr>
+<tr>
+<td>llvm-prof</td>
+<td>将 ‘llvmprof.out’ raw 数据格式化成人类可读的报告</td>
+</tr>
+<tr>
+<td>llvm-ld</td>
+<td>带有可装载的运行时优化支持的通用目标连接器</td>
+</tr>
+<tr>
+<td>llvm-config</td>
+<td>打印出配置时 LLVM 编译选项、库、等等</td>
+</tr>
+<tr>
+<td>llvmc</td>
+<td>一个通用的可定制的编译器驱动</td>
+</tr>
+<tr>
+<td>llvm-diff</td>
+<td>比较两个模块的结构</td>
+</tr>
+<tr>
+<td>bugpoint</td>
+<td>自动案例测试减速器</td>
+</tr>
+<tr>
+<td>llvm-extract</td>
+<td>从 LLVM 字节代码文件中解压出一个函数</td>
+</tr>
+<tr>
+<td>llvm-bcanalyzer</td>
+<td>字节代码分析器 （分析二进制编码本身，而不是它代表的程序）</td>
+</tr>
+<tr>
+<td>FileCheck</td>
+<td>灵活的文件验证器，广泛的被测试工具利用</td>
+</tr>
+<tr>
+<td>tblgen</td>
+<td>目标描述阅读器和生成器</td>
+</tr>
+<tr>
+<td>lit LLVM</td>
+<td>集成测试器，用于运行测试</td>
+</tr>
+<tr>
+<td>AddressSanitizer</td>
+<td>一个快速内存错误探测器</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADCE (Aggressive Dead Code Elimination)</td>
+<td>积极的死代码消除</td>
+</tr>
+<tr>
+<td>AST (Abstract Syntax Tree)</td>
+<td>抽象语法树</td>
+</tr>
+<tr>
+<td>BB Vectorization (Basic-Block Vectorization)</td>
+<td>基本块向量化</td>
+</tr>
+<tr>
+<td>BURS (Bottom Up Rewriting System)</td>
+<td>自底向上重写系统</td>
+</tr>
+<tr>
+<td>CSE (Common Subexpression Elimination)</td>
+<td>共同子表达式消除 例如 <code>(a+b)*(a+b)</code> 有两个相同的子表达式: <code>(a+b)</code>。这个优化使得只做一次加法然后执行乘法。</td>
+</tr>
+<tr>
+<td>DAG (Directed Acyclic Graph)</td>
+<td>有向无欢图</td>
+</tr>
+<tr>
+<td>DSE (Dead Store Elimination)</td>
+<td>可不达存储消除</td>
+</tr>
+<tr>
+<td>FCA (First Class Aggregate)</td>
+<td>第一类集合</td>
+</tr>
+<tr>
+<td>IPA (Inter-Procedural Analysis)</td>
+<td>过程间分析</td>
+</tr>
+<tr>
+<td>IPO</td>
+<td>过程间优化。引用到过程、函数和编译单元之间发生的大量代码优化。</td>
+</tr>
+<tr>
+<td>ISel</td>
+<td>指令选择</td>
+</tr>
+<tr>
+<td>LCSSA (Loop-Closed Static Single Assignment Form)</td>
+<td>闭环静态单赋值形式</td>
+</tr>
+<tr>
+<td>LICM (Loop Invariant Code Motion)</td>
+<td>循环不变量</td>
+</tr>
+<tr>
+<td>Load-VN</td>
+<td>负荷值编号</td>
+</tr>
+<tr>
+<td>LTO</td>
+<td>链接时优化</td>
+</tr>
+<tr>
+<td>MC</td>
+<td>机器码</td>
+</tr>
+<tr>
+<td>Object Pointer</td>
+<td>指向对象的指针，使得垃圾回收器可以追踪对象内的引用。</td>
+</tr>
+<tr>
+<td>PRE (Partial Redundancy Elimination)</td>
+<td>部分冗余消除</td>
+</tr>
+<tr>
+<td>Safe Point ()</td>
+<td></td>
+</tr>
+<tr>
+<td>SDISel (Selection DAG Instruction Selection)</td>
+<td>DAG 指令选择</td>
+</tr>
+<tr>
+<td>SCC (Strongly Connected Component)</td>
+<td>强链接组件</td>
+</tr>
+<tr>
+<td>SCCP (Sparse Conditional Constant Propagation)</td>
+<td>稀疏的条件常量传播</td>
+</tr>
+<tr>
+<td>SLP (Superword-Level Parallelism)</td>
+<td></td>
+</tr>
+<tr>
+<td>SRoA (Scalar Replacement of Aggregates)</td>
+<td>聚合标量替换</td>
+</tr>
+<tr>
+<td>SSA (Static Single Assignment)</td>
+<td>静态单赋值</td>
+</tr>
+<tr>
+<td>Stack Map</td>
+<td>在垃圾回收中，由代码生成器发出的元数据在一个函数调用的栈帧中标识了roots</td>
+</tr>
+<tr>
+<td>TBAA (Type-Based Alias Analysis)</td>
+<td>基于类型的别名分析</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <p>Reference：</p>
 <ol>
 <li><a href="">LLVM Cookbook</a></li>
+<li><a href="https://llvm-tutorial-cn.readthedocs.io/en/latest/index.html" target="_blank" rel="noopener">用LLVM开发新语言</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

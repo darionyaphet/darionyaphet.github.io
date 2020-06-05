@@ -8,10 +8,113 @@
 <li>基于物化视图的Lattice 和Tile 机制，以应用于OLAP 分析；</li>
 <li>支持对流数据的查询。</li>
 </ul>
+<p><code>Calcite</code> 提供了标准的 SQL 语言、多种查询优化和连接各种数据源的能力。从功能上看它有很多数据库管理系统的典型功能，比如 SQL 解析、SQL 校验、SQL 查询优化、SQL 生成、数据连接查询等等，但却不包括数据处理、数据存储等 DBMS 的核心功能。正因为 Calcite 这种与数据处理和存储的无关的设计，才使它成为在多个数据源和数据处理引擎之间进行协调的绝佳选择。</p>
+<p>Calcite 的主要功能是 SQL 语法解析(parse)和优化(optimazation)。首先它会把 SQL 语句解析成抽象语法树（AST Abstract Syntax Tree），并基于一定规则或成本对 AST 的算法与关系进行优化，最后推给各个数据处理引擎进行执行。</p>
+<p>Apache Calcite定位为一个完整的查询处理系统，但 Calcite 的设计是非常灵活，实际项目中一般有两种使用方式：</p>
+<ul>
+<li>把 Calcite 当作库，嵌入到项目中。</li>
+<li>实现一个适配器，通过读取数据源的适配器与 Calcite 集成。</li>
+</ul>
+<p>Calcite 的优化器使用关系运算符树作为其内部表示，其内部优化引擎主要由三个组件组成：规则、元数据提供者和规划引擎。图中虚线表示 Calcite 与外部的相互作用，从图中可看出这种相互作用的方式有多种。</p>
+<ul>
+<li>解析（Parser），Calcite 通过Java CC 将 SQL 解析成未经校验的的 AST。</li>
+<li>验证（Validate），该步主要作用是校验上一步中的 AST 是否合法。</li>
+<li>优化（Optimize），该步主要作用是优化 RelNode 树，把它转化成物理执行计划。</li>
+<li>执行（Execute），这一步主要做的是把物理执行计划转换成可在特定平台执行的程序。</li>
+</ul>
+<p>Calcite 还引入 Lattice（格子）和 Tile（瓷片）的概念。Lattice 可以看做是在星形模式数据模型下对物化视图的推荐、创建和识别的机制。这种推荐可以根据查询的频次统计，也可以基于某些分析维度的重要等级。Tile 则是 Lattice 中的一个逻辑的物化视图，它可以通过三种方法来实体化：1）在 lattice 中声明；2）通过推荐算法实现；3）在响应查询时创建。</p>
+<p><code>Calcite</code> 架构最核心地方就是 <code>Optimizer</code>， Optimization Engine 包含三个组成部分：</p>
+<ol>
+<li>rules(匹配规则): </li>
+<li>metadata providers:</li>
+<li>planner engines: </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RelOptRule</td>
+<td>transforms an expression into another</td>
+<td></td>
+</tr>
+<tr>
+<td>ConverterRule</td>
+<td>Abstract base class for a rule which converts from one calling convention to another without changing semantics</td>
+<td></td>
+</tr>
+<tr>
+<td>RelNode</td>
+<td>relational expression</td>
+<td></td>
+</tr>
+<tr>
+<td>Converter</td>
+<td>A relational expression implements the interface Converter to indicate that it converts a physical attribute, or RelTrait of a relational expression from one value to another</td>
+<td></td>
+</tr>
+<tr>
+<td>RexNode</td>
+<td>Row-level expression</td>
+<td></td>
+</tr>
+<tr>
+<td>RelTrait</td>
+<td>RelTrait represents the manifestation of a relational expression trait within a trait definition</td>
+<td></td>
+</tr>
+<tr>
+<td>Convention</td>
+<td>Calling convention used to repressent a single data source, inputs must be in the same convention</td>
+<td></td>
+</tr>
+<tr>
+<td>RelTraitDef</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RelOptCluster</td>
+<td>An environment for related relational expressions during the optimization of a query</td>
+<td></td>
+</tr>
+<tr>
+<td>RelOptPlanner</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RelOptCost</td>
+<td>defines an interface for optimizer cost in terms of number of rows processed, CPU cost, and I/O cost</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<ul>
+<li>Catalog - Defines metadata and namespaces that can be accessed in SQL queries</li>
+<li>SQL parser - Parses valid SQL queries into an abstract syntax tree (AST)</li>
+<li>SQL validator - Validates abstract syntax trees against metadata provided by the catalog</li>
+<li>Query optimizer - Converts AST into logical plans, optimizes logical plans, and converts logical expressions into physical plans</li>
+<li>SQL generator - Converts physical plans to SQL</li>
+</ul>
+<hr>
+<p><strong>JavaCC</strong></p>
+<p><code>JavaCC</code>用来处理语法文件（jj）生成解析代码，<code>JJTree</code> 用来处理jjt文件，生成树节点代码和jj文件，<code>JJDoc</code> 根据jj文件，生成文本本件(Html)</p>
+<p><code>JavaCC</code>是一个词法分析生成器和语法分析生成器。词法分析和语法分析是处理输入字符序列的组件，编译器和解释器协同词法分析和语法分析来解码程序文件。<code>词法分析器</code>可以把一连串的字符序列划分成一个一个的叫做<code>Token</code>的序列，同时它也可以把这些Token分类。这些Token序列将会传送给语法分析器以供其决定程序结构。<br><code>JavaCC</code>的输入文件是一个词法和语法的规范文件，其中也包括一些动作的描述，它的后缀应该是jj。</p>
 <hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.infoq.cn/article/new-big-data-hadoop-query-engine-apache-calcite" target="_blank" rel="noopener">Apache Calcite：Hadoop 中新型大数据查询引擎</a></li>
+<li><a href="https://www.jianshu.com/p/4f4fea8abfab" target="_blank" rel="noopener">Apache Calcite 论文学习笔记</a></li>
+<li><a href="https://matt33.com/2019/03/07/apache-calcite-process-flow/" target="_blank" rel="noopener">Apache Calcite 处理流程详解（一）</a></li>
+<li><a href="https://www.alibabacloud.com/blog/maxcompute-query-optimization-with-calcite_595363" target="_blank" rel="noopener">MaxCompute Query Optimization with Calcite</a></li>
+<li><a href="https://archive.fosdem.org/2017/schedule/event/hpc_bigdata_calcite/attachments/slides/1823/export/events/attachments/hpc_bigdata_calcite/slides/1823/FOSDEM2017ChristianTzolov_v3.pdf" target="_blank" rel="noopener">SQL for NoSQL and how Apache Calcite can help</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

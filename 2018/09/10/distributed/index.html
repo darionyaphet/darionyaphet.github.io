@@ -156,7 +156,18 @@
 <p>PS：因果关系指的是时序关系，即时间的前后，并不是逻辑上的原因和结果。时间戳如无特别说明，都指的是逻辑时钟的时间戳，不是物理时钟的时间戳。</p>
 <p><code>Lamport 逻辑时钟算法</code>，提供了一种判断分布式系统中事件全序关系的方法：如果 a -&gt; b，那么 C(a) &lt; C(b)，但是 C(a) &lt; C(b) 并不能说明 a -&gt; b。也就是说C(a) &lt; C(b) 是 a -&gt; b 的必要不充分条件，我们不能通过 Lamport 时间戳对事件 a、b 的因果关系进行判断。</p>
 <hr>
-<p><strong>一致性</strong></p>
+<p><strong>ZAB</strong></p>
+<p><code>ZAB(Zookeeper Atomic Broadcast)</code>，看到<code>Atomic</code>和<code>Broadcast</code>两个词，应该就能大概明白ZAB的主要工作方式了。<code>ZAB</code>是一个为Zookeeper量身定制的支持崩溃恢复的原子广播协议，用于保障各副本之间数据一致性。</p>
+<p>ZAB协议中存在两种角色，<code>Leader</code>和<code>Follower</code>。<code>Leader</code>负责数据的读和写请求，<code>Follower</code>只负责读请求，外部应用可以给任意的Zookeeper端发送请求，所以如果是写请求，就会转给Leader处理，读的话则就地响应。这样做同时也是为了达到所有写请求都能有序处理的效果。</p>
+<p><code>原子</code>可以理解为事务，Zookeeper收到一个写请求后，对其分配一个全局唯一且递增的<code>Zxid</code>，然后将该请求转化为事务Proposal，严格按照请求的接收次序放到针对每个<code>Follower</code>的FIFO队列中，即向集群中所有Follower广播该数据，Follower成功收到数据后，会发送<code>Ack</code>给<code>Leader</code>，当<code>Leader</code>收到的<code>Ack</code>超过半数，则向<code>Follower</code>发送<code>commit</code>命令，完成事务的提交。</p>
+<p><code>ZAB事务</code>的提交过程中是遵循2PC协议的，即事务预处理请求和事务提交是分成两阶段进行的，不同之处在于2PC要求所有副本应答，而ZAB只要求超过半数的副本应答即可，这样也避免了2PC单点超时造成阻塞的问题。</p>
+<p>崩溃恢复</p>
+<hr>
+<p><strong>各类Consistency对比小结</strong></p>
+<p><em>Linearizability</em></p>
+<p>node1写A, node2写B, <code>写A</code>操作在<code>写B</code>开始前完成, B一定覆盖A; 对于多个观察者来说, 任意一个观察者看到B后, 其他观察者必须只能观察到B; 或者B操作完成后, 所有观察者都只能观察到B;</p>
+<p><em>Sequential</em></p>
+<p><em>Causality</em></p>
 <hr>
 <p>Reference:</p>
 <ol>
@@ -172,6 +183,7 @@
 <li><a href="https://www.cnblogs.com/hzmark/p/Time_Clocks_Ordering.html" target="_blank" rel="noopener">译 Time, Clocks, and the Ordering of Events in a Distributed System</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/56886156" target="_blank" rel="noopener">分布式系统：向量时钟</a></li>
 <li><a href="https://owent.net/2019/1902.html" target="_blank" rel="noopener">Google去中心化分布式系统论文三件套(Percolator、Spanner、F1)读后感</a></li>
+<li><a href="https://mp.weixin.qq.com/s/rZ9d0wyjT3ZI5O-1DC9zMw" target="_blank" rel="noopener">分布式系统之ZAB协议</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
