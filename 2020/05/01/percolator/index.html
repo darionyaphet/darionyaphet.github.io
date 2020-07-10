@@ -9,14 +9,58 @@
 <p>倒排索引是Google搜索引擎中最为关键的技术之一。应对海量数据时，高效的索引创建和索引的实时更新都是必须解决的难题。Google设计了<code>MapReduece</code>系统解决了海量数据索引创建的问题，但并没有解决增量数据的实时更新问题。</p>
 <p>因此，Google设计<code>Percolator</code>的初衷是：<code>支持海量数据存储、并行随机读写、跨行事务的分布式数据库。</code></p>
 <p>由于<code>Percolator</code>构建在不支持跨行事务的<code>BigTable</code>之上，基于<code>BigTable</code>达到<code>Percolator</code>的设计目标便是其要解决的核心问题。<code>Percolator</code> 提供了跨行、跨表的、基于快照隔离的<code>ACID</code>事务。</p>
+<p><code>notify列</code>仅仅是一个hint值（可能是个bool值），表示是否需要触发通知。</p>
+<p><code>ack列</code>是一个简单的时间戳值，表示最近执行通知的观察者的开始时间。</p>
+<p><code>data列</code>是KV结构，key是时间戳，value是真实数据，包含多个entry。</p>
+<p><code>write列</code>包含的是写记录，也是KV结构，key是时间戳，value是各个时间戳下曾经写入的值。</p>
+<p><code>lock列</code>也是KV结构，key是时间戳，value是锁的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">class Transaction &#123;</span><br><span class="line">    struct Write&#123; Row row; Column: col; string value;&#125;;</span><br><span class="line">    vector&lt;Write&gt; writes_;</span><br><span class="line">    int start_ts_;</span><br><span class="line"></span><br><span class="line">    Transaction():start_ts_(orcle.GetTimestamp()) &#123;&#125;</span><br><span class="line">    void Set(Write w) &#123;writes_.push_back(w);&#125;</span><br><span class="line">    bool Get(Row row, Column c, string* value) &#123;</span><br><span class="line">        while(true) &#123;</span><br><span class="line">            bigtable::Txn = bigtable::StartRowTransaction(row);</span><br><span class="line">            // Check for locks that signal concurrent writes.</span><br><span class="line">            if (T.Read(row, c+&quot;locks&quot;, [0, start_ts_])) &#123;</span><br><span class="line">                // There is a pending lock; try to clean it and wait</span><br><span class="line">                BackoffAndMaybeCleanupLock(row, c);</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // Find the latest write below our start_timestamp.</span><br><span class="line">        latest_write = T.Read(row, c+&quot;write&quot;, [0, start_ts_]);</span><br><span class="line">        if(!latest_write.found()) return false; // no data</span><br><span class="line">        int data_ts = latest_write.start_timestamp();</span><br><span class="line">        *value = T.Read(row, c+&quot;data&quot;, [data_ts, data_ts]);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    // prewrite tries to lock cell w, returning false in case of conflict.</span><br><span class="line">    bool Prewrite(Write w, Write primary) &#123;</span><br><span class="line">        Column c = w.col;</span><br><span class="line">        bigtable::Txn T = bigtable::StartRowTransaction(w.row);</span><br><span class="line"></span><br><span class="line">        // abort on writes after our start stimestamp ...</span><br><span class="line">        if (T.Read(w.row, c+&quot;write&quot;, [start_ts_, max])) return false;</span><br><span class="line">        // ... or locks at any timestamp.</span><br><span class="line">        if (T.Read(w.row, c+&quot;lock&quot;, [0, max])) return false;</span><br><span class="line"></span><br><span class="line">        T.Write(w.row, c+&quot;data&quot;, start_ts_, w.value);</span><br><span class="line">        T.Write(w.row, c+&quot;lock&quot;, start_ts_, </span><br><span class="line">            &#123;primary.row, primary.col&#125;);  // The primary&apos;s location.</span><br><span class="line">        return T.Commit();</span><br><span class="line">    &#125;</span><br><span class="line">    bool Commit() &#123;</span><br><span class="line">        Write primary = write_[0];</span><br><span class="line">        vector&lt;Write&gt; secondaries(write_.begin() + 1, write_.end());</span><br><span class="line">        if (!Prewrite(primary, primary)) return false;</span><br><span class="line">        for (Write w : secondaries)</span><br><span class="line">            if (!Prewrite(w, primary)) return false;</span><br><span class="line"></span><br><span class="line">        int commit_ts = orcle.GetTimestamp();</span><br><span class="line"></span><br><span class="line">        // Commit primary first.</span><br><span class="line">        Write p = primary;</span><br><span class="line">        bigtable::Txn T = bigtable::StartRowTransaction(p.row);</span><br><span class="line">        if (!T.Read(p.row, p.col+&quot;lock&quot;, [start_ts_, start_ts_]))</span><br><span class="line">            return false; // aborted while working</span><br><span class="line">        T.Write(p.row, p.col+&quot;write&quot;, commit_ts,</span><br><span class="line">            start_ts_); // Pointer to data written at start_ts_</span><br><span class="line">        T.Erase(p.row, p.col+&quot;lock&quot;, commit_ts);</span><br><span class="line">        if(!T.Commit()) return false;  // commit point</span><br><span class="line"></span><br><span class="line">        // Second phase: write our write records for secondary cells.</span><br><span class="line">        for (Write w:secondaries) &#123;</span><br><span class="line">            bigtable::write(w.row, w.col+&quot;write&quot;, commit_ts, start_ts_);</span><br><span class="line">            bigtable::Erase(w.row, w.col+&quot;lock&quot;, commit_ts);</span><br><span class="line">        &#125;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;; // class Transaction</span><br></pre></td></tr></table></figure>
+<p>如果事务在它的开始时间戳之后看见另一个写记录，它会取消；这是“写-写”冲突，也就是快照隔离机制所重点保护的情况。</p>
+<p>如果事务在任意时间戳看见另一个锁，它也取消；如果看到的锁在我们的开始时间戳之前，可能提交的事务已经提交了却因为某种原因推迟了锁的释放，但是这种情况可能性不大，保险起见所以取消。</p>
 <p><em>缺点</em></p>
 <p><em>清理无效行的开销</em></p>
 <p><code>Percolator</code>系统还需要一组purge后台进程，把那些没有任何事务可以看到的行版本清除掉，以及清除掉那些被删除掉的行。由于行的所有版本都是存储在big table系统的数据表中的，所以后台的purge 任务也会对<code>BigTable</code>系统构成很大的负载。这个问题是PostgreSQL也有的问题。Innodb没有这个问题是因为数据表上面永远只有最新版本的行，老版本的行是通过undo日志临时生成的。Innodb Undo日志集中存放在undo表空间中，清理的代价要低很多。</p>
+<p><code>Percolator</code> 是 Google 的上一代分布式事务解决方案，构建在 BigTable 之上，用于网页索引更新的业务。原理总体来说就是一个经过优化的二阶段提交的实现，进行了一个二级锁的优化。</p>
+<p><strong>读写事务</strong></p>
+<ol>
+<li>事务提交前，在客户端 buffer 所有的 update/delete 操作。</li>
+<li>Prewrite 阶段:</li>
+</ol>
+<p>首先在所有行的写操作中选出一个作为 <code>primary</code>，其他的为 <code>secondaries</code>。</p>
+<p>PrewritePrimary: 对 <code>primaryRow</code> 写入 L 列(上锁)，L 列中记录本次事务的<code>开始时间戳</code>。写入 L 列前会检查:</p>
+<ol>
+<li>是否已经有别的客户端已经上锁。</li>
+<li>是否在本次事务开始时间之后，检查 W 列，是否有更新 [startTs, +Inf) 的写操作已经提交 (Conflict)。</li>
+</ol>
+<p>在这两种种情况下会返回事务冲突。否则，就成功上锁。将行的内容写入 row 中，时间戳设置为 startTs。</p>
+<p>将 primaryRow 的锁上好了以后，进行 secondaries 的 prewrite 流程:</p>
+<ol>
+<li>类似 primaryRow 的上锁流程，只不过锁的内容为事务开始时间及 primaryRow 的 Lock 的信息。</li>
+<li>检查的事项同 primaryRow 的一致。</li>
+</ol>
+<p>当锁成功写入后，写入 row，时间戳设置为 startTs。</p>
+<p>以上 Prewrite 流程任何一步发生错误，都会进行回滚：删除 Lock，删除版本为 startTs 的数据。</p>
+<p>当 Prewrite 完成以后，进入 Commit 阶段，当前时间戳为 commitTs，且 commitTs&gt; startTs :</p>
+<ol>
+<li>commit primary：写入 W 列新数据，时间戳为 commitTs，内容为 startTs，表明数据的最新版本是 startTs 对应的数据。</li>
+<li>删除L列。</li>
+</ol>
+<p>如果 primary row 提交失败的话，全事务回滚，回滚逻辑同 prewrite。如果 commit primary 成功，则可以异步的 commit secondaries, 流程和 commit primary 一致， 失败了也无所谓。</p>
+<p><strong>事务中的读操作</strong></p>
+<ol>
+<li>检查该行是否有 L 列，时间戳为 [0, startTs]，如果有，表示目前有其他事务正占用此行，如果这个锁已经超时则尝试清除，否则等待超时或者其他事务主动解锁。注意此时不能直接返回老版本的数据，否则会发生幻读的问题。</li>
+<li>读取至 startTs 时该行最新的数据，方法是：读取 W 列，时间戳为 [0, startTs], 获取这一列的值，转化成时间戳 t, 然后读取此列于 t 版本的数据内容。</li>
+</ol>
+<p>由于锁是分两级的，primary 和 seconary，只要 primary 的行锁去掉，就表示该事务已经成功 提交，这样的好处是 secondary 的 commit 是可以异步进行的，只是在异步提交进行的过程中 ，如果此时有读请求，可能会需要做一下锁的清理工作。</p>
 <hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://medium.com/yugabyte/implementing-distributed-transactions-the-google-way-percolator-vs-spanner-6cbccfc1f2ed" target="_blank" rel="noopener">Implementing Distributed Transactions the Google Way: Percolator vs. Spanner</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/59115828" target="_blank" rel="noopener">Google Percolator 事务模型的利弊分析</a></li>
+<li><a href="https://karellincoln.github.io/2018/04/05/percolator-translate/" target="_blank" rel="noopener">percolator：在线增量处理系统 中文翻译</a></li>
+<li><a href="http://andremouche.github.io/transaction/percolator.html" target="_blank" rel="noopener">Google Percolator 的事务模型</a></li>
+<li><a href="https://www.jianshu.com/p/05194f4b29dd" target="_blank" rel="noopener">Percolator简单翻译与个人理解</a></li>
+<li><a href="https://pingcap.com/blog-cn/percolator-and-txn/" target="_blank" rel="noopener">Percolator 和 TiDB 事务算法</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

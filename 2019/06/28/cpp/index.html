@@ -1,4 +1,40 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>cpp | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-06-28</div></div></div><div class="container post-header"><h1>cpp</h1></div><div class="container post-content"><p><strong>.inl 文件</strong></p>
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>cpp | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2019-06-28</div></div></div><div class="container post-header"><h1>cpp</h1></div><div class="container post-content"><p><strong>decltype</strong></p>
+<p><code>decltype</code> 选择并返回操作数的数据类型，在此过程中，编译器分析表达式并得到它的类型，却不实际计算表达式的值。</p>
+<p><code>decltype</code>的类型推导并不是像<code>auto</code>一样是从变量声明的初始化表达式获得变量的类型，而是总是以一个普通表达式作为参数，返回该表达式的类型,而且<code>decltype</code>并不会对表达式进行求值。</p>
+<p><strong>mutable</strong></p>
+<p>mutable也是为了突破const的限制而设置的。被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。</p>
+<p>被const关键字修饰的函数的一个重要作用就是为了能够保护类中的成员变量。该函数可以使用类中的所有成员变量，但是不能修改他们的值。</p>
+<p>在某些特殊情况下，我们还是需要在const函数中修改类的某些成员变量，因为要修改的成员变量与类本身并无多少关系，即使修改了也不会对类造成多少影响。</p>
+<hr>
+<p><strong>is_invocable</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>std::is_invocable</td>
+<td>确定是否能以参数 ArgTypes… 调用 Fn 。</td>
+</tr>
+<tr>
+<td>std::is_invocable_r</td>
+<td>确定是否能以参数 ArgTypes… 调用 Fn 并生成可转换为 R 的结果。</td>
+</tr>
+<tr>
+<td>std::is_nothrow_invocable</td>
+<td>确定是否能以参数 ArgTypes… 调用 Fn 并已知这种调用不抛任何异常。</td>
+</tr>
+<tr>
+<td>std::is_nothrow_invocable_r</td>
+<td>确定是否能以参数 ArgTypes… 调用 Fn 并生成可转换为 R 的结果 并已知这种调用（包括转换）不抛任何异常。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>.inl 文件</strong></p>
 <p>内联函数较多的情况下，为了避免头文件过长，可以将所有的内联函数定义移到一个单独的文件中去，然后再用#include指令将它包含到类声明的后面（类的头文件的底部）。这样的文件称为一个内联函数定义文件。inl文件中也可以包含头文件的，因为内联函数中可能包含其他文件中定义的东西。</p>
 <hr>
 <p><strong><strong>attribute</strong></strong></p>
@@ -70,63 +106,6 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果操作x.swap(y)不发生异常，那么函数swap(Type&amp; x, Type&amp; y)一定不发生异常。</span></span><br><span class="line">void swap(Type&amp; x, Type&amp; y) noexcept(noexcept(x.swap(y)))    //C++11</span><br><span class="line">&#123;</span><br><span class="line">    x.swap(y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <hr>
 <p><strong>STL</strong></p>
-<p><code>慎重选择容器类型</code></p>
-<ul>
-<li>连续内存容器: 元素存放在一块或多块内存，每块内存中存有多个元素。</li>
-<li>每一个内存块中只存储一个元素。</li>
-</ul>
-<ol>
-<li>是否需要在容器任意位置插入新元素？</li>
-<li>是否关心容器中元素是如何排序的？</li>
-<li>必须是C++标准一部分吗？</li>
-<li>需要那种类型迭代器？</li>
-<li>容器中数据布局是否与C兼容？</li>
-<li>元素查找速度是否是考虑关键？</li>
-<li>是否介意引用计数？</li>
-</ol>
-<p><code>不要试图编写独立于容器类型的代码</code></p>
-<p>数组被泛化为<code>以其包含的对象的类型为参数</code>，函数被泛化为<code>以其使用的迭代器类型为参数</code>。</p>
-<p><code>确保容器中的对象拷贝正确而高效</code></p>
-<p><code>调用empty 而不是检查size()是否为0</code></p>
-<p><code>区间成员函数优先于与之对应的单元素成员函数</code></p>
-<p><code>当心C++编译器最烦人的分析机制</code></p>
-<p><code>如果容器中包含了通过new 操作创建的指针，切记在容器对象析构前将指针delete 掉</code></p>
-<p><code>切勿创建包含auto_ptr 的容器对象</code></p>
-<p><code>慎重选择删除元素的方法</code></p>
-<p><code>了解分配子（allocator）的约定和限制</code></p>
-<p><code>理解自定义分配子的合理用法</code></p>
-<p><code>切勿对STL 容器的线程安全性有不切实际的依赖</code></p>
-<p><code>vector 和string 优先于动态分配的数组</code></p>
-<p><code>使用reserve 来避免不必要的重新分配</code></p>
-<p><code>注意string 实现的多样性</code></p>
-<p><code>了解如何把vector 和string 数据传给旧的API</code></p>
-<p><code>使用“swap 技巧”除去多余的容量</code></p>
-<p><code>避免使用vector&lt;bool&gt;</code></p>
-<p><code>理解相等（equality）和等价（equivalence）的区别</code></p>
-<p><code>为包含指针的关联容器指定比较类型</code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
-<p><code></code></p>
 <hr>
 <p><strong>SFINAE</strong></p>
 <p>Substitution failure is not an error: 匹配失败不是错误</p>
@@ -279,6 +258,30 @@
 </blockquote>
 <hr>
 <p><strong>完美转发(Perfect Forwarding)</strong></p>
+<blockquote>
+<p>需要将一组参数原封不动的传递给另一个函数。</p>
+</blockquote>
+<p><em>原封不动</em> 不仅仅是参数的值不变，除了参数值之外，还有两组属性：左值／右值和 const/non-const。<br><code>完美转发</code>就是在参数传递过程中，属性和参数值都不能改变，不产生额外的开销，就好像转发者不存在一样。</p>
+<hr>
+<p><strong>模板特化(template specialization)</strong></p>
+<p><strong>模板偏特化(Partial Template Specialization)</strong></p>
+<p><code>模板特化</code>是通过给模板中的<em>所有模板参数一个具体的类</em>的方式来实现的.</p>
+<p><code>模板偏特化</code>则是通过给模板中的<em>部分模板参数以具体的类,而留下剩余的模板参数仍然使用原来的泛化定义</em>的方式来实现的;</p>
+<hr>
+<p><strong>enable_shared_from_this</strong></p>
+<p><code>std::enable_shared_from_this</code> 能让一个对象安全地生成其他额外的 std::shared_ptr 实例 ，它们与 pt 共享对象 t 的所有权。</p>
+<hr>
+<p><strong>元编程</strong></p>
+<p><code>元编程</code> 通过操作程序实体，在<code>编译时</code>计算出<code>运行时</code>需要的常数、类型、代码的方法。</p>
+<p>与普通程序不同，<code>元编程</code>则是借助语言提供的<code>模板</code>机制，通过编译器<code>推导</code>，在 <code>编译时</code> 生成程序。<br>元编程经过编译器推导得到的程序，再进一步通过编译器编译，产生最终的目标代码。</p>
+<p>C++ 将模板分成了 4 类：<code>类模板</code> (class template)，<code>函数模板</code> (function template)，<code>别名模板</code> (alias template) 和 <code>变量模板</code> (variable template)。</p>
+<p>前两者能产生新的类型，属于 <code>类型构造器</code> (type constructor)；而后两者是 C++ 为前两者补充的简化记法，属于 <code>语法糖</code> (syntactic sugar)。</p>
+<p><code>类模板</code> 和 <code>函数模板</code> 分别用于定义具有相似功能的 类 和 函数 (function)，是泛型中对 类型 和 算法 的抽象。在标准库中，容器 (container) 和 函数 都是 类模板 和 函数模板 的应用。</p>
+<p><code>别名模板</code> 和 <code>变量模板</code> 分别在 C++ 11 和 C++ 14 引入，分别提供了具有模板特性的 类型别名 (type alias) 和 常量 (constant) 的简记方法。</p>
+<p><code>模板参数</code>可以分为三种：值参数，类型参数，模板参数。</p>
+<p><code>变长模板</code>模板参数的个数可以不确定，变长参数折叠为一个 参数包，使用时通过编译时迭代，遍历各个参数。</p>
+<p><code>特化</code> (specialization) 类似于函数的 <code>重载</code> (overload)，即给出 全部模板参数取值（完全特化）或 部分模板参数取值（部分特化）的模板实现。</p>
+<p><code>实例化</code> (instantiation) 类似于函数的 <code>绑定</code> (binding)，是编译器根据参数的个数和类型，判断使用哪个重载的过程。由于函数和模板的重载具有相似性，所以他们的参数 重载规则 (overloading rule) 也是相似的。</p>
 <hr>
 <p><strong>Tips</strong></p>
 <table>
@@ -309,6 +312,26 @@
 </table>
 <p><code>compare_exchange_weak</code>和<code>compare_exchange_strong</code>则是著名的<code>CAS</code>。参数会要求在这里传入期待的数值和新的数值。对比变量的值和期待的值是否一致，如果是，则替换为新数值。否则将变量的值和期待的值交换。</p>
 <p><code>compare_exchange_weak</code>版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。</p>
+<p><code>likely(x)</code>代表x是逻辑真（1）的可能性比较大；<code>unlikely(x)</code>代表x是逻辑假（0）的可能性比较大。</p>
+<hr>
+<p><strong>Boost intrusive</strong></p>
+<p><code>intrusive</code> 容器相当于是把构造函数使用的东西嵌入在对象里面，而 <code>non-intrusive</code> 容器实际上并不改变 object 本身，而是在外面 wrap 一层表示结构的东西。</p>
+<p><code>boost.intrusive</code> 提供了一个创建 intrusive 的框架，并且提供了一些类似 STL 中容器的实现。</p>
+<hr>
+<p><strong>std::chrono</strong></p>
+<blockquote>
+<p>std::chrono::duration 表示一段时间，比如两个小时，12.88秒，只要能换算成秒即可。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class Rep, class Period = ratio&lt;1&gt; &gt; class duration;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>std::chrono::time_point 表示一个具体时间，如上个世纪80年代、你的生日、今天下午、火车出发时间等。鉴于使用时间的情景不同，这个time point具体到什么程度，由选用的单位决定。一个time point必须有一个clock计时。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class Clock, class Duration = typename Clock::duration&gt;  class time_point;</span><br></pre></td></tr></table></figure>
+<p><code>time_from_eproch()</code>用来获得1970年1月1日到<code>time_point</code>时间经过的duration。如果time point以天为单位，函数返回的duration就以天为单位。</p>
+<blockquote>
+<p>std::chrono::system_clock 表示当前系统时钟，系统中运行的所有进程使用now()得到的时间是一致的。</p>
+</blockquote>
+<p><code>now()</code> 当前时间<code>time_point</code> <code>to_time_t()</code> <code>time_point</code>转换成<code>time_t</code>秒 <code>from_time_t()</code> 从<code>time_t</code>转换成<code>time_point</code></p>
 <hr>
 <p>Reference:</p>
 <ol>
@@ -324,7 +347,11 @@
 <li><a href="https://tyzual.com/2019/02/11/mem-order/" target="_blank" rel="noopener">C++11 中的内存模型</a></li>
 <li><a href="https://www.cnblogs.com/navono007/p/5746048.html" target="_blank" rel="noopener">C++11内存模型的粗略解释</a></li>
 <li><a href="https://zh.cppreference.com/w/cpp/language/alignas" target="_blank" rel="noopener">alignas 说明符 (C++11 起)</a></li>
-<li><a href="https://cloud.tencent.com/developer/article/1387860" target="_blank" rel="noopener">C++中的万能引用和完美转发</a></li>
+<li><a href="https://theonegis.github.io/cxx/C-中的万能引用和完美转发/" target="_blank" rel="noopener">C++中的万能引用和完美转发</a></li>
+<li><a href="https://bot-man-jl.github.io/articles/?post=2017/Cpp-Metaprogramming" target="_blank" rel="noopener">浅谈 C++ 元编程</a></li>
+<li><a href="https://www.epubit.com/onlineEbookReader?id=10e415c8-6134-446f-8e02-0ab966b50a21&amp;pid=1dc1a5d4-3b51-4166-bead-3f669486d1c8" target="_blank" rel="noopener">C++模板元编程实战：一个深度学习框架的初步实现</a></li>
+<li><a href="https://remonstrate.wordpress.com/2012/04/13/boost-的-intrusive-容器/" target="_blank" rel="noopener">BOOST 的 INTRUSIVE 容器</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/55856487" target="_blank" rel="noopener">C++11朝码夕解: move和forward</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

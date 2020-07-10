@@ -59,6 +59,11 @@
 <p>一个查询的直接开销主要取决于两个因素：第一个因素就是<code>跨存储和计算操作符之间的数据传输开销</code>，另一个因素就是<code>数据运算所花费的时间</code>。</p>
 <p><strong>推送模型</strong></p>
 <p><strong>拉取&amp;推送模型融合</strong></p>
+<p><strong>事务</strong></p>
+<p><em>共享锁(S锁,读锁)</em></p>
+<p>若事务T对数据对象A加上S锁，则事务T可以读A但不能修改A，其他事务只能再对A加S锁，而不能加X锁，直到T释放A上的S锁。这保证了其他事务可以读A，但在T释放A上的S锁之前不能对A做任何修改。</p>
+<p><em>排他锁(X锁,写锁)</em></p>
+<p>若事务T对数据对象A加上X锁，事务T可以读A也可以修改A，其他事务不能再对A加任何锁，直到T释放A上的锁。这保证了其他事务在T释放A上的锁之前不能再读取和修改A。</p>
 <hr>
 <p>Reference:</p>
 <ol>
@@ -69,6 +74,8 @@
 <li><a href="http://mysql.taobao.org/monthly/2017/10/01/" target="_blank" rel="noopener">PgSQL · 特性分析 · MVCC机制浅析</a></li>
 <li><a href="https://cloud.tencent.com/developer/news/128684" target="_blank" rel="noopener">读后感：Volcano-An Extensible and Parallel Query Evaluation System</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/41562506" target="_blank" rel="noopener">数据库查询引擎的进化之路</a></li>
+<li><a href="https://www.jianshu.com/p/7cb632c2fd1a" target="_blank" rel="noopener">隔离级别的一些tips</a></li>
+<li><a href="https://www.hytheory.com/database/serializable-snapshot-isolation/" target="_blank" rel="noopener">可串行化快照隔离</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
