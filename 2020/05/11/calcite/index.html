@@ -107,6 +107,15 @@
 <p><strong>JavaCC</strong></p>
 <p><code>JavaCC</code>用来处理语法文件（jj）生成解析代码，<code>JJTree</code> 用来处理jjt文件，生成树节点代码和jj文件，<code>JJDoc</code> 根据jj文件，生成文本本件(Html)</p>
 <p><code>JavaCC</code>是一个词法分析生成器和语法分析生成器。词法分析和语法分析是处理输入字符序列的组件，编译器和解释器协同词法分析和语法分析来解码程序文件。<code>词法分析器</code>可以把一连串的字符序列划分成一个一个的叫做<code>Token</code>的序列，同时它也可以把这些Token分类。这些Token序列将会传送给语法分析器以供其决定程序结构。<br><code>JavaCC</code>的输入文件是一个词法和语法的规范文件，其中也包括一些动作的描述，它的后缀应该是jj。</p>
+<p><code>.jj文件基本语法</code></p>
+<blockquote>
+<p>词法部分声明：SKIP、TOKEN、SPECIAL_TOKEN、MORE。 </p>
+<blockquote>
+<p>SKIP用来说明被忽略的串。</p>
+<p> TOKEN用来说明在词法层次上识别的token。</p>
+<p> #开头的token只是在词法分析时使用，不能作为语法分析的输入，相对词法分析是局部的。</p>
+</blockquote>
+</blockquote>
 <hr>
 <p>Reference:</p>
 <ol>

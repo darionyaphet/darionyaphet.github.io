@@ -17,7 +17,27 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class Graph[VD, ED]&#123;</span><br><span class="line">    val vertices: VertexRDD[VD]</span><br><span class="line">    val edges: EdgeRDD[ED]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>GraphX的整体架构可以分为三个部分：</p>
 <pre><code>存储层和原语层: Graph类是图计算的核心类，内部含有VertexRDD、EdgeRDD和RDD[EdgeTriplet].
-</code></pre><p>reference :</p>
+</code></pre><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p><code>ConstantFolding</code></p>
+<p><code>ConstantPropagation</code></p>
+<p><code>ReorderAssociativeOperator</code></p>
+<p><code>OptimizeIn</code></p>
+<hr>
+<blockquote>
+<p>RDD</p>
+<blockquote>
+<p>A Resilient Distributed Dataset, the basic abstraction in Spark.</p>
+<p>Represents an immutable, partitioned collection of elements that can be operated on in parallel.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>DataSource</p>
+<blockquote>
+<p>The main class responsible for representing a pluggable Data Source in Spark SQL.</p>
+<p>In addition to acting as the canonical set of parameters that can describe a Data Source, this class is used to resolve a description to a concrete implementation that can be used in a query plan or to write out data using an external library.</p>
+</blockquote>
+</blockquote>
+<hr>
+<p>reference :</p>
 <ol>
 <li><a href="https://www.cnblogs.com/shishanyuan/p/4747793.html" target="_blank" rel="noopener">Spark入门实战系列–9.Spark图计算GraphX介绍及实例</a></li>
 </ol>
