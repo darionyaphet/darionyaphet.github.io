@@ -104,6 +104,33 @@
 <p>通过庖丁解LevelDB之概览中对Compaction过程的描述可以知道在CompactMemTable和BackgroundCompaction过程中会导致新文件的产生和旧文件的删除。每当这个时候都会有一个新的对应的Version生成，并插入VersionSet链表头部。</p>
 <p>VersionSet是一个Version构成的双向链表，这些Version按时间顺序先后产生，记录了当时的元信息，链表头指向当前最新的Version，同时维护了每个Version的引用计数，被引用中的Version不会被删除，其对应的SST文件也因此得以保留，通过这种方式，使得LevelDB可以在一个稳定的快照视图上访问文件。VersionSet中除了Version的双向链表外还会记录一些如LogNumber，Sequence，下一个SST文件编号的状态信息。</p>
 <p><strong>Version Edit Layout</strong></p>
+<blockquote>
+<p>DBImpl keeps a ColumnFamilySet, which references to all column families by<br>pointing to respective ColumnFamilyData object of each column family.</p>
+</blockquote>
+<blockquote>
+<p>ColumnFamilyHandle also points to ColumnFamilyData directly, so that<br>when a user executes a query, it can directly find memtables and Version<br>as well as SuperVersion to the column family, without going through<br>ColumnFamilySet.</p>
+</blockquote>
+<blockquote>
+<p>ColumnFamilySet points to the latest view of the LSM-tree (list of memtables<br>and SST files) indirectly, while ongoing operations may hold references<br>to a current or an out-of-date SuperVersion, which in turn points to a<br>point-in-time view of the LSM-tree.</p>
+</blockquote>
+<blockquote>
+<p>ColumnFamilyData</p>
+<blockquote>
+<p>keeps all the data that a column family needs.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>MemTableList</p>
+<blockquote>
+<p>stores references to all the immutable memtables.<br>The memtables are flushed to L0 as soon as possible and in any order.<br>If there are more than one immutable memtable, their flushes can occur concurrently.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>SuperVersion</p>
+<blockquote>
+<p>holds references to memtable, all immutable memtables and version.</p>
+</blockquote>
+</blockquote>
 <hr>
 <p>Reference </p>
 <ol>
