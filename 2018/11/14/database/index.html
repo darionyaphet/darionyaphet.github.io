@@ -25,6 +25,7 @@
 <p><code>MVCC</code>使用<code>时间戳</code>或<code>自动增量的事务ID</code>实现<code>事务一致性</code>。MVCC可以确保每个事务(T)通常不必“读等待”数据库对象(P)。这通过对象有多个版本，每个版本有创建时间戳 与废止时间戳 (WTS)做到的。</p>
 <p>事务Ti读取对象P时，只有比事务Ti的时间戳早，但是时间上最接近事务Ti的对象版本可见，且该版本应该没有被废止。<br>事务Ti写入对象P时，如果还有事务Tk要写入同一对象，则(Ti)必须早于(Tk)，即 (Ti) &lt; (Tk)，才能成功。</p>
 <p>MVCC可以无锁实现。</p>
+<p>MVCC Meta Data</p>
 <hr>
 <p><strong>Volcano</strong></p>
 <p>Volcano-An Extensible and Parallel Query Evaluation System</p>
@@ -65,6 +66,9 @@
 <p><em>排他锁(X锁,写锁)</em></p>
 <p>若事务T对数据对象A加上X锁，事务T可以读A也可以修改A，其他事务不能再对A加任何锁，直到T释放A上的锁。这保证了其他事务在T释放A上的锁之前不能再读取和修改A。</p>
 <hr>
+<p><code>Volcano Optimizer</code> 将搜索分为两个阶段，在第一个阶段枚举所有逻辑等价的 Logical Algebra，而在第二阶段运用动态规划的方法自顶向下地搜索代价最小的 Physical Algebra</p>
+<p><code>Cascades Optimizer</code> 则将这两个阶段融合在一起，通过提供一个 Guidance 来指导 Rule 的执行顺序，在枚举逻辑等价算子的同时也进行物理算子的生成，这样做可以避免枚举所有的逻辑执行计划</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://blog.csdn.net/songchuwang1868/article/details/97630005" target="_blank" rel="noopener">隔离级别、SI 和 SSI（四种隔离级别和快照隔离）</a></li>
@@ -76,6 +80,9 @@
 <li><a href="https://zhuanlan.zhihu.com/p/41562506" target="_blank" rel="noopener">数据库查询引擎的进化之路</a></li>
 <li><a href="https://www.jianshu.com/p/7cb632c2fd1a" target="_blank" rel="noopener">隔离级别的一些tips</a></li>
 <li><a href="https://www.hytheory.com/database/serializable-snapshot-isolation/" target="_blank" rel="noopener">可串行化快照隔离</a></li>
+<li><a href="https://aaaaaaron.github.io/2020/02/08/Calcite-Volcano-Optimizer-部分/" target="_blank" rel="noopener">Volcano Planner优化器模型介绍</a></li>
+<li><a href="https://aaaaaaron.github.io/2020/02/08/Calcite-Parser-部分/" target="_blank" rel="noopener">Calcite - Parser 部分</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/115437885" target="_blank" rel="noopener">VLDB17 | MVCC设计要点大总结</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

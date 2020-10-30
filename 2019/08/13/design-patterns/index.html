@@ -31,10 +31,21 @@
 </blockquote>
 </blockquote>
 <hr>
+<p><strong>访问者模式</strong></p>
+<p>访问者模式（Visitor）提供一个作用于某对象结构中的各元素的操作表示，它使我们可以在不改变各元素的类的前提下定义作用于这些元素的新操作。访问者模式是一种对象行为型模式。</p>
+<p><code>Vistor</code>: 抽象访问者为对象结构中每一个具体元素类ConcreteElement声明一个访问操作，从这个操作的名称或参数类型可以清楚知道需要访问的具体元素的类型，具体访问者需要实现这些操作方法，定义对这些元素的访问操作。</p>
+<p><code>Concrete Visitor</code>: 具体访问者实现了每个由抽象访问者声明的操作，每一个操作用于访问对象结构中一种类型的元素。</p>
+<p><code>Element</code>: 抽象元素一般是抽象类或者接口，它定义一个accept()方法，该方法通常以一个抽象访问者作为参数。</p>
+<p><code>Concrete Element</code>: 具体元素实现了accept()方法，在accept()方法中调用访问者的访问方法以便完成对一个元素的操作。</p>
+<p><code>Object Structure</code>: 对象结构是一个元素的集合，它用于存放元素对象，并且提供了遍历其内部元素的方法。它可以结合组合模式来实现，也可以是一个简单的集合对象，如一个List对象或一个Set对象。</p>
+<p>访问者模式中对象结构存储了不同类型的元素对象，以供不同访问者访问。访问者模式包括两个层次结构，一个是访问者层次结构，提供了抽象访问者和具体访问者，一个是元素层次结构，提供了抽象元素和具体元素。相同的访问者可以以不同的方式访问不同的元素，相同的元素可以接受不同访问者以不同访问方式访问。在访问者模式中，增加新的访问者无须修改原有系统，系统具有较好的可扩展性。</p>
+<p>在访问者模式中，抽象访问者定义了访问元素对象的方法，通常为每一种类型的元素对象都提供一个访问方法，而具体访问者可以实现这些访问方法。这些访问方法的命名一般有两种方式：一种是直接在方法名中标明待访问元素对象的具体类型，如visitElementA(ElementA elementA)，还有一种是统一取名为visit()，通过参数类型的不同来定义一系列重载的visit()方法。当然，如果所有的访问者对某一类型的元素的访问操作都相同，则可以将操作代码移到抽象访问者类中，其典型代码如下所示：</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.cnblogs.com/lixiuyu/p/5847342.html" target="_blank" rel="noopener">设计模式原则</a></li>
 <li><a href="https://www.cnblogs.com/lixiuyu/p/5923160.html" target="_blank" rel="noopener">设计模式之桥接模式</a></li>
+<li><a href="https://blog.csdn.net/lovelion/article/details/7433567" target="_blank" rel="noopener">操作复杂对象结构——访问者模式</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

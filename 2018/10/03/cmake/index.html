@@ -738,6 +738,17 @@
 </blockquote>
 </blockquote>
 <hr>
+<h4 id="find-package"><a href="#find-package" class="headerlink" title="find_package"></a>find_package</h4><blockquote>
+<p>CMake本身不提供任何搜索库的便捷方法，所有搜索库并给变量赋值的操作必须由CMake代码完成。</p>
+</blockquote>
+<p><code>find_package</code>采用两种模式搜索库：</p>
+<ol>
+<li>Module模式：搜索CMAKE_MODULE_PATH指定路径下的FindXXX.cmake文件，执行该文件从而找到XXX库。</li>
+<li>Config模式：搜索XXX_DIR指定路径下的XXXConfig.cmake文件，执行该文件从而找到XXX库。</li>
+</ol>
+<p>CMake默认采取Module模式，如果Module模式未找到库，才会采取Config模式。</p>
+<p>如果XXX_DIR路径下找不到XXXConfig.cmake文件，则会找/usr/local/lib/cmake/XXX/中的XXXConfig.cmake文件。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="http://www.hahack.com/codes/cmake/" target="_blank" rel="noopener">CMake 入门实战</a></li>
@@ -747,6 +758,8 @@
 <li><a href="">cmake-cookbook.pdf</a></li>
 <li><a href="https://www.cnblogs.com/dverdon/p/4574056.html" target="_blank" rel="noopener">CMake代码示例</a></li>
 <li><a href="https://blog.csdn.net/wzzfeitian/article/details/40963457" target="_blank" rel="noopener">cmake使用示例与整理总结</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/97369704" target="_blank" rel="noopener">Cmake之深入理解find_package的用法</a></li>
+<li><a href="http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/" target="_blank" rel="noopener">CMake如何查找链接库</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

@@ -113,24 +113,13 @@
 <blockquote>
 <p>ColumnFamilySet points to the latest view of the LSM-tree (list of memtables<br>and SST files) indirectly, while ongoing operations may hold references<br>to a current or an out-of-date SuperVersion, which in turn points to a<br>point-in-time view of the LSM-tree.</p>
 </blockquote>
-<blockquote>
-<p>ColumnFamilyData</p>
-<blockquote>
-<p>keeps all the data that a column family needs.</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>MemTableList</p>
-<blockquote>
-<p>stores references to all the immutable memtables.<br>The memtables are flushed to L0 as soon as possible and in any order.<br>If there are more than one immutable memtable, their flushes can occur concurrently.</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>SuperVersion</p>
-<blockquote>
-<p>holds references to memtable, all immutable memtables and version.</p>
-</blockquote>
-</blockquote>
+<p><code>ColumnFamilyData</code> keeps all the data that a column family needs.</p>
+<p><code>ColumnFamilySet</code></p>
+<p><code>MemTableList</code> stores references to all the immutable memtables.</p>
+<p>The memtables are flushed to L0 as soon as possible and in any order.</p>
+<p>If there are more than one immutable memtable, their flushes can occur concurrently.</p>
+<p><code>SuperVersion</code> holds references to memtable, all immutable memtables and version.</p>
+<p><code>Version</code> A column family’s version consists of the SST files owned by the column family at a certain point in time.</p>
 <hr>
 <p>Reference </p>
 <ol>
