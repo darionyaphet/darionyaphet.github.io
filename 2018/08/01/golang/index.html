@@ -65,6 +65,16 @@
 <p>Go 遵守分号注入规则（automatic semicolon injection），编译器会在每行代码尾部特定分隔符后加 ; 来分隔多条语句，比如会在 ) 后加分号：</p>
 </blockquote>
 <hr>
+<p><strong>Go Plugin</strong></p>
+<p>Golang是静态编译型语言，编译时就将所有引用的包全部打包到最终的可执行程序中，因此并不能在运行时动态加载其他共享库。Go Plugin提供了这样一种方式，能够让你在运行时动态加载外部库。Plugin可以根据需要随时替换其中某些部件而不用修改程序。Plugin 可以和主程序独立建设，主程序只需要制定好框架，实现默认功能。Plugin 可根据用户需求随时自行扩展开发，运行时随意替换，提高了程序的可定制性；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">type Plugin struct&#123; ... &#125;</span><br><span class="line"></span><br><span class="line">func Open(path string) (*Plugin, error)</span><br><span class="line"></span><br><span class="line">func (p *Plugin) Lookup(symName string) (Symbol, error)</span><br><span class="line"></span><br><span class="line">type Symbol interface&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Plugin</code> 即Golang加载的插件。</p>
+<ol>
+<li>Open 根据参数path提供的路径加载这个插件，并返回插件结构指针</li>
+<li>Lookup 通过名称在插件中寻找对应的变量或方法，以Symbol的形式返回</li>
+</ol>
+<p><code>Symbol</code> 是interface的别名，可以从插件里面拿到任何类型的可导出元素。</p>
+<hr>
 <p>Reference :</p>
 <ol>
 <li><a href="https://smartystreets.com/blog/tags/testing-in-go-series" target="_blank" rel="noopener">Testing in Go by example</a></li>
