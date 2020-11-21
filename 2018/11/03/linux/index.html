@@ -26,6 +26,22 @@
 <p>由于内核在初始化时也只映射了物理内存的前896M，我们可以知道内核也目录表只能保证第768项开始的224项中有有效映射。从这里我们可以知道，所有的进程都共享了其内核线性地址空间。</p>
 <p>当一个进程在内核空间发生缺页故障的时候，这主要发生在访问内核空间动态映射区线性地址，在其处理程序中，就要通过0号进程的页目录（swapper_pg_dir）来同步本进程的内核页目录，实际上就是拷贝0号进程的内核页目录到本进程中（内核页表与进程0共享，故不需要复制）。如果进程0的该地址处的内核页目录也不存在，则出错，具体代码可以参考vmalloc的实现源码。</p>
 <p>当进程运行于用户态时，若其需要申请内存空间，内核首先会在其用户线性空间中分配需要的线性地址空间，再通过伙伴分配系统分配物理内存并把分配的物理内存跟用户空间线性地址映射起来，最后再修改进程的页目录项及页表项写入这些映射关系。</p>
+<hr>
+<p><strong>IO</strong></p>
+<p><code>文件描述符</code>用于表述指向文件的引用的抽象化概念。</p>
+<p><strong>阻塞 I/O（blocking IO）</strong></p>
+<p><code>Linux</code> 中默认情况下所有的socket都是blocking。</p>
+<p>用户进程调用了recvfrom这个系统调用，Linux Kernel就开始了IO的第一个阶段：准备数据。这个过程需要等待，也就是说数据被拷贝到操作系统内核的缓冲区中是需要一个过程的。而在用户进程这边，整个进程会被阻塞。当Kernel一直等到数据准备好了，它就会将数据从Kernel中拷贝到用户内存，Kernel返回结果，用户进程解除block状态，重新运行起来。</p>
+<p><img src="/Users/darion/darionyaphet/source/_posts/linux/blocking_IO.png" alt="blocking IO"></p>
+<p>Linux可以通过设置socket为non-blocking。当对一个non-blocking socket执行读操作时，流程如下：</p>
+<p>当用户进程发出Read操作时，如果Kernel中的数据还没有准备好，那么它并不会block用户进程，而是立刻返回一个error。从用户进程角度讲 ，它发起一个read操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个error时，它就知道数据还没有准备好，于是它可以再次发送read操作。一旦kernel中的数据准备好了，并且又再次收到了用户进程的system call，那么它马上就将数据拷贝到了用户内存，然后返回。</p>
+<p><code>epoll</code>是Linux内核的可扩展I/O事件通知机制。设计目的旨在取代既有POSIX select与poll系统函数，让需要大量操作文件描述符的程序得以发挥更优异的性能。epoll 实现的功能与 poll 类似，都是监听多个文件描述符上的事件。epoll 通过使用红黑树搜索被监控的文件描述符。</p>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://zh.wikipedia.org/wiki/Epoll" target="_blank" rel="noopener">wiki epoll</a></li>
+<li><a href="https://segmentfault.com/a/1190000003063859" target="_blank" rel="noopener">Linux IO模式及 select、poll、epoll详解</a></li>
+</ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
 });

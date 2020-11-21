@@ -7,7 +7,11 @@
 <p><code>connectionState: States</code> 表示ZooKeeper连接状态，包括：<code>CONNECTING</code>, <code>ASSOCIATING</code>, <code>CONNECTED</code>, <code>CONNECTEDREADONLY</code>,<code>CLOSED</code>, <code>AUTH_FAILED</code>, <code>NOT_CONNECTED</code>。</p>
 <p><code>handleRequest</code> 方法发送请求并等待相应。</p>
 <hr>
-<p><code>Stream</code></p>
+<p><strong>时间轮</strong></p>
+<p>Kafka时间轮底层就是一个环形数组，数组中每个元素都存放一个双向链表TimerTaskList，链表中封装了很多延时任务。</p>
+<p>Kafka中一个时间轮TimingWheel是由20个时间格组成，wheelSize = 20；每格的时间跨度是1ms，tickMs = 1ms。参照Kafka，上图中也用了20个灰边小圆表示时间格，为了动画演示可以看得清楚，我们这里每个小圆的时间跨度是1s。</p>
+<p>所以现在整个时间轮的时间跨度就是 tickMs * wheelSize ，也就是 20s。从0s到19s，我们都分别有一个灰边小圆来承载。</p>
+<p>Kafka的时间轮还有一个表盘指针 currentTime，表示时间轮当前所处的时间。也就是图中用黑色粗线表示的圆，随着时间推移, 这个指针也会不断前进;</p>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();
 });

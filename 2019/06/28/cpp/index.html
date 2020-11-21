@@ -333,6 +333,12 @@
 </blockquote>
 <p><code>now()</code> 当前时间<code>time_point</code> <code>to_time_t()</code> <code>time_point</code>转换成<code>time_t</code>秒 <code>from_time_t()</code> 从<code>time_t</code>转换成<code>time_point</code></p>
 <hr>
+<p><code>restrict</code> 含义是由编程者向编译器声明，在这个指针的生命周期中，只有这个指针本身或者直接由它产生的指针(如 ptr + 1)能够用来访问该指针指向的对象．作用是限制指针别名，帮助编译器做优化．如果该指针与另外一个指针指向同一对象，那么结果是未定义的．</p>
+<p>表明指针是访问一个数据对象的唯一且初始的方式.即它告诉编译器，所有修改该指针所指向内存中内容的操作都必须通过该指针来修改,而不能通过其它途径(其它变量或指针)来修改;</p>
+<hr>
+<p><strong>__thread 关键字</strong></p>
+<p><code>__thread</code>是GCC内置的线程局部存储设施。_thread变量每一个线程有一份独立实体，各个线程的值互不干扰。可以用来修饰那些带有全局性且值可能变，但是又不值得用全局变量保护的变量。</p>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.cnblogs.com/jiangbin/p/6986511.html" target="_blank" rel="noopener">C++中的RAII介绍</a></li>
@@ -353,6 +359,9 @@
 <li><a href="https://remonstrate.wordpress.com/2012/04/13/boost-的-intrusive-容器/" target="_blank" rel="noopener">BOOST 的 INTRUSIVE 容器</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/55856487" target="_blank" rel="noopener">C++11朝码夕解: move和forward</a></li>
 <li><a href="http://blog.guorongfei.com/2016/03/16/cppx-stdlib-empalce/" target="_blank" rel="noopener">C++11 中的 emplace</a></li>
+<li><a href="https://wizardforcel.gitbooks.io/cpp-11-faq/content/88.html" target="_blank" rel="noopener">C++11 FAQ中文版</a></li>
+<li><a href="https://blog.csdn.net/veghlreywg/article/details/88556681" target="_blank" rel="noopener">函数参数是右值引用类型，能够接受什么样的参数输入</a></li>
+<li><a href="https://fzheng.me/2019/10/19/std-move-and-rvalue-ref/" target="_blank" rel="noopener">理解 C++ 右值引用和 std::move</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

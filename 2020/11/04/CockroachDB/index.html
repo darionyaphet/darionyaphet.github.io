@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>CockroachDB | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-11-04</div></div></div><div class="container post-header"><h1>CockroachDB</h1></div><div class="container post-content"><p><code>CockroachDB</code> is a distributed SQL database. The primary design goals are scalability, strong consistency and survivability (hence the name). CockroachDB aims to tolerate disk, machine, rack, and even datacenter failures with minimal latency disruption and no manual intervention. CockroachDB nodes are symmetric; a design goal is homogeneous deployment (one binary) with minimal configuration and no required external dependencies.</p>
+<p>The entry point for database clients is the SQL interface. Every node in a CockroachDB cluster can act as a client SQL gateway. A SQL gateway transforms and executes client SQL statements to key-value (KV) operations, which the gateway distributes across the cluster as necessary and returns results to the client. CockroachDB implements a single, monolithic sorted map from key to value where both keys and values are byte strings.</p>
+<p>The KV map is logically composed of smaller segments of the keyspace called ranges. Each range is backed by data stored in a local KV storage engine (we use RocksDB, a variant of LevelDB). Range data is replicated to a configurable number of additional CockroachDB nodes. Ranges are merged and split to maintain a target size, by default 64M. The relatively small size facilitates quick repair and rebalancing to address node failures, new capacity and even read/write load. However, the size must be balanced against the pressure on the system from having more ranges to manage.</p>
+<p>CockroachDB achieves horizontally scalability:</p>
+<ul>
+<li>adding more nodes increases the capacity of the cluster by the amount of storage on each node (divided by a configurable replication factor), theoretically up to 4 exabytes (4E) of logical data;</li>
+<li>client queries can be sent to any node in the cluster, and queries can operate independently (w/o conflicts), meaning that overall throughput is a linear factor of the number of nodes in the cluster.</li>
+<li>queries are distributed (ref: distributed SQL) so that the overall throughput of single queries can be increased by adding more nodes.</li>
+</ul>
+<p>CockroachDB achieves strong consistency:</p>
+<ul>
+<li>uses a distributed consensus protocol for synchronous replication of data in each key value range. We’ve chosen to use the Raft consensus algorithm; all consensus state is stored in RocksDB.</li>
+<li>single or batched mutations to a single range are mediated via the range’s Raft instance. Raft guarantees ACID semantics.</li>
+<li>logical mutations which affect multiple ranges employ distributed transactions for ACID semantics. CockroachDB uses an efficient non-locking distributed commit protocol.</li>
+</ul>
+<p>CockroachDB achieves survivability:</p>
+<ul>
+<li>range replicas can be co-located within a single datacenter for low latency replication and survive disk or machine failures. They can be distributed across racks to survive some network switch failures.</li>
+<li>range replicas can be located in datacenters spanning increasingly disparate geographies to survive ever-greater failure scenarios from datacenter power or networking loss to regional power failures (e.g. { US-East-1a, US-East-1b, US-East-1c }, { US-East, US-West, Japan }, { Ireland, US-East, US-West}, { Ireland, US-East, US-West, Japan, Australia }).</li>
+</ul>
+<p>CockroachDB provides snapshot isolation (SI) and serializable snapshot isolation (SSI) semantics, allowing externally consistent, lock-free reads and writes–both from a historical snapshot timestamp and from the current wall clock time. SI provides lock-free reads and writes but still allows write skew. SSI eliminates write skew, but introduces a performance hit in the case of a contentious system. SSI is the default isolation; clients must consciously decide to trade correctness for performance. CockroachDB implements a limited form of linearizability , providing ordering for any observer or chain of observers.</p>
+<p>Similar to Spanner directories, CockroachDB allows configuration of arbitrary zones of data. This allows replication factor, storage device type, and/or datacenter location to be chosen to optimize performance and/or availability. Unlike Spanner, zones are monolithic and don’t allow movement of fine grained data on the level of entity groups.</p>
+<p>Reference:</p>
+<ol>
+<li><a href="http://www.cockroachchina.cn/?p=1088" target="_blank" rel="noopener">CockroachDB设计文档（上）</a></li>
+<li><a href="http://www.cockroachchina.cn/?p=1105" target="_blank" rel="noopener">CockroachDB设计文档（中）</a></li>
+<li><a href="http://www.cockroachchina.cn/?p=1111" target="_blank" rel="noopener">CockroachDB设计文档（下）</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>
