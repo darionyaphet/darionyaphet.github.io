@@ -37,10 +37,12 @@
 <p>当用户进程发出Read操作时，如果Kernel中的数据还没有准备好，那么它并不会block用户进程，而是立刻返回一个error。从用户进程角度讲 ，它发起一个read操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个error时，它就知道数据还没有准备好，于是它可以再次发送read操作。一旦kernel中的数据准备好了，并且又再次收到了用户进程的system call，那么它马上就将数据拷贝到了用户内存，然后返回。</p>
 <p><code>epoll</code>是Linux内核的可扩展I/O事件通知机制。设计目的旨在取代既有POSIX select与poll系统函数，让需要大量操作文件描述符的程序得以发挥更优异的性能。epoll 实现的功能与 poll 类似，都是监听多个文件描述符上的事件。epoll 通过使用红黑树搜索被监控的文件描述符。</p>
 <hr>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://zh.wikipedia.org/wiki/Epoll" target="_blank" rel="noopener">wiki epoll</a></li>
 <li><a href="https://segmentfault.com/a/1190000003063859" target="_blank" rel="noopener">Linux IO模式及 select、poll、epoll详解</a></li>
+<li><a href="https://developer.ibm.com/zh/tutorials/l-system-calls/" target="_blank" rel="noopener">使用 Linux 系统调用的内核命令</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

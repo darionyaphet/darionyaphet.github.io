@@ -233,7 +233,7 @@
 <hr>
 <p><strong>Lambda表达式</strong></p>
 <p><code>Lambda 表达式</code>用于定义并创建匿名的函数对象，形式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[函数对象参数] (操作符重载函数参数) mutable 或 exception 声明 -&gt; 返回值类型 &#123;函数体&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[ capture-list ] &#123; body &#125;</span><br><span class="line">[ capture-list ] ( params ) &#123; body &#125;</span><br><span class="line">[ capture-list ] ( params ) -&gt; ret &#123; body &#125;</span><br><span class="line">[ capture-list ] ( params ) mutable exception attribute -&gt; ret &#123; body &#125;</span><br></pre></td></tr></table></figure>
 <p><em>函数对象参数</em>是传递给编译器自动生成的函数对象类的构造函数的。</p>
 <p><em>操作符重载函数参数</em></p>
 <p><em>mutable 或 exception 声明</em></p>
@@ -339,6 +339,14 @@
 <p><strong>__thread 关键字</strong></p>
 <p><code>__thread</code>是GCC内置的线程局部存储设施。_thread变量每一个线程有一份独立实体，各个线程的值互不干扰。可以用来修饰那些带有全局性且值可能变，但是又不值得用全局变量保护的变量。</p>
 <hr>
+<p><strong>std::decay</strong> </p>
+<p>为类型T应用从左值到右值（lvalue to rvalue）、数组到指针（array to pointer）和函数到指针（function to pointer）的隐式转换。转换将移除类型T的cv限定符（const和volatile限定符），并定义结果类型为成员decay<t>::type的类型。这种转换很类似于当函数的所有参数按值传递时发生转换。 </t></p>
+<ul>
+<li>如果类型T是一个函数类型，那么从函数到指针的类型转换将被应用，并且T的衰变类型等同于：<code>add_pointer&lt;T&gt;::type</code></li>
+<li>如果类型T是一个数组类型，那么从数组到指针的类型转换将被应用，并且T的衰变类型等同于：<code>add_pointer&lt;remove_extent&lt;remove_reference&lt;T&gt;::type&gt;::type&gt;::type</code></li>
+<li>当左值到右值转换被应用时，T的衰变类型等同于：<code>remove_cv&lt;remove_reference&lt;T&gt;::type&gt;::type</code></li>
+</ul>
+<hr>
 <p>Reference:</p>
 <ol>
 <li><a href="https://www.cnblogs.com/jiangbin/p/6986511.html" target="_blank" rel="noopener">C++中的RAII介绍</a></li>
@@ -362,6 +370,8 @@
 <li><a href="https://wizardforcel.gitbooks.io/cpp-11-faq/content/88.html" target="_blank" rel="noopener">C++11 FAQ中文版</a></li>
 <li><a href="https://blog.csdn.net/veghlreywg/article/details/88556681" target="_blank" rel="noopener">函数参数是右值引用类型，能够接受什么样的参数输入</a></li>
 <li><a href="https://fzheng.me/2019/10/19/std-move-and-rvalue-ref/" target="_blank" rel="noopener">理解 C++ 右值引用和 std::move</a></li>
+<li><a href="https://paul.pub/cpp-lambda-function-bind/" target="_blank" rel="noopener">C++11中的lambda，std::function以及std:bind</a></li>
+<li><a href="https://paul.pub/cpp-value-category/" target="_blank" rel="noopener">C++中的值类别</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

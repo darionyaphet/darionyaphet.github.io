@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>mpi | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-11-28</div></div></div><div class="container post-header"><h1>mpi</h1></div><div class="container post-content"><p> MPI是一个库，而不是一门语言。</p>
+<p> MPI是一种标准或规范的代表，而不特指某一个对它的具体实现。</p>
+<p> MPI是一种消息传递编程模型，并成为这种编程模型的代表和事实上的标准。</p>
+<p> 所有MPI的名字都有前缀 <code>MPI_</code> 不管是常量，变量还是过程或函数调用的名字都是如此。</p>
+<p> <code>int MPI_Init(int *argc, char ***argv)</code></p>
+<p> <code>MPI_COMM_SIZE(comm,size)</code></p>
+<p> 返回给定的通信域中所包括的进程的个数，不同的进程通过这一调用得知在给定的通信域中一共有多少个进程在并行执行。</p>
+<p> <code>MPI_SEND(buf,count,datatype,dest,tag,comm)</code></p>
+<p><code>MPI_SEND</code>将发送缓冲区中的count个datatype数据类型的数据发送到目的进程，目的进程在通信域中的标识号是dest，本次发送的消息标志是tag，使用这一标志，就可以把本次发送的消息和本进程向同一目的进程发送的其它消息区别开来。</p>
+<p><code>MPI_RECV(buf,count,datatype,source,tag,comm,status)</code></p>
+<p><code>MPI_RECV</code>从指定的进程source接收消息 并且该消息的数据类型和消息标识和本接收进程指定的datatype和tag相一致 接收到的消息所包含的数据元素的个数最多不能超过count。</p>
+<p><code>MPI</code>的消息传递过程可以分为三个阶段：</p>
+<ol>
+<li>消息装配，将发送数据从发送缓冲区中取出 加上消息信封等形成一个完整的消息。</li>
+<li>消息传递，将装配好的消息从发送端传递到接收端。</li>
+<li>消息拆卸，从接收到的消息中取出数据送入接收缓冲区。</li>
+</ol>
+<p>类型匹配规则可以概括为：</p>
+<ol>
+<li>有类型数据的通信，发送方和接收方均使用相同的数据类型。</li>
+<li>无类型数据的通信，发送方和接收方均以MPI_BYTE作为数据类型。</li>
+<li>打包数据的通信, 发送方和接收方均使用MPI_PACKED。</li>
+</ol>
+<p>信封： &lt;源/目，标识，通信域&gt;<br>数据： &lt;起始地址，数据个数，数据类型&gt;</p>
+<p>MPI允许发送者=接收者，即一个进程可以给自己发送一个消息。</p>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>

@@ -332,6 +332,15 @@
 <p>如果follower或者candidate崩溃了，那么后续发送给他们的 RPC 都会失败。</p>
 <p>Raft 中处理这种失败就是简单的通过无限的重试；</p>
 <p>Raft 的 RPC 都是幂等的，所以这样重试不会造成任何问题。</p>
+<p><strong>成员变更机制</strong></p>
+<p>成员变更时，因为无法做到在同一个时刻使所有的节点从旧配置转换到新配置，那么直接从就配置向新配置切换就可能存在一个节点同时满足新旧配置的“超过半数”原则。</p>
+<p>原集群由Server1、Server2、Server3，现在对集群做变更，增加Server4、Server5。</p>
+<p>如果采用直接从旧配置到新配置的切换，那么有一段时间存在两个不想交的<code>超过半数的集群</code>。</p>
+<p>Server1可以通过自身和Server2的选票成为Leader，Server3可以通过自身和Server4、Server5的选票成为Leader；此时整个集群可能在同一任期中出现了两个Leader，这和协议是违背的。</p>
+<ul>
+<li>Leader收到C-old到C-new的配置变更请求时，创建C-old-new的日志并开始复制给其他节点</li>
+<li>Follower以最新的配置做决定</li>
+</ul>
 <hr>
 <p>Reference :</p>
 <ol>
@@ -342,6 +351,7 @@
 <li><a href="https://i6448038.github.io/2018/12/12/raft/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="noopener">raft一致性算法详解</a></li>
 <li><a href="https://mp.weixin.qq.com/s/i6ULr-aW7MOxQotCQpqBCQ?" target="_blank" rel="noopener">分布式强一致性数据库的灵魂 - Raft 算法</a></li>
 <li><a href="https://www.cnblogs.com/aquester/p/10308335.html" target="_blank" rel="noopener">Raft协议学习笔记</a></li>
+<li><a href="https://ifeve.com/解读raft（四-成员变更）/" target="_blank" rel="noopener">解读Raft（四 成员变更）</a></li>
 </ol>
 </div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
   $(".fancybox").fancybox();

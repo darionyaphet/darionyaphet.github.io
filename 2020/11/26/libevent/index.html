@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="science &amp; art"><title>libevent | Hexo</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a></nav><div class="container post-meta"><div class="post-time">2020-11-26</div></div></div><div class="container post-header"><h1>libevent</h1></div><div class="container post-content"><h3 id="Libevent"><a href="#Libevent" class="headerlink" title="Libevent"></a>Libevent</h3><p>​使用<code>libevent</code>函数之前需要分配一个或者多个<code>event_base</code>结构体。每个<code>event_base</code>结构体持有一个事件集合，可以检测以确定哪个事件是激活的。</p>
+<p>event_base_new函数分配并且返回一个新的具有默认设置的event_base。</p>
+<p><code>event_config</code>是一个容纳<code>event_base</code>配置信息的不透明结构体。</p>
+<p>需要<code>event_base</code>时，将<code>event_config</code>传递给<code>event_base_new_with_config</code>函数。</p>
+<p><code>libevent</code>基本操作单元是<code>event</code>，每一个<code>event</code>代表了一些条件的集合，这些条件包括：</p>
+<ul>
+<li>文件描述符已经准备好读或写</li>
+<li>文件描述符正在变为就绪，准备好读或写（仅限于边沿触发）</li>
+<li>超时事件</li>
+<li>信号发生</li>
+<li>用户触发事件</li>
+</ul>
+<blockquote>
+<p>所有事件具有相似的生命周期。调用libevent函数设置事件并且关联到<code>event_base</code>之后，事件进入已初始化状态。此时可以将事件添加到<code>event_base</code>中，这使之进入未决状态。在未决状态下，如果触发事件的条件发生，则事件进入激活状态，事件回调函数将被执行。如果配置为持久的，当执行回调时，事件将保持为未决状态；否则，执行完回调后，事件不再是未决的。删除操作可以让未决事件成为非未决已初始化的；添加操作可以让非未决事件再次成为未决的。</p>
+</blockquote>
+<hr>
+<p>Reference:</p>
+<ol>
+<li><a href="https://www.cnblogs.com/szitcast/p/10963742.html" target="_blank" rel="noopener">Libevent学习笔记(一)：简介和安装</a></li>
+<li><a href="https://www.cnblogs.com/szitcast/p/10970073.html" target="_blank" rel="noopener">Libevent学习笔记(二)：创建event_base</a></li>
+<li><a href="https://www.cnblogs.com/szitcast/p/10981903.html" target="_blank" rel="noopener">Libevent学习笔记(四)：事件event</a></li>
+</ol>
+</div></div><div class="post-main post-comment"></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script></body></html>
